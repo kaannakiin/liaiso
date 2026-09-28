@@ -95,11 +95,31 @@ export class LiaisoProbeEvaluator implements ProbeEvaluator {
       /\{([^}]+)\}/g,
       (_match, name: string) =>
         encodeURIComponent(
-          this.options.visibility.probeValues.get(name.toLowerCase()) ??
+          constantFor(entry, name) ??
+            this.options.visibility.probeValues.get(name.toLowerCase()) ??
             placeholderFor(entry, name),
         ),
     );
   }
+}
+
+/**
+ * Guard: a family member is reachable only through its own key, so a placeholder or a host probe
+ * value would probe a different member, or none, and report its verdict for this one.
+ */
+function constantFor(entry: CatalogEntry, name: string): string | undefined {
+  const fill = entry.template?.parameters.find(
+    (parameter) => parameter.name === name && parameter.location === "path",
+  )?.fill;
+  if (fill?.kind !== "constant") {
+    return undefined;
+  }
+  const value: unknown = fill.value;
+  return typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+    ? String(value)
+    : undefined;
 }
 
 function placeholderFor(entry: CatalogEntry, name: string): string {

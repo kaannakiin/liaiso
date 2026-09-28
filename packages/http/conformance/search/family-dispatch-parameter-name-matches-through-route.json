@@ -1,0 +1,88 @@
+{
+  "kind": "search",
+  "description": "Hiding the dispatch parameter withholds its slot, not its name: the name stays in the route every member shares, so it matches every member and nothing else",
+  "input": {
+    "tools": [
+      {
+        "name": "list_customer_balances",
+        "description": "Müşteri bakiyelerini listeler.",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "minBalance": {
+              "type": "number",
+              "description": "En düşük bakiye."
+            }
+          }
+        }
+      },
+      {
+        "name": "list_delayed_orders",
+        "description": "Gecikmiş siparişleri listeler.",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "days": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      {
+        "name": "assign_courier",
+        "description": "Siparişe kurye atar.",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "orderNumber": {
+              "type": "string"
+            },
+            "courierCode": {
+              "type": "string"
+            },
+            "vehiclePlate": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "list_orders",
+        "description": "Siparişleri listeler.",
+        "route": "/Rest/Orders/List",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "get_customer_by_id",
+        "description": "Müşteri kaydını getirir.",
+        "route": "/Rest/Customers/{id}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    ],
+    "query": "method"
+  },
+  "expected": {
+    "names": [
+      "list_delayed_orders",
+      "assign_courier",
+      "list_customer_balances"
+    ]
+  }
+}

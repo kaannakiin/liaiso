@@ -23,6 +23,24 @@ spec, a guard comment or the package README.
   published package may not depend on a private one. Either publish core or bundle it.
 - **A route-normalisation conformance corpus.** Each SDK pins its own route folding with unit tests
   ([selection-hierarchy.md](packages/http/spec/selection-hierarchy.md), Known limits).
+- **Tool families from an OpenAPI document.** Ingestion never produces `family`
+  ([tool-families.md](packages/http/spec/tool-families.md)), so `openapi-mcp` publishes a
+  dispatching endpoint as one opaque tool. An `x-liaiso-family` extension, or a member list the
+  gateway config names, would lower it the way the SDKs do.
+- **Per-caller family membership.** Members are global: a caller who may not run a method still
+  sees it. Filtering members per caller needs a caller-dependent published schema, which the catalog
+  snapshot, the generation stamp and `listChanged` all rule out today
+  ([argument-curation.md](packages/http/spec/argument-curation.md), out of scope).
+- **A dispatch key in the body.** A family dispatches on a path, query, header or cookie parameter.
+  A JSON-RPC-style `{"method": ..., "params": ...}` body is not covered.
+- **Variant and family selection parity.** `@McpVariant` and `@McpToolFamily` imply selection on
+  NestJS; `[McpToolVariant]` and `[McpToolFamily]` do not on ASP.NET Core, which still needs
+  `[McpTool]`.
+- **Build-time `unknown_fill_source` on ASP.NET Core.** The spec checks a deferred fill's source at
+  tool production ([argument-curation.md](packages/http/spec/argument-curation.md)); the ASP.NET SDK
+  skips a missing provider at invoke time instead.
+- **Member bodies on `[McpToolVariant]`.** A NestJS `@McpVariant` can carry a family member's body,
+  so a fixed family needs no source; on ASP.NET Core a member with its own body comes from a source.
 
 ## Source servers
 

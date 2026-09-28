@@ -54,14 +54,19 @@ Curation markers:
 [McpArgument("q", Name = "keyword", Description = "...")]   // rename, re-describe
 [McpArgument("tenantId", Hidden = true, ValueFrom = "...")] // hide: provider, Value, or ValueJson
 [McpToolVariant("name", "description")]                     // one of several tools per operation
+[McpToolFamily("methodId", Source = "...")]                 // one tool per method behind a dispatcher
 ```
+
+`options.Families.Provide(name, source)` registers a family's member source, and
+`Families.LoadTimeout` bounds each load; see
+[how to expose a dispatching endpoint as one tool per method](/docs/http-catalog/expose-a-dispatching-endpoint-as-one-tool-per-method).
 
 `McpArgumentAttribute` also targets a parameter or a DTO property, where the member names the
 argument. At most one of `Value`, `ValueJson` and `ValueFrom` may be set, and none without
 `Hidden = true`.
 
-Option groups are twelve properties on `LiaisoOptions` — `Identity`, `Synthetic`, `Selection`,
-`Query`, `Schema`, `Naming`, `Visibility`, `Cache`, `Errors`, `ResourceServer`, `Diagnostics`, `Arguments`. Their fields
+Option groups are thirteen properties on `LiaisoOptions` — `Identity`, `Synthetic`, `Selection`,
+`Query`, `Schema`, `Naming`, `Visibility`, `Cache`, `Errors`, `ResourceServer`, `Diagnostics`, `Arguments`, `Families`. Their fields
 and defaults are in
 [`LiaisoOptions.cs`](https://github.com/kaannakiin/liaiso/blob/main/sdks/dotnet/src/Liaiso.AspNetCore/LiaisoOptions.cs);
 this page does not copy them.
@@ -92,6 +97,7 @@ Curation on the NestJS side:
 
 ```ts
 McpVariant(options: McpVariantOptions): MethodDecorator
+McpToolFamily(options: McpToolFamilyOptions): MethodDecorator
 
 const hidden: {
   value(value: JsonValue): ArgumentRule;
@@ -104,6 +110,7 @@ function curate<T>(rules: ArgumentRules<T>): ArgumentRules<T>;
 
 `curate<T>()` key-checks the record against a DTO's own keys at compile time; `arguments` accepts a
 plain record without it. `options.arguments` carries `provide`, `curate`, `everywhere` and `seal`.
+`options.families` carries `provide` and `loadTimeoutMs`; the member shape is `McpFamilyMember`.
 
 `options.query.grouping` (`"flatten"` by default, `"group"` to opt in) and its ASP.NET twin
 `options.Query.Grouping` decide whether a whole-object query binding stays one argument or is
@@ -180,9 +187,17 @@ source, next to the token definitions.
 ## Catalog reload
 
 ```ts
-LiaisoCatalog.reload(): void
+LiaisoCatalog.reload(): Promise<void>
+```
+
+```csharp
+ILiaisoCatalogChangeSource.ReloadAsync(CancellationToken cancellationToken = default): ValueTask
 ```
 
 Rebuilds the catalog, bumps the generation counter, and fires the change listeners that re-stamp
 `_meta` and send `notifications/tools/list_changed`. See
-[meta-tool contract](/docs/http-catalog/meta-tool-contract).
+[meta-tool contract](/docs/http-catalog/meta-tool-contract). With no family source registered the
+NestJS rebuild has happened by the time the call returns. With one, members are loaded first,
+reloads run one at a time, and a rebuild that would turn a valid catalog fatal is refused — the
+promise rejects, or the task throws, with `LiaisoCatalogError` / `LiaisoCatalogException` — and the
+current catalog is kept.

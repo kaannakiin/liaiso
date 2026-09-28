@@ -186,9 +186,9 @@ export interface NamingEndpoint {
   route: string;
   containerPrefix?: string;
   toolName?: string;
-  variants?: [ToolVariant, ...ToolVariant[]];
+  variants?: [NamingVariant, ...NamingVariant[]];
 }
-export interface ToolVariant {
+export interface NamingVariant {
   name: string;
   description: string;
   arguments?: ArgumentCuration[];
@@ -237,6 +237,8 @@ export interface EndpointDescriptor {
   tags?: string[];
   arguments?: ArgumentCuration[];
   variants?: [ToolVariant, ...ToolVariant[]];
+  family?: ToolFamily;
+  annotations?: ToolAnnotations;
 }
 export interface Parameter {
   name: string;
@@ -327,6 +329,26 @@ export interface IdentityCarrier {
   in: "header" | "query" | "cookie";
   name: string;
 }
+export interface ToolVariant {
+  name: string;
+  description: string;
+  arguments?: ArgumentCuration[];
+  requestBody?: VariantRequestBody;
+  annotations?: ToolAnnotations;
+}
+export interface VariantRequestBody {
+  schema: JsonSchemaObject;
+  required?: boolean;
+  description?: string;
+}
+export interface ToolAnnotations {
+  readOnlyHint?: boolean;
+  destructiveHint?: boolean;
+  idempotentHint?: boolean;
+}
+export interface ToolFamily {
+  parameter: string;
+}
 export interface ToolDefinition {
   name: string;
   description: string;
@@ -335,11 +357,6 @@ export interface ToolDefinition {
   outputSchema?: JsonSchemaObject;
   annotations: ToolAnnotations;
   auth: Auth;
-}
-export interface ToolAnnotations {
-  readOnlyHint?: boolean;
-  destructiveHint?: boolean;
-  idempotentHint?: boolean;
 }
 export interface MetadataExtractionExpectedTools {
   tools: [ToolDefinition, ...ToolDefinition[]];
@@ -359,7 +376,13 @@ export interface MetadataExtractionExpectedError {
     | "identity_carrier_parameter"
     | "unsupported_parameter_content"
     | "multiple_querystring"
-    | "querystring_with_query";
+    | "querystring_with_query"
+    | "family_parameter_unresolved"
+    | "family_without_members"
+    | "family_key_unfilled"
+    | "family_key_duplicate"
+    | "variant_body_without_family"
+    | "variant_body_invalid";
 }
 export interface ArgumentMappingFixture {
   kind: "argument-mapping";

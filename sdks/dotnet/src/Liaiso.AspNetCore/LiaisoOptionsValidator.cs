@@ -26,6 +26,10 @@ internal sealed class LiaisoOptionsValidator : IValidateOptions<LiaisoOptions>
         {
             failures.Add("Visibility.ProbeConcurrency must be at least 1.");
         }
+        if (options.Families.LoadTimeout <= TimeSpan.Zero)
+        {
+            failures.Add("Families.LoadTimeout must be positive.");
+        }
         if (options.Invoke.MaxInlineFileBytes < 0)
         {
             failures.Add("Invoke.MaxInlineFileBytes must be zero or positive.");

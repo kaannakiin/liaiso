@@ -1,4 +1,10 @@
-import { Inject, Injectable, Optional, RequestMethod } from "@nestjs/common";
+import {
+  Inject,
+  Injectable,
+  Optional,
+  RequestMethod,
+  type OnApplicationBootstrap,
+} from "@nestjs/common";
 import {
   ApplicationConfig,
   DiscoveryService,
@@ -19,6 +25,8 @@ import {
   type DiagnosticReporter,
   type EndpointDescriptor,
   type FileOptions,
+  type ToolAnnotations,
+  type ToolVariant,
 } from "@liaiso/core";
 import { severityOf, type CatalogDiagnostic } from "./discovery/diagnostics.js";
 import {
@@ -28,7 +36,13 @@ import {
   normalizeRoute,
   type DiscoveredEndpoint,
 } from "./discovery/endpoint-discovery.js";
-import type { ArgumentRule } from "./decorators.js";
+import type { ArgumentRule, McpVariantOptions } from "./decorators.js";
+import {
+  loadFamilies,
+  resolveFamily,
+  type FamilyLoads,
+  type FamilyResolution,
+} from "./families.js";
 import {
   LIAISO_OPTIONS,
   type CurationRule,
@@ -49,11 +63,15 @@ export interface CatalogSnapshot extends CatalogBuild<NestSource> {
   readonly discovered: number;
 }
 
+type LoweredFamily = Extract<FamilyResolution, { kind: "members" }>;
+
 @Injectable()
-export class LiaisoCatalog {
+export class LiaisoCatalog implements OnApplicationBootstrap {
   private snapshot: CatalogSnapshot | undefined;
   private currentGeneration = 0;
   private readonly listeners = new Set<() => void>();
+  private loads: FamilyLoads | undefined;
+  private pending: Promise<void> = Promise.resolve();
 
   constructor(
     private readonly discovery: DiscoveryService,
@@ -68,7 +86,7 @@ export class LiaisoCatalog {
   }
 
   get current(): CatalogSnapshot {
-    this.snapshot ??= this.build();
+    this.snapshot ??= this.build(this.loads);
     return this.snapshot;
   }
 
@@ -77,8 +95,57 @@ export class LiaisoCatalog {
     return () => this.listeners.delete(listener);
   }
 
-  reload(): void {
-    this.snapshot = this.build();
+  /**
+   * Rebuilds the catalog, loading family members first when any source is registered.
+   *
+   * Without a source the rebuild happens before this returns, as it always has. With one, reloads
+   * run one at a time, and a rebuild that would turn a valid catalog fatal is refused and the
+   * current catalog kept ([tool-families.md] §Membership): member data added under a name another
+   * tool already has would otherwise take every tool offline.
+   *
+   * @throws LiaisoCatalogError through the returned promise when the rebuild is refused
+   */
+  reload(): Promise<void> {
+    if (this.options.families.sources.size === 0) {
+      this.commit(this.build(this.loads));
+      return Promise.resolve();
+    }
+    return this.enqueue(async () => {
+      const loads = await loadFamilies(this.options.families, this.loads);
+      const candidate = this.build(loads);
+      if (candidate.fatal.length > 0 && this.current.fatal.length === 0) {
+        assertCatalogValid(candidate.fatal);
+      }
+      this.loads = loads;
+      this.commit(candidate);
+    });
+  }
+
+  /**
+   * Loads family members once the application's own providers are ready, since a source usually
+   * reads from one of them. A catalog built earlier carries `family_not_loaded` and is rebuilt
+   * here, which signals `listChanged`.
+   */
+  async onApplicationBootstrap(): Promise<void> {
+    if (this.options.families.sources.size === 0) {
+      return;
+    }
+    await this.enqueue(async () => {
+      this.loads = await loadFamilies(this.options.families, this.loads);
+      if (this.snapshot !== undefined) {
+        this.commit(this.build(this.loads));
+      }
+    });
+  }
+
+  private enqueue(task: () => Promise<void>): Promise<void> {
+    const next = this.pending.then(task);
+    this.pending = next.catch(() => undefined);
+    return next;
+  }
+
+  private commit(snapshot: CatalogSnapshot): void {
+    this.snapshot = snapshot;
     this.currentGeneration += 1;
     for (const listener of this.listeners) {
       listener();
@@ -167,7 +234,7 @@ export class LiaisoCatalog {
     return stack.some((layer) => layer.name === needed) ? undefined : needed;
   }
 
-  private build(): CatalogSnapshot {
+  private build(loads: FamilyLoads | undefined): CatalogSnapshot {
     const prior: CatalogDiagnostic[] = [];
     const report: DiagnosticReporter = (diagnostic) => {
       prior.push(diagnostic);
@@ -209,10 +276,32 @@ export class LiaisoCatalog {
     const reserved = routePaths
       .create({ globalPrefix, methodPath: mcpPath }, RequestMethod.ALL)
       .map(normalizeRoute);
-    const routed = discovered.filter(
-      (endpoint) =>
-        !reserved.some((path) => endpoint.descriptor.route.startsWith(path)),
-    );
+    const families = new Map<DiscoveredEndpoint, LoweredFamily>();
+    const routed = discovered.filter((endpoint) => {
+      if (reserved.some((path) => endpoint.descriptor.route.startsWith(path))) {
+        return false;
+      }
+      const family = endpoint.hints.family;
+      if (family === undefined) {
+        return true;
+      }
+      const resolution = resolveFamily(
+        family,
+        `${endpoint.controller.name}.${endpoint.handlerName}`,
+        endpoint.hints.variants ?? [],
+        this.options.families,
+        loads,
+      );
+      if (resolution.kind === "refused") {
+        report(resolution.diagnostic);
+        return false;
+      }
+      if (resolution.kind === "members") {
+        resolution.diagnostics.forEach(report);
+        families.set(endpoint, resolution);
+      }
+      return true;
+    });
 
     const built = buildCatalog<NestSource>(
       routed.map((endpoint) => {
@@ -228,7 +317,12 @@ export class LiaisoCatalog {
           ...markersOf(endpoint),
           ...(tags === undefined ? {} : { tags }),
           declare: (cleaned) =>
-            declaredDescriptor(endpoint, this.curationFor(endpoint), cleaned),
+            declaredDescriptor(
+              endpoint,
+              this.curationFor(endpoint),
+              cleaned,
+              families.get(endpoint),
+            ),
         };
       }),
       {
@@ -375,32 +469,79 @@ function assertUnambiguous(
  *
  * Discovery reports facts; declarations are reduced here, the same way `toolName` and
  * `containerPrefix` are. The curation list arrives resolved because the ladder that produces it
- * needs the host's central rules, which are not a property of the endpoint.
+ * needs the host's central rules, which are not a property of the endpoint; a family's members
+ * arrive already lowered, because they were loaded from a source rather than declared.
  */
 export function declaredDescriptor(
   endpoint: DiscoveredEndpoint,
   curation: readonly ArgumentCuration[],
   tags?: readonly string[],
+  family?: LoweredFamily,
 ): EndpointDescriptor {
   const hints = endpoint.hints;
+  const annotations = annotationsOf(hints);
+  const declaredFamily =
+    family?.family ??
+    (hints.family === undefined
+      ? undefined
+      : { parameter: hints.family.parameter });
+  const variants: ToolVariant[] = [
+    ...(hints.variants ?? []).map(declaredVariant),
+    ...(family?.variants ?? []),
+  ];
   return {
     ...endpoint.descriptor,
     ...(hints.name === undefined ? {} : { toolName: hints.name }),
     ...(hints.prefix === undefined ? {} : { containerPrefix: hints.prefix }),
     ...(tags === undefined ? {} : { tags: [...tags] }),
     ...(curation.length === 0 ? {} : { arguments: [...curation] }),
-    ...(hints.variants === undefined || hints.variants.length === 0
+    ...(variants.length === 0
+      ? {}
+      : { variants: variants as EndpointDescriptor["variants"] }),
+    ...(declaredFamily === undefined ? {} : { family: declaredFamily }),
+    ...(annotations === undefined ? {} : { annotations }),
+  };
+}
+
+function declaredVariant(variant: McpVariantOptions): ToolVariant {
+  const annotations = annotationsOf(variant);
+  return {
+    name: variant.name,
+    description: variant.description,
+    ...(variant.arguments === undefined
+      ? {}
+      : { arguments: toCuration(variant.arguments) }),
+    ...(variant.body === undefined
       ? {}
       : {
-          variants: hints.variants.map((variant) => ({
-            name: variant.name,
-            description: variant.description,
-            ...(variant.arguments === undefined
+          requestBody: {
+            schema: variant.body,
+            ...(variant.bodyRequired === undefined
               ? {}
-              : { arguments: toCuration(variant.arguments) }),
-          })) as EndpointDescriptor["variants"],
+              : { required: variant.bodyRequired }),
+          },
         }),
+    ...(annotations === undefined ? {} : { annotations }),
   };
+}
+
+function annotationsOf(declared: {
+  readonly readOnly?: boolean;
+  readonly destructive?: boolean;
+  readonly idempotent?: boolean;
+}): ToolAnnotations | undefined {
+  const annotations: ToolAnnotations = {
+    ...(declared.readOnly === undefined
+      ? {}
+      : { readOnlyHint: declared.readOnly }),
+    ...(declared.destructive === undefined
+      ? {}
+      : { destructiveHint: declared.destructive }),
+    ...(declared.idempotent === undefined
+      ? {}
+      : { idempotentHint: declared.idempotent }),
+  };
+  return Object.keys(annotations).length === 0 ? undefined : annotations;
 }
 
 export function toCuration(

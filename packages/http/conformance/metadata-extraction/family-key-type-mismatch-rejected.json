@@ -1,0 +1,65 @@
+{
+  "kind": "metadata-extraction",
+  "description": "A member key is an ordinary constant fill, so it must fit the dispatch parameter's schema: a string key on an integer parameter is refused",
+  "input": {
+    "operationId": "InvokeDynamicMethod",
+    "container": "DynamicMethodController",
+    "method": "POST",
+    "route": "/Rest/InvokeDynamicMethod/{methodId}",
+    "description": "Invokes a server method by its id.",
+    "parameters": [
+      {
+        "name": "methodId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "requestBody": {
+      "schema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "family": {
+      "parameter": "methodId"
+    },
+    "variants": [
+      {
+        "name": "list_customer_balances",
+        "description": "Lists customer balances, optionally above a minimum.",
+        "arguments": [
+          {
+            "name": "methodId",
+            "hidden": {
+              "kind": "constant",
+              "value": "balances"
+            }
+          }
+        ],
+        "requestBody": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "minBalance": {
+                "type": "number",
+                "description": "Lowest balance to include."
+              }
+            },
+            "required": []
+          }
+        }
+      }
+    ],
+    "auth": {
+      "anonymous": "no",
+      "policies": [],
+      "imperative": false
+    }
+  },
+  "expected": {
+    "error": "invalid_fill_constant"
+  }
+}

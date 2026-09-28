@@ -6,7 +6,9 @@ namespace Liaiso.AspNetCore.Naming;
 
 public enum PrefixMode { Always, OnCollision }
 
-internal sealed record ToolProduction(EndpointDescriptor Endpoint, ToolVariant? Variant);
+/// <param name="Operation">The declared operation: its identity folds routes and owns diagnostics.</param>
+/// <param name="Endpoint">The descriptor the tool and its template are built from; a family member's carries the member's body.</param>
+internal sealed record ToolProduction(EndpointDescriptor Operation, EndpointDescriptor Endpoint, ToolVariant? Variant);
 
 internal static partial class ToolNameFactory
 {
@@ -129,24 +131,40 @@ internal static partial class ToolNameFactory
         List<ToolProduction> productions = [];
         foreach (T item in Deduplicate(items, selector, onFolded))
         {
-            EndpointDescriptor endpoint = selector(item);
-            if (endpoint.Variants is null)
-            {
-                productions.Add(new ToolProduction(endpoint, null));
-                continue;
-            }
-            if (endpoint.ToolName is not null)
-            {
-                throw new LiaisoTemplateException(
-                    LiaisoTemplateException.VariantDeclarationConflict,
-                    $"{endpoint.Method} {endpoint.Route} declares both a tool name and variants; a variant names itself.");
-            }
-            foreach (ToolVariant variant in endpoint.Variants)
-            {
-                productions.Add(new ToolProduction(endpoint, variant));
-            }
+            productions.AddRange(ProductionsOf(selector(item)));
         }
         return productions;
+    }
+
+    /// <summary>The productions of one already-folded operation.</summary>
+    /// <exception cref="LiaisoTemplateException">The operation's variant or family declaration is refused.</exception>
+    public static IReadOnlyList<ToolProduction> ProductionsOf(EndpointDescriptor operation)
+    {
+        if (operation.Variants is null)
+        {
+            FamilyRules.Assert(operation);
+            return [new ToolProduction(operation, operation, null)];
+        }
+        if (operation.ToolName is not null)
+        {
+            throw new LiaisoTemplateException(
+                LiaisoTemplateException.VariantDeclarationConflict,
+                $"{operation.Method} {operation.Route} declares both a tool name and variants; a variant names itself.");
+        }
+        FamilyRules.Assert(operation);
+        return [.. operation.Variants.Select(variant =>
+            new ToolProduction(operation, FamilyRules.ProductionDescriptor(operation, variant), variant))];
+    }
+
+    public static string VariantName(ToolVariant variant, EndpointDescriptor operation)
+    {
+        if (!ToolNamePattern().IsMatch(variant.Name))
+        {
+            throw new LiaisoCatalogException(
+                LiaisoCatalogException.InvalidName,
+                $"Variant name '{variant.Name}' of {operation.Method} {operation.Route} does not match the required pattern.");
+        }
+        return variant.Name;
     }
 
     public static IReadOnlyList<string> CreateAll(
@@ -158,14 +176,14 @@ internal static partial class ToolNameFactory
 
         List<ToolProduction> operations = [.. ExpandProductions(endpoints, e => e)];
         List<string> names =
-            [.. operations.Select(p => p.Variant?.Name ?? Create(p.Endpoint, mode))];
+            [.. operations.Select(p => p.Variant is null ? Create(p.Operation, mode) : VariantName(p.Variant, p.Operation))];
 
         if (mode == PrefixMode.OnCollision)
         {
             Dictionary<string, List<int>> groups = new(StringComparer.Ordinal);
             for (int index = 0; index < operations.Count; index++)
             {
-                if (operations[index].Endpoint.ToolName is not null
+                if (operations[index].Operation.ToolName is not null
                     || operations[index].Variant is not null)
                 {
                     continue;
@@ -187,7 +205,7 @@ internal static partial class ToolNameFactory
                 }
                 foreach (int index in group)
                 {
-                    EndpointDescriptor endpoint = operations[index].Endpoint;
+                    EndpointDescriptor endpoint = operations[index].Operation;
                     string prefixed = ApplyPrefix(body, DerivePrefix(endpoint));
                     if (string.Equals(prefixed, body, StringComparison.Ordinal))
                     {
@@ -208,9 +226,9 @@ internal static partial class ToolNameFactory
             {
                 throw new LiaisoCatalogException(
                     LiaisoCatalogException.NameCollision,
-                    $"Tool name '{names[index]}' is produced by both {owner.Method} {owner.Route} and {operations[index].Endpoint.Method} {operations[index].Endpoint.Route}; declare a tool name on one of them.");
+                    $"Tool name '{names[index]}' is produced by both {owner.Method} {owner.Route} and {operations[index].Operation.Method} {operations[index].Operation.Route}; declare a tool name on one of them.");
             }
-            claimed[names[index]] = operations[index].Endpoint;
+            claimed[names[index]] = operations[index].Operation;
         }
         return names;
     }

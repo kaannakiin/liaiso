@@ -8,6 +8,7 @@ export {
   hidden,
   McpIgnore,
   McpTool,
+  McpToolFamily,
   McpVariant,
 } from "./decorators.js";
 export type {
@@ -16,9 +17,13 @@ export type {
   JsonValue,
   McpFileFieldOptions,
   McpResponseDeclaration,
+  McpToolEffect,
+  McpToolFamilyOptions,
   McpToolOptions,
   McpVariantOptions,
 } from "./decorators.js";
+export { ToolFamilyOptions } from "./families.js";
+export type { McpFamilyMember, McpFamilySource } from "./families.js";
 export { LiaisoFileRefused } from "./files.js";
 export type {
   FileResolution,

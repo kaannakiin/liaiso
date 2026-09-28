@@ -1,0 +1,40 @@
+{
+  "kind": "metadata-extraction",
+  "description": "Only a family member may replace the operation's body; a plain variant carrying its own body is refused",
+  "input": {
+    "operationId": "CreateOrder",
+    "method": "POST",
+    "route": "/orders",
+    "description": "Creates an order.",
+    "requestBody": {
+      "schema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "variants": [
+      {
+        "name": "create_rush_order",
+        "description": "Creates an order with rush delivery.",
+        "requestBody": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "rush": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "auth": {
+      "anonymous": "no",
+      "policies": [],
+      "imperative": false
+    }
+  },
+  "expected": {
+    "error": "variant_body_without_family"
+  }
+}

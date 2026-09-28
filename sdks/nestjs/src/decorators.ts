@@ -136,7 +136,37 @@ export interface McpToolOptions {
   readonly destructive?: boolean;
   readonly idempotent?: boolean;
   readonly variants?: readonly McpVariantOptions[];
+  readonly family?: McpToolFamilyOptions;
 }
+
+/**
+ * The operation dispatches on one parameter, and each of its variants is a member that writes its
+ * own key there ([tool-families.md]).
+ *
+ * @param parameter the dispatch parameter's wire name
+ * @param source the name a member source was registered under with `options.families.provide`;
+ * without one the members are the handler's `@McpVariant`s alone
+ */
+export interface McpToolFamilyOptions {
+  readonly parameter: string;
+  readonly source?: string;
+}
+
+/**
+ * Behaviour hints a member declares. The union keeps a read-only member from also claiming to be
+ * destructive, which MCP defines as meaningless.
+ */
+export type McpToolEffect =
+  | {
+      readonly readOnly: true;
+      readonly destructive?: never;
+      readonly idempotent?: boolean;
+    }
+  | {
+      readonly readOnly?: false;
+      readonly destructive?: boolean;
+      readonly idempotent?: boolean;
+    };
 
 /**
  * One of several tools produced from a single operation.
@@ -149,6 +179,12 @@ export interface McpVariantOptions {
   readonly name: string;
   readonly description: string;
   readonly arguments?: Readonly<Record<string, ArgumentRule>>;
+  /** A family member's own body; refused on a variant of an operation that is not a family. */
+  readonly body?: JsonSchemaObject;
+  readonly bodyRequired?: boolean;
+  readonly readOnly?: boolean;
+  readonly destructive?: boolean;
+  readonly idempotent?: boolean;
 }
 
 export interface McpSelectionMarker {
@@ -170,6 +206,21 @@ export function McpVariant(options: McpVariantOptions): MethodDecorator {
   }) as MethodDecorator;
 }
 
+export function McpToolFamily(options: McpToolFamilyOptions): MethodDecorator {
+  return ((
+    _target: object,
+    _property?: string | symbol,
+    descriptor?: PropertyDescriptor,
+  ): void => {
+    if (descriptor?.value !== undefined) {
+      updateCarrier(descriptor.value as object, (carried) => ({
+        ...carried,
+        family: options,
+      }));
+    }
+  }) as MethodDecorator;
+}
+
 type Target = object | ((...args: never[]) => unknown);
 
 function append(target: Target, marker: McpSelectionMarker): void {
@@ -180,19 +231,28 @@ function append(target: Target, marker: McpSelectionMarker): void {
 }
 
 function appendVariant(target: object, variant: McpVariantOptions): void {
-  const existing =
-    (Reflect.getOwnMetadata(MCP_SELECTION, target) as
-      McpSelectionMarker[] | undefined) ?? [];
-  const carrier = existing.find((marker) => marker.include);
   /**
    * Prepended, not appended: method decorators evaluate bottom-up, so appending would publish the
    * variants in the reverse of the order they are written in, and the order is what the catalog
    * zips names against.
    */
-  const variants = [variant, ...(carrier?.options.variants ?? [])];
+  updateCarrier(target, (carried) => ({
+    ...carried,
+    variants: [variant, ...(carried.variants ?? [])],
+  }));
+}
+
+function updateCarrier(
+  target: object,
+  update: (carried: McpToolOptions) => McpToolOptions,
+): void {
+  const existing =
+    (Reflect.getOwnMetadata(MCP_SELECTION, target) as
+      McpSelectionMarker[] | undefined) ?? [];
+  const carrier = existing.find((marker) => marker.include);
   const marker: McpSelectionMarker = {
     include: true,
-    options: { ...(carrier?.options ?? {}), variants },
+    options: update(carrier?.options ?? {}),
   };
   Reflect.defineMetadata(
     MCP_SELECTION,

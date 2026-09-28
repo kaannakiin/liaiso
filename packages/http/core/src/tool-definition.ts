@@ -501,7 +501,18 @@ function liftDefs(
   return ordered;
 }
 
-function annotate(method: string): ToolAnnotations {
+function annotate(
+  endpoint: EndpointDescriptor,
+  variant: ToolVariant | undefined,
+): ToolAnnotations {
+  return {
+    ...impliedAnnotations(endpoint.method),
+    ...endpoint.annotations,
+    ...variant?.annotations,
+  };
+}
+
+function impliedAnnotations(method: string): ToolAnnotations {
   switch (method.toUpperCase()) {
     case "GET":
     case "HEAD":
@@ -540,7 +551,7 @@ export function createToolDefinition(
     inputSchema: buildInputSchema(endpoint, variant, relief, files),
     ...(outputSchema === undefined ? {} : { outputSchema }),
     ...(endpoint.deprecated === true ? { deprecated: true } : {}),
-    annotations: annotate(endpoint.method),
+    annotations: annotate(endpoint, variant),
     auth: endpoint.auth,
   };
 }

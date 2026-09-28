@@ -28,11 +28,19 @@ import {
   type EndpointDescriptor,
   type FileOptions,
   type Fixture,
+  type JsonSchemaObject,
   type ToolDefinition,
 } from "@liaiso/core";
 import { describe, expect, it } from "vitest";
 import { cleanTags, declaredDescriptor, toCuration } from "../src/catalog.js";
-import { curate, hidden, McpTool, McpVariant } from "../src/decorators.js";
+import {
+  curate,
+  hidden,
+  McpTool,
+  McpToolFamily,
+  McpVariant,
+  type McpVariantOptions,
+} from "../src/decorators.js";
 import {
   discoverEndpoints,
   type DiscoveryOptions,
@@ -555,6 +563,265 @@ class CurationController {
   variantResetsRecord(@Query() _query: CurationStatusQuery): void {}
 }
 
+const balancesKey = "3f2c9a1e-8b4d-4c6a-9e21-7d5b0c4a1f10";
+const delayedKey = "b27e5d04-61a3-4f8e-a0c9-2e8d7f13b5a6";
+const courierKey = "e91b3c7f-0d2a-48e5-b6f4-5a1c9d8e2b07";
+
+const balancesBody: JsonSchemaObject = {
+  type: "object",
+  properties: {
+    minBalance: { type: "number", description: "Lowest balance to include." },
+  },
+  required: [],
+};
+
+const delayedBody: JsonSchemaObject = {
+  type: "object",
+  properties: { days: { type: "integer", minimum: 1 } },
+  required: ["days"],
+};
+
+const courierBody: JsonSchemaObject = {
+  type: "object",
+  properties: {
+    orderNumber: { type: "string" },
+    courierCode: { type: "string" },
+  },
+  required: ["orderNumber", "courierCode"],
+};
+
+const withTenant = (body: JsonSchemaObject): JsonSchemaObject => ({
+  ...body,
+  properties: { ...body.properties, tenantId: { type: "string" } },
+});
+
+const balances = (
+  extra: Partial<McpVariantOptions> = {},
+): McpVariantOptions => ({
+  name: "list_customer_balances",
+  description: "Lists customer balances, optionally above a minimum.",
+  arguments: { methodId: hidden.value(balancesKey) },
+  body: balancesBody,
+  ...extra,
+});
+
+const delayed = (
+  extra: Partial<McpVariantOptions> = {},
+): McpVariantOptions => ({
+  name: "list_delayed_orders",
+  description: "Lists orders delivered later than promised.",
+  arguments: { methodId: hidden.value(delayedKey) },
+  body: delayedBody,
+  ...extra,
+});
+
+const courier = (
+  extra: Partial<McpVariantOptions> = {},
+): McpVariantOptions => ({
+  name: "assign_courier",
+  description: "Assigns a courier to an order.",
+  arguments: { methodId: hidden.value(courierKey) },
+  body: courierBody,
+  ...extra,
+});
+
+const dispatches = { parameter: "methodId" } as const;
+
+@Controller("Rest")
+class DynamicMethodController {
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances())
+  @McpVariant(delayed())
+  @McpVariant(courier())
+  @UseGuards(AuthenticatedGuard)
+  members(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances({ readOnly: true, idempotent: true }))
+  @McpVariant(delayed())
+  @McpVariant(courier({ destructive: true }))
+  @UseGuards(AuthenticatedGuard)
+  annotatedMembers(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({
+    description: "Invokes a server method by its id.",
+    arguments: { tenantId: hidden.from("tenant") },
+  })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances({ body: withTenant(balancesBody) }))
+  @McpVariant(delayed({ body: withTenant(delayedBody) }))
+  @McpVariant(courier({ body: withTenant(courierBody) }))
+  @UseGuards(AuthenticatedGuard)
+  tenantMembers(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances())
+  @McpVariant(delayed({ bodyRequired: false }))
+  @McpVariant(courier())
+  @UseGuards(AuthenticatedGuard)
+  optionalMember(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({
+    description: "Invokes a server method by its id.",
+    arguments: { tenantId: hidden.from("tenant") },
+  })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances({ body: withTenant(balancesBody) }))
+  @McpVariant(delayed())
+  @McpVariant(courier({ body: withTenant(courierBody) }))
+  @UseGuards(AuthenticatedGuard)
+  memberLacksCuratedField(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances({ arguments: { methodId: hidden.value("balances") } }))
+  @UseGuards(AuthenticatedGuard)
+  integerKey(
+    @Param("methodId", ParseIntPipe) _methodId: number,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily({ parameter: "method" })
+  @McpVariant(balances())
+  @McpVariant(delayed())
+  @McpVariant(courier())
+  @UseGuards(AuthenticatedGuard)
+  undeclaredParameter(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @UseGuards(AuthenticatedGuard)
+  noMembers(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances())
+  @McpVariant({
+    name: "list_delayed_orders",
+    description: "Lists orders delivered later than promised.",
+    body: delayedBody,
+  })
+  @McpVariant(courier())
+  @UseGuards(AuthenticatedGuard)
+  memberWithoutKey(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances())
+  @McpVariant(delayed({ arguments: { methodId: hidden.from("method") } }))
+  @McpVariant(courier())
+  @UseGuards(AuthenticatedGuard)
+  deferredKey(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(balances())
+  @McpVariant(delayed())
+  @McpVariant(courier({ arguments: { methodId: hidden.value(balancesKey) } }))
+  @UseGuards(AuthenticatedGuard)
+  duplicateKey(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+
+  @Post("InvokeDynamicMethod/:methodId")
+  @McpTool({ description: "Invokes a server method by its id." })
+  @McpToolFamily(dispatches)
+  @McpVariant(
+    balances({
+      body: {
+        type: "object",
+        properties: {
+          filter: { $ref: "https://schemas.example.test/filter.json" },
+        },
+      },
+    }),
+  )
+  @McpVariant(delayed())
+  @McpVariant(courier())
+  @UseGuards(AuthenticatedGuard)
+  externalReference(
+    @Param("methodId") _methodId: string,
+    @Body() _body: Record<string, unknown>,
+  ): void {}
+}
+
+@Controller()
+class AnnotatedController {
+  @Post("index/rebuild")
+  @McpTool({ description: "Rebuilds the search index.", idempotent: true })
+  @UseGuards(AuthenticatedGuard)
+  rebuildIndex(): void {}
+
+  @Post("reports/run")
+  @McpTool({ description: "Runs a report.", idempotent: true })
+  @McpVariant({
+    name: "run_sales_report",
+    description: "Runs the sales report.",
+    readOnly: true,
+  })
+  @McpVariant({
+    name: "run_purge_report",
+    description: "Runs the purge report, which deletes what it reports.",
+    destructive: true,
+    idempotent: false,
+  })
+  @UseGuards(AuthenticatedGuard)
+  runReport(): void {}
+
+  @Post("orders")
+  @McpTool({ description: "Creates an order." })
+  @McpVariant({
+    name: "create_rush_order",
+    description: "Creates an order with rush delivery.",
+    body: { type: "object", properties: { rush: { type: "boolean" } } },
+  })
+  @UseGuards(AuthenticatedGuard)
+  createOrder(@Body() _body: Record<string, unknown>): void {}
+}
+
 const integerArrayBody: DiscoveryOptions = {
   schema: {
     typeShape: (target) =>
@@ -581,6 +848,66 @@ interface HostCase {
 }
 
 const hosts: Record<string, HostCase> = {
+  "family-members-produce-one-tool-each.json": {
+    controller: DynamicMethodController,
+    handler: "members",
+  },
+  "family-member-annotations-override-method-hints.json": {
+    controller: DynamicMethodController,
+    handler: "annotatedMembers",
+  },
+  "family-endpoint-curation-applies-to-every-member.json": {
+    controller: DynamicMethodController,
+    handler: "tenantMembers",
+  },
+  "family-member-body-optional-is-root.json": {
+    controller: DynamicMethodController,
+    handler: "optionalMember",
+  },
+  "family-member-body-curation-unresolved.json": {
+    controller: DynamicMethodController,
+    handler: "memberLacksCuratedField",
+  },
+  "family-key-type-mismatch-rejected.json": {
+    controller: DynamicMethodController,
+    handler: "integerKey",
+  },
+  "family-parameter-unresolved.json": {
+    controller: DynamicMethodController,
+    handler: "undeclaredParameter",
+  },
+  "family-without-members-rejected.json": {
+    controller: DynamicMethodController,
+    handler: "noMembers",
+  },
+  "family-key-not-hidden-rejected.json": {
+    controller: DynamicMethodController,
+    handler: "memberWithoutKey",
+  },
+  "family-key-deferred-rejected.json": {
+    controller: DynamicMethodController,
+    handler: "deferredKey",
+  },
+  "family-key-duplicate-rejected.json": {
+    controller: DynamicMethodController,
+    handler: "duplicateKey",
+  },
+  "variant-body-external-ref-rejected.json": {
+    controller: DynamicMethodController,
+    handler: "externalReference",
+  },
+  "endpoint-annotations-override-method-hints.json": {
+    controller: AnnotatedController,
+    handler: "rebuildIndex",
+  },
+  "variant-annotations-override-method-hints.json": {
+    controller: AnnotatedController,
+    handler: "runReport",
+  },
+  "variant-body-without-family-rejected.json": {
+    controller: AnnotatedController,
+    handler: "createOrder",
+  },
   "array-body-becomes-body-argument.json": {
     controller: ImportController,
     handler: "importIds",
@@ -713,6 +1040,8 @@ const hosts: Record<string, HostCase> = {
 };
 
 const unproducible: Record<string, string> = {
+  "family-parameter-not-scalar-rejected.json":
+    "An array-valued named @Query parameter reaches discovery with its element type erased, so Nest cannot emit the array-of-string parameter the fixture pins; family-parameter-unresolved.json covers the same code through a Nest host.",
   "allow-reserved-outside-query-rejected.json":
     "Nest discovery never declares allowReserved.",
   "binary-body-non-file-rejected.json":
@@ -855,14 +1184,12 @@ function toolsOf(
       undefined,
       files,
     );
-    if (production.endpoint.requestBody?.contentType !== undefined) {
-      createRequestTemplateFromEndpoint(
-        production.endpoint,
-        production.variant,
-        undefined,
-        files,
-      );
-    }
+    createRequestTemplateFromEndpoint(
+      production.endpoint,
+      production.variant,
+      undefined,
+      files,
+    );
     return tool;
   });
 }
@@ -899,6 +1226,8 @@ describe("nest descriptor round-trip against metadata-extraction", () => {
       expect(descriptor.responses ?? {}).toEqual(fixture.input.responses ?? {});
       expect(descriptor.arguments ?? []).toEqual(fixture.input.arguments ?? []);
       expect(descriptor.variants ?? []).toEqual(fixture.input.variants ?? []);
+      expect(descriptor.family).toEqual(fixture.input.family);
+      expect(descriptor.annotations).toEqual(fixture.input.annotations);
       /**
        * Guard: gated on the host declaring tags, not on the fixture carrying them. Seven fixtures
        * carry illustrative `tags` that no Nest controller could produce — discovery derives the

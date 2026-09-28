@@ -1,0 +1,38 @@
+{
+  "kind": "metadata-extraction",
+  "description": "A family with no member produces no tool at all; the uncurated dispatcher is never published in its place",
+  "input": {
+    "operationId": "InvokeDynamicMethod",
+    "container": "DynamicMethodController",
+    "method": "POST",
+    "route": "/Rest/InvokeDynamicMethod/{methodId}",
+    "description": "Invokes a server method by its id.",
+    "parameters": [
+      {
+        "name": "methodId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "schema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "family": {
+      "parameter": "methodId"
+    },
+    "auth": {
+      "anonymous": "no",
+      "policies": [],
+      "imperative": false
+    }
+  },
+  "expected": {
+    "error": "family_without_members"
+  }
+}

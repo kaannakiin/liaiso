@@ -5,10 +5,11 @@ import type { FileOptions } from "../file-argument.js";
 import type { EndpointDescriptor } from "../generated/endpoint-descriptor.js";
 import type { ToolDefinition } from "../generated/tool-definition.js";
 import {
-  createToolNames,
   deduplicateOperations,
-  expandToolProductions,
+  nameProductions,
+  productionsOf,
   type PrefixMode,
+  type ToolProduction,
 } from "../naming.js";
 import {
   routePlaceholderNames,
@@ -168,11 +169,11 @@ export function buildCatalog<Source extends object>(
   );
 
   /**
-   * One production per tool, from an already-folded list.
+   * One production per tool, from an already-folded list, expanded one operation at a time.
    *
-   * Naming expands variants internally, so the catalog has to walk the same productions rather
-   * than the operations: with variants the two lists differ in length and a positional zip over
-   * operations would attach the wrong name to the wrong tool.
+   * A refused variant or family declaration drops its own operation and nothing else: expanding
+   * the whole list under one guard let a single conflict empty the catalog without a fatal
+   * diagnostic. Naming then walks the same productions, so the positional zip below stays aligned.
    */
   const declaredList = operations.map((candidate) =>
     candidate.declare(tagsOf.get(candidate)),
@@ -185,11 +186,21 @@ export function buildCatalog<Source extends object>(
     }
   });
 
+  const productions: ToolProduction[] = [];
+  for (const declared of declaredList) {
+    try {
+      productions.push(...productionsOf(declared));
+    } catch (error) {
+      report({
+        code: (error as LiaisoTemplateError).code,
+        message: (error as Error).message,
+      });
+    }
+  }
+
   let names: string[];
-  let productions: ReturnType<typeof expandToolProductions>;
   try {
-    productions = expandToolProductions(declaredList, (e) => e);
-    names = createToolNames(declaredList, {
+    names = nameProductions(productions, {
       ...(options.prefixMode === undefined
         ? {}
         : { prefixMode: options.prefixMode }),
@@ -200,7 +211,6 @@ export function buildCatalog<Source extends object>(
       code: (error as LiaisoCatalogError).code,
       message: (error as Error).message,
     });
-    productions = [];
     names = [];
   }
 
@@ -208,7 +218,7 @@ export function buildCatalog<Source extends object>(
   const byName = new Map<string, CatalogEntry<Source>>();
   for (const [position, production] of productions.entries()) {
     const name = names[position];
-    const candidate = sourceOf.get(production.endpoint);
+    const candidate = sourceOf.get(production.operation);
     if (name === undefined || candidate === undefined) {
       continue;
     }

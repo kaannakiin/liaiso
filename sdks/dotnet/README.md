@@ -144,6 +144,12 @@ pipeline still decides. It changes what the agent has to think about, not what i
 `[McpToolVariant(name, description)]` produces several tools from one action. Both are constructor
 arguments, because one description cannot honestly describe two differently curated tools.
 
+`[McpToolFamily("methodId", Source = "...")]` publishes an action that dispatches on a parameter
+as one tool per method. `options.Families.Provide(name, source)` supplies the members — key, name,
+description, body schema — loaded at startup and on every `ReloadAsync`; the key is written into the
+route and never reaches the agent. Full guide: the docs site's _How to expose a dispatching endpoint
+as one tool per method_.
+
 Full guide: the docs site's _How to curate the arguments an agent sees_.
 
 ## 3c. Telling the agent what a tool returns

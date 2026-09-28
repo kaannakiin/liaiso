@@ -57,7 +57,9 @@ internal static partial class EndpointCatalog
         ArgumentCurationOptions? curation = null,
         IReadOnlyList<SelectionRule>? selectionRules = null,
         bool groupQueryObjects = false,
-        string? refDescription = null)
+        string? refDescription = null,
+        ToolFamilyOptions? families = null,
+        IReadOnlyDictionary<string, FamilyLoad>? familyLoads = null)
     {
         ArgumentNullException.ThrowIfNull(apiDescriptions);
         severityOf ??= DiagnosticCodes.SeverityOf;
@@ -73,7 +75,7 @@ internal static partial class EndpointCatalog
         }
 
         List<CatalogDiagnostic> diagnostics = [];
-        List<(Endpoint? Endpoint, EndpointDescriptor Descriptor, ToolAnnotations? Overrides)> candidates = [];
+        List<(Endpoint? Endpoint, EndpointDescriptor Descriptor)> candidates = [];
         int discovered = 0;
         int selected = 0;
 
@@ -132,7 +134,27 @@ internal static partial class EndpointCatalog
                     dropped += 1;
                     continue;
                 }
-                candidates.Add((endpoint, descriptor, OverridesFor(action, metadata)));
+                descriptor = descriptor with { Annotations = OverridesFor(action, metadata) };
+                if (FamilyOf(action, metadata) is { } declaration)
+                {
+                    FamilyResolution resolution = FamilyReader.Resolve(
+                        declaration, target, descriptor.Variants, families ?? new ToolFamilyOptions(), familyLoads);
+                    if (resolution is FamilyResolution.Refused refused)
+                    {
+                        diagnostics.Add(refused.Diagnostic);
+                        dropped += 1;
+                        continue;
+                    }
+                    FamilyResolution.Members members = (FamilyResolution.Members)resolution;
+                    diagnostics.AddRange(members.Diagnostics);
+                    List<ToolVariant> variants = [.. descriptor.Variants ?? [], .. members.Variants];
+                    descriptor = descriptor with
+                    {
+                        Family = members.Family,
+                        Variants = variants.Count == 0 ? null : variants,
+                    };
+                }
+                candidates.Add((endpoint, descriptor));
             }
         }
 
@@ -140,7 +162,7 @@ internal static partial class EndpointCatalog
         Dictionary<string, EndpointDescriptor> claimed = new(StringComparer.Ordinal);
 
         Dictionary<string, IReadOnlyList<string>> alternates = new(StringComparer.Ordinal);
-        List<(Endpoint? Endpoint, EndpointDescriptor Descriptor, ToolAnnotations? Overrides)> operations =
+        List<(Endpoint? Endpoint, EndpointDescriptor Descriptor)> operations =
             [.. ToolNameFactory.Deduplicate(candidates, c => c.Descriptor, (kept, folded) =>
             {
                 string[] routes = [.. folded.Select(f => f.Descriptor.Route)];
@@ -153,7 +175,7 @@ internal static partial class EndpointCatalog
         Dictionary<string, int> bodyGroups = new(StringComparer.Ordinal);
         if (prefixMode == PrefixMode.OnCollision)
         {
-            foreach ((_, EndpointDescriptor descriptor, _) in operations)
+            foreach ((_, EndpointDescriptor descriptor) in operations)
             {
                 if (descriptor.ToolName is not null)
                 {
@@ -164,12 +186,12 @@ internal static partial class EndpointCatalog
             }
         }
 
-        foreach ((Endpoint? endpoint, EndpointDescriptor descriptor, ToolAnnotations? overrides) in operations)
+        foreach ((Endpoint? endpoint, EndpointDescriptor operation) in operations)
         {
             IReadOnlyList<ToolProduction> productions;
             try
             {
-                productions = ToolNameFactory.ExpandProductions([descriptor], d => d);
+                productions = ToolNameFactory.ProductionsOf(operation);
             }
             catch (LiaisoTemplateException ex)
             {
@@ -180,11 +202,14 @@ internal static partial class EndpointCatalog
 
             foreach (ToolProduction production in productions)
             {
+                EndpointDescriptor descriptor = production.Endpoint;
                 ToolVariant? variant = production.Variant;
                 string name;
                 try
                 {
-                    name = variant?.Name ?? ToolNameFactory.Create(descriptor, prefixMode);
+                    name = variant is null
+                        ? ToolNameFactory.Create(operation, prefixMode)
+                        : ToolNameFactory.VariantName(variant, operation);
                     if (prefixMode == PrefixMode.OnCollision
                         && variant is null
                         && descriptor.ToolName is null
@@ -226,14 +251,23 @@ internal static partial class EndpointCatalog
                     descriptor, alternates.GetValueOrDefault(FoldKey(descriptor)), diagnostics);
                 (RequestTemplate? template, string? failure) = BuildTemplate(
                     descriptor, diagnostics, variant, relief, refDescription);
-                if (failure is not null && severityOf(failure) >= CatalogSeverity.EndpointDropped)
+                if (failure is not null)
                 {
                     dropped += 1;
                     continue;
                 }
 
-                ToolDefinition tool = Apply(
-                    ToolDefinitionFactory.Create(descriptor, name, variant, relief, refDescription), overrides);
+                ToolDefinition tool;
+                try
+                {
+                    tool = ToolDefinitionFactory.Create(descriptor, name, variant, relief, refDescription);
+                }
+                catch (LiaisoTemplateException ex)
+                {
+                    diagnostics.Add(new CatalogDiagnostic(ex.Code, ex.Message));
+                    dropped += 1;
+                    continue;
+                }
                 if (template is not null)
                 {
                     ReportCurationLeaks(
@@ -705,22 +739,10 @@ internal static partial class EndpointCatalog
         };
     }
 
-    private static ToolDefinition Apply(ToolDefinition tool, ToolAnnotations? overrides)
-    {
-        if (overrides is null)
-        {
-            return tool;
-        }
-        return tool with
-        {
-            Annotations = new ToolAnnotations
-            {
-                ReadOnlyHint = overrides.ReadOnlyHint ?? tool.Annotations.ReadOnlyHint,
-                DestructiveHint = overrides.DestructiveHint ?? tool.Annotations.DestructiveHint,
-                IdempotentHint = overrides.IdempotentHint ?? tool.Annotations.IdempotentHint,
-            },
-        };
-    }
+    private static McpToolFamilyAttribute? FamilyOf(ActionDescriptor action, IReadOnlyList<object> metadata) =>
+        action is ControllerActionDescriptor controller
+            ? controller.MethodInfo.GetCustomAttribute<McpToolFamilyAttribute>(inherit: true)
+            : metadata.OfType<McpToolFamilyAttribute>().LastOrDefault();
 
     private static SelectionMarker? ContainerMarker(ActionDescriptor action) =>
         action is ControllerActionDescriptor controller

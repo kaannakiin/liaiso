@@ -1,4 +1,13 @@
+export type FamilyErrorCode =
+  | "family_parameter_unresolved"
+  | "family_without_members"
+  | "family_key_unfilled"
+  | "family_key_duplicate"
+  | "variant_body_without_family"
+  | "variant_body_invalid";
+
 export type LiaisoTemplateErrorCode =
+  | FamilyErrorCode
   | "empty_route"
   | "body_not_allowed"
   | "conflicting_body_modes"

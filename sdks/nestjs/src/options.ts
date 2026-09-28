@@ -5,6 +5,7 @@ import type { Recognizer, SelectionDefault, SelectionRule } from "@liaiso/core";
 import type { ArgumentRule, JsonValue } from "./decorators.js";
 import type { CatalogSeverity } from "./discovery/diagnostics.js";
 import type { TypeShapeBinderOptions } from "./discovery/type-shape.js";
+import { ToolFamilyOptions } from "./families.js";
 import type { LiaisoFileOptions } from "./files.js";
 import type { OuterConnection } from "./outer-connection.js";
 
@@ -298,6 +299,7 @@ export class LiaisoOptions {
     downgrade: new Set<string>(),
   };
   readonly arguments = new ArgumentCurationOptions();
+  readonly families = new ToolFamilyOptions();
   readonly visibility: LiaisoVisibilityOptions = {
     tier: "declarative",
     onUnknown: "show",

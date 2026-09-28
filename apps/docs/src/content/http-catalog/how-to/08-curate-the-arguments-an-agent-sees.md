@@ -169,6 +169,10 @@ Variants also compete with each other in search: same route, adjacent descriptio
 Make the **first clause** of each description different, because the search card truncates at 160
 characters.
 
+When the variants come from data rather than from code — one endpoint dispatching to many methods,
+each with its own body — declare a family instead:
+[How to expose a dispatching endpoint as one tool per method](/docs/http-catalog/expose-a-dispatching-endpoint-as-one-tool-per-method).
+
 ## Keep a query DTO grouped instead of flattened
 
 By default a whole-object query binding is flattened: `ListOrdersQuery { Status, Min }` reaches the
@@ -226,7 +230,8 @@ binding, so turning this on cannot make an endpoint disappear.
 ## What curation will not do
 
 It will not add an argument your backend does not accept, narrow an argument's schema, reorder
-arguments, or vary per caller. The published schema is the same for everyone; only the value of a
+arguments, or vary per caller. A family member's own body is not narrowing: the dispatching
+endpoint's body is opaque, so the member's schema is the only one there is. The published schema is the same for everyone; only the value of a
 provider-filled argument changes from one caller to the next.
 
 The normative rules are in `packages/http/spec/argument-curation.md`.

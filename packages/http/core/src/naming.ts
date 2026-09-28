@@ -1,4 +1,5 @@
 import { LiaisoCatalogError, LiaisoTemplateError } from "./errors.js";
+import { assertFamily, productionDescriptor } from "./family.js";
 import type {
   EndpointDescriptor,
   ToolVariant,
@@ -137,6 +138,19 @@ function validate(name: string, endpoint: EndpointDescriptor): string {
   return name;
 }
 
+function validateVariant(
+  variant: ToolVariant,
+  operation: EndpointDescriptor,
+): string {
+  if (!toolNamePattern.test(variant.name)) {
+    throw new LiaisoCatalogError(
+      "invalid_name",
+      `Variant name '${variant.name}' of ${operation.method} ${operation.route} does not match the required pattern.`,
+    );
+  }
+  return variant.name;
+}
+
 export function createToolBody(endpoint: EndpointDescriptor): string {
   return endpoint.operationId === undefined ||
     endpoint.operationId.trim() === ""
@@ -224,7 +238,16 @@ export interface NamingOptions {
   readonly onDiagnostic?: (code: string, message: string) => void;
 }
 
+/**
+ * One tool to produce.
+ *
+ * @param operation the declared operation: its identity folds routes, owns diagnostics and keys the
+ * catalog's source lookup
+ * @param endpoint the descriptor the tool and its template are built from; for a family member it
+ * carries the member's body instead of the operation's
+ */
 export interface ToolProduction {
+  readonly operation: EndpointDescriptor;
   readonly endpoint: EndpointDescriptor;
   readonly variant?: ToolVariant;
 }
@@ -244,40 +267,67 @@ export function expandToolProductions<T>(
   selector: (item: T) => EndpointDescriptor,
   onFolded?: (fold: FoldedOperation<T>) => void,
 ): ToolProduction[] {
-  const productions: ToolProduction[] = [];
-  for (const item of deduplicateOperations(items, selector, onFolded)) {
-    const endpoint = selector(item);
-    if (endpoint.variants === undefined) {
-      productions.push({ endpoint });
-      continue;
-    }
-    if (endpoint.toolName !== undefined) {
-      throw new LiaisoTemplateError(
-        "variant_declaration_conflict",
-        `${endpoint.method} ${endpoint.route} declares both a tool name and variants; a variant names itself.`,
-      );
-    }
-    for (const variant of endpoint.variants) {
-      productions.push({ endpoint, variant });
-    }
+  return deduplicateOperations(items, selector, onFolded).flatMap((item) =>
+    productionsOf(selector(item)),
+  );
+}
+
+/**
+ * The productions of one already-folded operation.
+ *
+ * @throws LiaisoTemplateError when the operation's variant or family declaration is refused; the
+ * refusal concerns this operation alone
+ */
+export function productionsOf(operation: EndpointDescriptor): ToolProduction[] {
+  if (operation.variants === undefined) {
+    assertFamily(operation);
+    return [{ operation, endpoint: operation }];
   }
-  return productions;
+  if (operation.toolName !== undefined) {
+    throw new LiaisoTemplateError(
+      "variant_declaration_conflict",
+      `${operation.method} ${operation.route} declares both a tool name and variants; a variant names itself.`,
+    );
+  }
+  assertFamily(operation);
+  return operation.variants.map((variant) => ({
+    operation,
+    endpoint: productionDescriptor(operation, variant),
+    variant,
+  }));
 }
 
 export function createToolNames(
   endpoints: readonly EndpointDescriptor[],
   options: NamingOptions = {},
 ): string[] {
+  return nameProductions(
+    expandToolProductions(endpoints, (e) => e),
+    options,
+  );
+}
+
+/**
+ * Names already-expanded productions, one name per production in order.
+ *
+ * @throws LiaisoCatalogError `invalid_name` or `name_collision`; both concern the catalog as a
+ * whole, because a name is only valid relative to every other name
+ */
+export function nameProductions(
+  productions: readonly ToolProduction[],
+  options: NamingOptions = {},
+): string[] {
   const mode = options.prefixMode ?? "always";
-  const operations = expandToolProductions(endpoints, (e) => e);
-  const names = operations.map(({ endpoint, variant }) =>
-    variant === undefined ? createToolName(endpoint, mode) : variant.name,
+  const names = productions.map(({ operation, variant }) =>
+    variant === undefined
+      ? createToolName(operation, mode)
+      : validateVariant(variant, operation),
   );
 
   if (mode === "onCollision") {
     const groups = new Map<string, number[]>();
-    operations.forEach(({ endpoint, variant }, index) => {
-      if (endpoint.toolName !== undefined || variant !== undefined) {
+    productions.forEach(({ operation, variant }, index) => {
+      if (operation.toolName !== undefined || variant !== undefined) {
         return;
       }
       const group = groups.get(names[index] as string);
@@ -292,31 +342,31 @@ export function createToolNames(
         continue;
       }
       for (const index of group) {
-        const endpoint = (operations[index] as ToolProduction).endpoint;
-        const prefixed = applyPrefix(body, derivePrefix(endpoint));
+        const operation = (productions[index] as ToolProduction).operation;
+        const prefixed = applyPrefix(body, derivePrefix(operation));
         if (prefixed === body) {
           continue;
         }
         names[index] = prefixed;
         options.onDiagnostic?.(
           "name_disambiguated",
-          `Tool name '${body}' collided; ${endpoint.method} ${endpoint.route} is exposed as '${prefixed}'.`,
+          `Tool name '${body}' collided; ${operation.method} ${operation.route} is exposed as '${prefixed}'.`,
         );
       }
     }
   }
 
   const claimed = new Map<string, EndpointDescriptor>();
-  operations.forEach(({ endpoint }, index) => {
+  productions.forEach(({ operation }, index) => {
     const name = names[index] as string;
     const owner = claimed.get(name);
     if (owner !== undefined) {
       throw new LiaisoCatalogError(
         "name_collision",
-        `Tool name '${name}' is produced by both ${owner.method} ${owner.route} and ${endpoint.method} ${endpoint.route}; declare a tool name on one of them.`,
+        `Tool name '${name}' is produced by both ${owner.method} ${owner.route} and ${operation.method} ${operation.route}; declare a tool name on one of them.`,
       );
     }
-    claimed.set(name, endpoint);
+    claimed.set(name, operation);
   });
   return names;
 }

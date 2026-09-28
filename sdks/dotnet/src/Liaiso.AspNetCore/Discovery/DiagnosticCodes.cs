@@ -39,6 +39,11 @@ public static class DiagnosticCodes
     public const string UnflattenableBodyRoot = "unflattenable_body_root";
     public const string UnsupportedDictionaryKey = "unsupported_dictionary_key";
     public const string VariantIndistinguishable = "variant_indistinguishable";
+    public const string UnknownFamilySource = "unknown_family_source";
+    public const string FamilySourceFailed = "family_source_failed";
+    public const string FamilySourceStale = "family_source_stale";
+    public const string FamilyNotLoaded = "family_not_loaded";
+    public const string FamilyMemberRejected = "family_member_rejected";
 
     private static readonly Dictionary<string, CatalogSeverity> Defaults =
         new(StringComparer.Ordinal)
@@ -57,6 +62,19 @@ public static class DiagnosticCodes
             [FormAntiforgeryRequired] = CatalogSeverity.EndpointDropped,
             [MissingHttpMethod] = CatalogSeverity.EndpointDropped,
             [TemplateRejected] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.CurationUnresolved] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.InvalidFillConstant] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.HiddenRequiredOmitted] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.VariantDeclarationConflict] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.FamilyParameterUnresolved] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.FamilyWithoutMembers] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.FamilyKeyUnfilled] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.FamilyKeyDuplicate] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.VariantBodyWithoutFamily] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.VariantBodyInvalid] = CatalogSeverity.EndpointDropped,
+            [UnknownFamilySource] = CatalogSeverity.EndpointDropped,
+            [FamilySourceFailed] = CatalogSeverity.EndpointDropped,
+            [FamilyNotLoaded] = CatalogSeverity.EndpointDropped,
         };
 
     public static CatalogSeverity SeverityOf(string code) =>

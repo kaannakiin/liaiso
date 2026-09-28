@@ -24,6 +24,8 @@ public sealed class LiaisoOptions
     public ResourceServerOptions ResourceServer { get; } = new();
     public DiagnosticsOptions Diagnostics { get; } = new();
     public ArgumentCurationOptions Arguments { get; } = new();
+
+    public ToolFamilyOptions Families { get; } = new();
     public InvokeOptions Invoke { get; } = new();
 
     /// <summary>

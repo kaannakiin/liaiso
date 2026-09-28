@@ -1,0 +1,29 @@
+{
+  "kind": "naming",
+  "description": "A variant name is absolute but not exempt: one equal to another operation's generated name collides, and the collision is an error rather than a silent rename",
+  "input": {
+    "endpoints": [
+      {
+        "operationId": "ListOrders",
+        "container": "OrdersController",
+        "method": "GET",
+        "route": "/orders"
+      },
+      {
+        "operationId": "InvokeDynamicMethod",
+        "container": "DynamicMethodController",
+        "method": "POST",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "variants": [
+          {
+            "name": "list_orders",
+            "description": "Lists orders through the dispatcher."
+          }
+        ]
+      }
+    ]
+  },
+  "expected": {
+    "error": "name_collision"
+  }
+}

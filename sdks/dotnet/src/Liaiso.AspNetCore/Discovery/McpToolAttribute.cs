@@ -93,6 +93,24 @@ public sealed class McpToolVariantAttribute(string name, string description) : A
     public string Description { get; } = description;
 }
 
+/// <summary>
+/// Declares that the operation dispatches on one parameter: each of its variants is a member that
+/// writes its own key there, and the operation itself is never published.
+/// </summary>
+/// <remarks>
+/// With <see cref="Source"/> the members come from the source registered under that name with
+/// <c>options.Families.Provide</c>; without it they are the action's
+/// <see cref="McpToolVariantAttribute"/>s alone. Like a variant, it does not select the operation:
+/// <see cref="McpToolAttribute"/> still does.
+/// </remarks>
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+public sealed class McpToolFamilyAttribute(string parameter) : Attribute
+{
+    public string Parameter { get; } = parameter;
+
+    public string? Source { get; set; }
+}
+
 /// <summary>Curates one argument: renames it, re-describes it, or hides it with a value.</summary>
 /// <remarks>
 /// Attribute arguments must be compile-time constants, so an object or array constant cannot be

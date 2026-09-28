@@ -232,6 +232,12 @@ pipeline still decides. It changes what the agent has to think about, not what i
 `@McpVariant({ name, description, arguments })` produces several tools from one handler. Both fields
 are required, because one description cannot honestly describe two differently curated tools.
 
+`@McpToolFamily({ parameter: "methodId", source: "..." })` publishes a handler that dispatches on a
+parameter as one tool per method. `options.families.provide(name, source)` supplies the members —
+key, name, description, body schema — loaded in `onApplicationBootstrap` and on every `reload()`,
+which now returns a promise; the key is written into the route and never reaches the agent. Full
+guide: the docs site's _How to expose a dispatching endpoint as one tool per method_.
+
 Full guide: the docs site's _How to curate the arguments an agent sees_.
 
 ## 3c. Telling the agent what a tool returns
