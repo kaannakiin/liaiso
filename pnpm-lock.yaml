@@ -51,12 +51,27 @@ importers:
       '@cloudflare/vite-plugin':
         specifier: ^1.60.1
         version: 1.60.1(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(sugarss@5.0.1(postcss@8.5.26))(yaml@2.9.1))(wrangler@4.140.0(@types/node@24.13.3))
+      '@liaiso/excel-mcp':
+        specifier: workspace:*
+        version: link:../../packages/servers/excel-mcp
+      '@liaiso/llm-mcp':
+        specifier: workspace:*
+        version: link:../../packages/servers/llm-mcp
+      '@liaiso/mssql-mcp':
+        specifier: workspace:*
+        version: link:../../packages/servers/mssql-mcp
       '@liaiso/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/toolchain/oxlint-config
+      '@liaiso/pdf-mcp':
+        specifier: workspace:*
+        version: link:../../packages/servers/pdf-mcp
       '@liaiso/typescript-config':
         specifier: workspace:*
         version: link:../../packages/toolchain/typescript-config
+      '@liaiso/xml-mcp':
+        specifier: workspace:*
+        version: link:../../packages/servers/xml-mcp
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(sugarss@5.0.1(postcss@8.5.26))(yaml@2.9.1))

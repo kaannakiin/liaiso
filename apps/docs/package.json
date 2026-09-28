@@ -10,7 +10,8 @@
     "deploy": "wrangler deploy",
     "lint": "oxlint --deny-warnings",
     "check-types": "tsc --noEmit",
-    "validate": "node scripts/check-content.mjs"
+    "validate": "node scripts/check-content.mjs && node scripts/gen-reference.mjs --check",
+    "gen": "node scripts/gen-reference.mjs"
   },
   "dependencies": {
     "@mantine/core": "9.6.0",
@@ -25,8 +26,13 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.60.1",
+    "@liaiso/excel-mcp": "workspace:*",
+    "@liaiso/llm-mcp": "workspace:*",
+    "@liaiso/mssql-mcp": "workspace:*",
     "@liaiso/oxlint-config": "workspace:*",
+    "@liaiso/pdf-mcp": "workspace:*",
     "@liaiso/typescript-config": "workspace:*",
+    "@liaiso/xml-mcp": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-router-devtools": "^1.167.1",
     "@types/node": "^24.3.0",
