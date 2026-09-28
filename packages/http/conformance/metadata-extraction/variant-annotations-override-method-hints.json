@@ -1,0 +1,78 @@
+{
+  "kind": "metadata-extraction",
+  "description": "A variant's annotations are merged per key over the operation's, which are merged over the method's: a plain variant may declare them without a family",
+  "input": {
+    "operationId": "RunReport",
+    "method": "POST",
+    "route": "/reports/run",
+    "description": "Runs a report.",
+    "annotations": {
+      "idempotentHint": true
+    },
+    "variants": [
+      {
+        "name": "run_sales_report",
+        "description": "Runs the sales report.",
+        "annotations": {
+          "readOnlyHint": true
+        }
+      },
+      {
+        "name": "run_purge_report",
+        "description": "Runs the purge report, which deletes what it reports.",
+        "annotations": {
+          "destructiveHint": true,
+          "idempotentHint": false
+        }
+      }
+    ],
+    "auth": {
+      "anonymous": "no",
+      "policies": [],
+      "imperative": false
+    }
+  },
+  "expected": {
+    "tools": [
+      {
+        "name": "run_sales_report",
+        "description": "Runs the sales report.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "readOnlyHint": true
+        },
+        "auth": {
+          "anonymous": "no",
+          "policies": [],
+          "imperative": false
+        }
+      },
+      {
+        "name": "run_purge_report",
+        "description": "Runs the purge report, which deletes what it reports.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "annotations": {
+          "destructiveHint": true,
+          "idempotentHint": false
+        },
+        "auth": {
+          "anonymous": "no",
+          "policies": [],
+          "imperative": false
+        }
+      }
+    ]
+  }
+}

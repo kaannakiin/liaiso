@@ -34,6 +34,8 @@ public sealed record EndpointDescriptor
     public IReadOnlyList<string>? Tags { get; init; }
     public IReadOnlyList<ArgumentCuration>? Arguments { get; init; }
     public IReadOnlyList<ToolVariant>? Variants { get; init; }
+    public ToolFamily? Family { get; init; }
+    public ToolAnnotations? Annotations { get; init; }
 }
 
 public sealed record Parameter
@@ -87,6 +89,20 @@ public sealed record ToolVariant
     public required string Name { get; init; }
     public required string Description { get; init; }
     public IReadOnlyList<ArgumentCuration>? Arguments { get; init; }
+    public VariantRequestBody? RequestBody { get; init; }
+    public ToolAnnotations? Annotations { get; init; }
+}
+
+public sealed record ToolFamily
+{
+    public required string Parameter { get; init; }
+}
+
+public sealed record VariantRequestBody
+{
+    public required JsonObject Schema { get; init; }
+    public bool? Required { get; init; }
+    public string? Description { get; init; }
 }
 
 public sealed record Auth

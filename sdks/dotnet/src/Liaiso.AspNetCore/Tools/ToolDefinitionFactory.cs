@@ -26,7 +26,7 @@ internal static partial class ToolDefinitionFactory
             InputSchema = BuildInputSchema(endpoint, variant, relief, refDescription),
             OutputSchema = BuildOutputSchema(endpoint),
             Deprecated = endpoint.Deprecated == true ? true : null,
-            Annotations = Annotate(endpoint.Method),
+            Annotations = Annotate(endpoint, variant),
             Auth = endpoint.Auth,
         };
     }
@@ -409,7 +409,21 @@ internal static partial class ToolDefinitionFactory
         return clone;
     }
 
-    private static ToolAnnotations Annotate(string method) => method.ToUpperInvariant() switch
+    /// <summary>The method's implied hints, overlaid per key by the operation's, then the variant's.</summary>
+    private static ToolAnnotations Annotate(EndpointDescriptor endpoint, ToolVariant? variant)
+    {
+        ToolAnnotations implied = Implied(endpoint.Method);
+        ToolAnnotations? declared = endpoint.Annotations;
+        ToolAnnotations? own = variant?.Annotations;
+        return new ToolAnnotations
+        {
+            ReadOnlyHint = own?.ReadOnlyHint ?? declared?.ReadOnlyHint ?? implied.ReadOnlyHint,
+            DestructiveHint = own?.DestructiveHint ?? declared?.DestructiveHint ?? implied.DestructiveHint,
+            IdempotentHint = own?.IdempotentHint ?? declared?.IdempotentHint ?? implied.IdempotentHint,
+        };
+    }
+
+    private static ToolAnnotations Implied(string method) => method.ToUpperInvariant() switch
     {
         "GET" or "HEAD" or "OPTIONS" or "QUERY" => new ToolAnnotations { ReadOnlyHint = true, IdempotentHint = true },
         "POST" => new ToolAnnotations { DestructiveHint = false },

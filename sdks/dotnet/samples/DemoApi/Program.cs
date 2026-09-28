@@ -46,6 +46,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddLiaiso(options =>
 {
     options.Visibility.Tier = VisibilityTier.Probe;
+    options.Families.Provide(DemoApi.DemoDynamicMethods.Source, DemoApi.DemoDynamicMethods.LoadAsync);
     if (Environment.GetEnvironmentVariable("DEMOAPI_QUERY_GROUPING") == "group")
     {
         options.Query.Grouping = QueryObjectGrouping.Group;

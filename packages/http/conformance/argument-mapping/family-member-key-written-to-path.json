@@ -1,0 +1,35 @@
+{
+  "kind": "argument-mapping",
+  "description": "A family member's key is an ordinary constant path fill: it is written into the dispatch parameter's segment and the agent's arguments fill the member's own body",
+  "input": {
+    "template": {
+      "method": "POST",
+      "route": "/Rest/InvokeDynamicMethod/{methodId}",
+      "parameters": [
+        {
+          "name": "methodId",
+          "in": "path",
+          "type": "string",
+          "fill": {
+            "kind": "constant",
+            "value": "3f2c9a1e-8b4d-4c6a-9e21-7d5b0c4a1f10"
+          }
+        }
+      ],
+      "body": {
+        "properties": [
+          "minBalance"
+        ]
+      }
+    },
+    "arguments": {
+      "minBalance": 1000
+    }
+  },
+  "expected": {
+    "pathAndQuery": "/Rest/InvokeDynamicMethod/3f2c9a1e-8b4d-4c6a-9e21-7d5b0c4a1f10",
+    "bodyJson": {
+      "minBalance": 1000
+    }
+  }
+}

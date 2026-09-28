@@ -169,7 +169,7 @@ describe("nest catalog generation and connection reflection", () => {
     const before = await generationsOf();
     const notifiedBefore = notifications;
 
-    catalog.reload();
+    await catalog.reload();
     await waitFor(() => notifications > notifiedBefore);
 
     const after = await generationsOf();

@@ -87,7 +87,10 @@ for (const dir of expectedKinds.filter((kind) => presentKinds.includes(kind))) {
       }
       continue;
     }
-    for (const problem of bodyProblems(fixture)) {
+    for (const problem of [
+      ...bodyProblems(fixture),
+      ...familyProblems(fixture),
+    ]) {
       failed += 1;
       console.error(`FAIL ${rel}\n  ${problem}`);
     }
@@ -138,6 +141,49 @@ function bodyProblems(fixture) {
     if (JSON.stringify(fields) !== JSON.stringify(properties)) {
       problems.push("form fields do not name body.properties");
     }
+  }
+  return problems;
+}
+
+/**
+ * The family rules a success fixture could otherwise contradict: one tool per member, no tool that
+ * still exposes the dispatch parameter, and every member writing its own distinct key. A fixture
+ * that pinned a success breaking one would teach an implementation to publish the dispatcher.
+ */
+function familyProblems(fixture) {
+  if (
+    fixture.kind !== "metadata-extraction" ||
+    fixture.input.family === undefined ||
+    !("tools" in fixture.expected)
+  ) {
+    return [];
+  }
+  const problems = [];
+  const operation = fixture.input;
+  const parameter = operation.family.parameter;
+  const variants = operation.variants ?? [];
+  if (fixture.expected.tools.length !== variants.length) {
+    problems.push("a family must produce exactly one tool per member");
+  }
+  for (const tool of fixture.expected.tools) {
+    if (Object.hasOwn(tool.inputSchema.properties ?? {}, parameter)) {
+      problems.push(`tool '${tool.name}' exposes the dispatch parameter`);
+    }
+  }
+  const keys = new Set();
+  for (const variant of variants) {
+    const record =
+      (variant.arguments ?? []).find((a) => a.name === parameter) ??
+      (operation.arguments ?? []).find((a) => a.name === parameter);
+    if (record?.hidden?.kind !== "constant") {
+      problems.push(`member '${variant.name}' does not hide its key`);
+      continue;
+    }
+    const key = JSON.stringify(record.hidden.value);
+    if (keys.has(key)) {
+      problems.push(`member '${variant.name}' repeats key ${key}`);
+    }
+    keys.add(key);
   }
   return problems;
 }

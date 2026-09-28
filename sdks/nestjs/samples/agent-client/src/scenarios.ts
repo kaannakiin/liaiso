@@ -7,7 +7,7 @@ import type {
 import { callTool } from "./mcp.js";
 
 export type ScenarioName =
-  "smoke" | "validation-retry" | "error-envelope" | "upload";
+  "smoke" | "validation-retry" | "error-envelope" | "upload" | "family";
 
 export interface ScenarioOptions {
   readonly tool?: string;
@@ -573,6 +573,126 @@ export async function runUpload(
   }
 }
 
+const familyMember = "assign_courier";
+const familyKey = "e91b3c7f-0d2a-48e5-b6f4-5a1c9d8e2b07";
+const siblingKey = "3f2c9a1e-8b4d-4c6a-9e21-7d5b0c4a1f10";
+
+interface DispatchEcho {
+  readonly methodId?: string;
+  readonly method?: string;
+  readonly received?: Readonly<Record<string, unknown>>;
+}
+
+function sameFields(
+  actual: Readonly<Record<string, unknown>> | undefined,
+  expected: Readonly<Record<string, unknown>>,
+): boolean {
+  const keys = Object.keys(expected);
+  return (
+    actual !== undefined &&
+    Object.keys(actual).length === keys.length &&
+    keys.every((key) => actual[key] === expected[key])
+  );
+}
+
+/**
+ * Drives one member of the demos' dispatching endpoint end to end. The backend echoes the key its
+ * route received, so a passing invoke proves the hidden constant — not the agent — chose the
+ * member ([tool-families.md]).
+ */
+export async function runFamily(
+  client: Client,
+  options: ScenarioOptions,
+): Promise<void> {
+  const rows: ChecklistRow[] = [];
+
+  const query = options.query ?? "courier";
+  const search = await callTool<SearchResponse>(client, "search_tools", {
+    query,
+  });
+  const ranked = search.parsed.results.map((result) => result.name);
+  rows.push({
+    step: `search_tools "${query}"`,
+    ok: !search.isError && ranked[0] === familyMember,
+    detail: ranked.join(", "),
+  });
+
+  const loaded = await callTool<LoadResult>(client, "load_tool", {
+    name: familyMember,
+  });
+  if (loaded.isError || isErrorEnvelope(loaded.parsed)) {
+    rows.push({
+      step: `load_tool ${familyMember}`,
+      ok: false,
+      detail: JSON.stringify(loaded.parsed),
+    });
+    printChecklist(rows);
+    throw new SetupFailure(`load_tool failed for "${familyMember}"`);
+  }
+  const properties = Object.keys(loaded.parsed.inputSchema.properties ?? {});
+  const annotations = loaded.parsed.annotations as
+    { readonly destructiveHint?: boolean } | undefined;
+  rows.push({
+    step: `load_tool ${familyMember}`,
+    ok:
+      !properties.includes("methodId") &&
+      properties.includes("orderNumber") &&
+      properties.includes("courierCode") &&
+      annotations?.destructiveHint === true,
+    detail: JSON.stringify({ properties, annotations }),
+  });
+
+  const args = { orderNumber: "ORD-1001", courierCode: "COURIER-7" };
+  const invoked = await callTool<InvokeResult>(client, "invoke_tool", {
+    name: familyMember,
+    arguments: args,
+  });
+  let echoed = false;
+  if (
+    !invoked.isError &&
+    !isErrorEnvelope(invoked.parsed) &&
+    invoked.parsed.status < 400
+  ) {
+    const body = invoked.parsed.body as DispatchEcho | undefined;
+    echoed =
+      body?.methodId?.toLowerCase() === familyKey &&
+      body.method === familyMember &&
+      sameFields(body.received, args);
+  }
+  rows.push({
+    step: `invoke_tool ${familyMember}`,
+    ok: echoed,
+    detail: JSON.stringify(invoked.parsed),
+  });
+
+  const smuggled = await callTool<InvokeResult>(client, "invoke_tool", {
+    name: familyMember,
+    arguments: { ...args, methodId: siblingKey },
+  });
+  rows.push({
+    step: `invoke_tool ${familyMember} + methodId`,
+    ok:
+      isErrorEnvelope(smuggled.parsed) &&
+      !isBackendMappedError(smuggled.parsed) &&
+      smuggled.parsed.error === "unknown_argument",
+    detail: JSON.stringify(smuggled.parsed),
+  });
+
+  const byKey = await callTool<SearchResponse>(client, "search_tools", {
+    query: familyKey,
+  });
+  rows.push({
+    step: "search_tools <member key>",
+    ok: !byKey.isError && byKey.parsed.results.length === 0,
+    detail: `${byKey.parsed.results.length} results`,
+  });
+
+  printChecklist(rows);
+  if (!rows.every((row) => row.ok)) {
+    throw new AssertionFailure(`family scenario failed for "${familyMember}"`);
+  }
+}
+
 export const scenarios: Readonly<
   Record<
     ScenarioName,
@@ -583,4 +703,5 @@ export const scenarios: Readonly<
   "validation-retry": runValidationRetry,
   "error-envelope": runErrorEnvelope,
   upload: runUpload,
+  family: runFamily,
 };

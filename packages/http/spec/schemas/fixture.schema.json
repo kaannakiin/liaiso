@@ -271,7 +271,30 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "endpoint-descriptor.schema.json#/$defs/ToolVariant"
+            "$ref": "#/$defs/NamingVariant"
+          }
+        }
+      }
+    },
+    "NamingVariant": {
+      "title": "NamingVariant",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description"],
+      "description": "A variant as naming sees it. The name is unconstrained here so a fixture can pin that an ill-formed one is refused.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "$ref": "endpoint-descriptor.schema.json#/$defs/ArgumentCuration"
           }
         }
       }
@@ -361,7 +384,13 @@
                     "identity_carrier_parameter",
                     "unsupported_parameter_content",
                     "multiple_querystring",
-                    "querystring_with_query"
+                    "querystring_with_query",
+                    "family_parameter_unresolved",
+                    "family_without_members",
+                    "family_key_unfilled",
+                    "family_key_duplicate",
+                    "variant_body_without_family",
+                    "variant_body_invalid"
                   ]
                 }
               }

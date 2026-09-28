@@ -10,9 +10,14 @@ export type {
   ArgumentCuration,
   ArgumentFill,
   ArgumentFillKind,
+  ToolFamily,
   ToolVariant,
+  VariantRequestBody,
 } from "./generated/endpoint-descriptor.js";
-export type { ToolDefinition } from "./generated/tool-definition.js";
+export type {
+  ToolAnnotations,
+  ToolDefinition,
+} from "./generated/tool-definition.js";
 export type { Fixture } from "./generated/fixture.js";
 export {
   LiaisoTemplateError,
@@ -160,6 +165,7 @@ export {
   routePlaceholderNames,
 } from "./request-template.js";
 export { expandToolProductions } from "./naming.js";
+export { declaredSchemaProblem, familySeverities } from "./family.js";
 export type { ToolProduction } from "./naming.js";
 export type { SearchDocument } from "./search.js";
 export { evaluateVisibility } from "./visibility.js";

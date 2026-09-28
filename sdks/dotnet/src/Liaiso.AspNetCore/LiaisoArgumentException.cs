@@ -28,6 +28,12 @@ public sealed class LiaisoTemplateException(string code, string message) : Excep
     public const string UnsupportedParameterContent = "unsupported_parameter_content";
     public const string MultipleQuerystring = "multiple_querystring";
     public const string QuerystringWithQuery = "querystring_with_query";
+    public const string FamilyParameterUnresolved = "family_parameter_unresolved";
+    public const string FamilyWithoutMembers = "family_without_members";
+    public const string FamilyKeyUnfilled = "family_key_unfilled";
+    public const string FamilyKeyDuplicate = "family_key_duplicate";
+    public const string VariantBodyWithoutFamily = "variant_body_without_family";
+    public const string VariantBodyInvalid = "variant_body_invalid";
 }
 
 public sealed class LiaisoArgumentException(string code, string message) : Exception(message)

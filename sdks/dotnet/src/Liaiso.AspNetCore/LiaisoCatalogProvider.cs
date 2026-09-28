@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -24,7 +25,8 @@ internal sealed class LiaisoCatalogProvider(
     ILiaisoCache cache,
     ILogger<LiaisoCatalogProvider> logger,
     IAuthorizationPolicyProvider? policyProvider = null,
-    Files.ILiaisoFileResolver? fileResolver = null) : ILiaisoCatalogChangeSource
+    Files.ILiaisoFileResolver? fileResolver = null,
+    IServiceScopeFactory? scopes = null) : ILiaisoCatalogChangeSource
 {
     private const string NewtonsoftInputFormatter =
         "Microsoft.AspNetCore.Mvc.Formatters.NewtonsoftJsonInputFormatter";
@@ -42,6 +44,8 @@ internal sealed class LiaisoCatalogProvider(
     private Snapshot? _snapshot;
     private CancellationTokenSource _changeSource = new();
     private long _generation;
+    private readonly SemaphoreSlim _reloads = new(1, 1);
+    private IReadOnlyDictionary<string, FamilyLoad>? _familyLoads;
 
     public void Attach(ICollection<EndpointDataSource> dataSources, string reservedPrefix)
     {
@@ -60,13 +64,92 @@ internal sealed class LiaisoCatalogProvider(
 
     public IReadOnlySet<string> PolicyNames => Current.PolicyNames;
 
+    /// <remarks>
+    /// With a family source registered, members are loaded first and reloads run one at a time; a
+    /// rebuild that would turn a valid catalog fatal is refused and the current catalog kept
+    /// (tool-families.md §Membership), because member data added under a name another tool already
+    /// has would otherwise take every tool offline.
+    /// </remarks>
+    /// <exception cref="LiaisoCatalogException">The rebuild is refused.</exception>
     public async ValueTask ReloadAsync(CancellationToken cancellationToken = default)
     {
-        lock (_gate)
+        if (options.Value.Families.Sources.Count == 0)
         {
-            _snapshot = Build();
-            Interlocked.Increment(ref _generation);
+            lock (_gate)
+            {
+                _snapshot = Build(_familyLoads);
+                Interlocked.Increment(ref _generation);
+            }
+            await CommitAsync(cancellationToken);
+            return;
         }
+
+        await _reloads.WaitAsync(cancellationToken);
+        try
+        {
+            IReadOnlyDictionary<string, FamilyLoad> loads = await FamilyReader.LoadAsync(
+                options.Value.Families, scopes, _familyLoads, cancellationToken);
+            lock (_gate)
+            {
+                Snapshot candidate = Build(loads);
+                if (candidate.Fatal.Count > 0 && Current.Fatal.Count == 0)
+                {
+                    throw new LiaisoCatalogException(
+                        candidate.Fatal[0].Code,
+                        "liaiso catalog reload refused; the current catalog is kept: "
+                        + string.Join(" | ", candidate.Fatal.Select(d => d.Message)));
+                }
+                _familyLoads = loads;
+                _snapshot = candidate;
+                Interlocked.Increment(ref _generation);
+            }
+            await CommitAsync(cancellationToken);
+        }
+        finally
+        {
+            _reloads.Release();
+        }
+    }
+
+    /// <summary>
+    /// Loads family members once, at startup. A catalog built earlier carries
+    /// <c>family_not_loaded</c> and is rebuilt here, which signals the change token.
+    /// </summary>
+    internal async Task LoadFamiliesAsync(CancellationToken cancellationToken)
+    {
+        if (options.Value.Families.Sources.Count == 0)
+        {
+            return;
+        }
+        await _reloads.WaitAsync(cancellationToken);
+        try
+        {
+            IReadOnlyDictionary<string, FamilyLoad> loads = await FamilyReader.LoadAsync(
+                options.Value.Families, scopes, _familyLoads, cancellationToken);
+            bool built;
+            lock (_gate)
+            {
+                _familyLoads = loads;
+                built = _snapshot is not null;
+                if (built)
+                {
+                    _snapshot = Build(loads);
+                    Interlocked.Increment(ref _generation);
+                }
+            }
+            if (built)
+            {
+                await CommitAsync(cancellationToken);
+            }
+        }
+        finally
+        {
+            _reloads.Release();
+        }
+    }
+
+    private async ValueTask CommitAsync(CancellationToken cancellationToken)
+    {
         CancellationTokenSource next = new();
         CancellationTokenSource previous = Interlocked.Exchange(ref _changeSource, next);
         previous.Cancel();
@@ -131,12 +214,12 @@ internal sealed class LiaisoCatalogProvider(
         {
             lock (_gate)
             {
-                return _snapshot ??= Build();
+                return _snapshot ??= Build(_familyLoads);
             }
         }
     }
 
-    private Snapshot Build()
+    private Snapshot Build(IReadOnlyDictionary<string, FamilyLoad>? familyLoads)
     {
         if (_dataSources is null)
         {
@@ -160,7 +243,9 @@ internal sealed class LiaisoCatalogProvider(
             curation: options.Value.Arguments,
             selectionRules: options.Value.Selection.Rules,
             groupQueryObjects: options.Value.Query.Grouping == QueryObjectGrouping.Group,
-            refDescription: fileResolver?.RefDescription);
+            refDescription: fileResolver?.RefDescription,
+            families: options.Value.Families,
+            familyLoads: familyLoads);
         if (schemaNotes.Count > 0)
         {
             result = result with { Diagnostics = [.. schemaNotes, .. result.Diagnostics] };

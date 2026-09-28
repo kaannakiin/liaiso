@@ -41,6 +41,12 @@ export function collectConfigurationFailures(
   if (options.invoke.maxFileBytes < 1) {
     failures.push("invoke.maxFileBytes must be at least 1.");
   }
+  if (
+    !Number.isInteger(options.families.loadTimeoutMs) ||
+    options.families.loadTimeoutMs < 1
+  ) {
+    failures.push("families.loadTimeoutMs must be a positive integer.");
+  }
   const refDescription = options.files.resolver?.refDescription;
   if (refDescription !== undefined && refDescription.trim() === "") {
     failures.push(

@@ -1,0 +1,27 @@
+{
+  "kind": "naming",
+  "description": "A variant names itself, so its name is checked against the same pattern as every generated name; a member name taken from host data is not trusted to fit it",
+  "input": {
+    "endpoints": [
+      {
+        "operationId": "InvokeDynamicMethod",
+        "container": "DynamicMethodController",
+        "method": "POST",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "variants": [
+          {
+            "name": "list_customer_balances",
+            "description": "Lists customer balances."
+          },
+          {
+            "name": "List-Delayed-Orders",
+            "description": "Lists delayed orders."
+          }
+        ]
+      }
+    ]
+  },
+  "expected": {
+    "error": "invalid_name"
+  }
+}

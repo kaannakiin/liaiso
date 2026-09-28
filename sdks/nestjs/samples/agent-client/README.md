@@ -45,7 +45,7 @@ so on) the process exits with **code 3**.
 ## Scenarios
 
 ```sh
-node dist/main.js --scenario <smoke|validation-retry|error-envelope|upload> [--tool <name>] [--query <q>] [--arguments <json>]
+node dist/main.js --scenario <smoke|validation-retry|error-envelope|upload|family> [--tool <name>] [--query <q>] [--arguments <json>]
 ```
 
 The legacy positional form (`<query> [tool] [argumentsJson]`) still works and maps to the `smoke`
@@ -74,6 +74,14 @@ scenario.
   `text` and `base64` set). The first two must succeed; the unresolved reference must come back as
   an SDK-side `file_unresolved` error, and the malformed argument as an SDK-side
   `invalid_file_argument` error — never as a backend error built from an empty part. Success is
+  **exit 0**.
+- **`family`**: drives the demos' dispatching endpoint (`POST /Rest/InvokeDynamicMethod/{methodId}`),
+  published as one tool per method ([tool-families.md](../../../../packages/http/spec/tool-families.md)).
+  It verifies that `search_tools "courier"` (or `--query`) ranks `assign_courier` first, that its
+  loaded schema has `orderNumber` and `courierCode` but no `methodId` and is marked destructive,
+  that invoking it reaches the backend with that member's own key (the demo echoes the key and the
+  method it resolved), that sending `methodId` as an argument comes back as an SDK-side
+  `unknown_argument` error, and that searching for the member's key finds nothing. Success is
   **exit 0**.
 
 ## Exit codes

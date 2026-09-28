@@ -54,7 +54,11 @@ These are `endpointDropped` by default and are the ones to expect when a single 
 `unsupported_binding`, `unsupported_body_shape`, `content_type_not_accepted`,
 `multiple_body_bindings`, `unsupported_object_style`, `unsupported_object_nesting`,
 `template_rejected`, and — on ASP.NET Core — `missing_http_method` and `form_antiforgery_required`,
-and — on NestJS — `unresolved_file_field` and `body_parser_missing`.
+and — on NestJS — `unresolved_file_field` and `body_parser_missing`. A tool family adds its own:
+`family_parameter_unresolved`, `family_without_members`, `family_key_unfilled`,
+`family_key_duplicate`, `variant_body_without_family`, `variant_body_invalid`,
+`unknown_family_source`, `family_source_failed` and `family_not_loaded`; see
+[how to expose a dispatching endpoint as one tool per method](/docs/http-catalog/expose-a-dispatching-endpoint-as-one-tool-per-method).
 
 In practice the two you will actually hit are `argument_collision` (a path or query parameter and a
 body property share a name, so the flat argument object cannot represent both) and

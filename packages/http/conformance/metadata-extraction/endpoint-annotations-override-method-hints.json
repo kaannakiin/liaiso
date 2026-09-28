@@ -1,0 +1,37 @@
+{
+  "kind": "metadata-extraction",
+  "description": "An operation's declared annotations are merged per key over the hints its method implies",
+  "input": {
+    "operationId": "RebuildIndex",
+    "method": "POST",
+    "route": "/index/rebuild",
+    "description": "Rebuilds the search index.",
+    "annotations": {
+      "idempotentHint": true
+    },
+    "auth": {
+      "anonymous": "no",
+      "policies": [],
+      "imperative": false
+    }
+  },
+  "expected": {
+    "name": "rebuild_index",
+    "description": "Rebuilds the search index.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true
+    },
+    "auth": {
+      "anonymous": "no",
+      "policies": [],
+      "imperative": false
+    }
+  }
+}

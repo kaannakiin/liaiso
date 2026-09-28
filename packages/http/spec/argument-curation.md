@@ -130,6 +130,8 @@ Three consequences:
 - **`alternateRoutes` belongs to the operation**, so every variant carries the same list and a query naming a compatibility path returns all of them. Alternate routes are search text and are never invoked: a hidden path parameter cannot be bypassed through one.
 - **Every variant shares `auth`** and therefore receives the same visibility decision. A narrowly curated variant is not a narrower permission.
 
+A variant MAY declare `annotations`, merged per key over the operation's ([tool-families.md](tool-families.md) §Annotations). A variant MAY declare its own `requestBody` only when the operation declares a `family`; the variants of such an operation are its members, and [tool-families.md](tool-families.md) defines what a member's body, key and search behaviour are.
+
 Variants dilute search: several cards with the same route and adjacent descriptions compete for the same terms. Implementations SHOULD warn (`variant_indistinguishable`) when two variants of one operation produce an equal `inputSchema` and an equal description, and variant descriptions should differ in their first clause, because the card truncates at 160 characters.
 
 ## Curation and route folding
@@ -167,10 +169,10 @@ Reused rather than added: two declarations for one wire name is `duplicate_argum
 
 ## Deliberately out of scope
 
-- **Narrowing an argument's schema.** Whether a declared schema narrows or widens the backend's own cannot be checked mechanically, and a wrongly narrowed contract stops the agent from composing a call the backend would have accepted.
+- **Narrowing an argument's schema.** Whether a declared schema narrows or widens the backend's own cannot be checked mechanically, and a wrongly narrowed contract stops the agent from composing a call the backend would have accepted. A family member's body is not an exception to this: the dispatcher's own body is deliberately opaque, so the member body narrows nothing — it is the only statement of that member's contract ([tool-families.md](tool-families.md)).
 - **A visible default.** [schema-conversion-rules.md](schema-conversion-rules.md) Table 5 declines to write `default`; `hidden` is the only value-injection path, and `omit` covers "let the backend decide".
-- **Per-caller curation.** The published schema MUST be caller-independent. A caller-dependent schema would break the catalog snapshot, the generation stamp and the `listChanged` fan-out ([transport.md](transport.md)), all three of which assume a single global generation. Only the **value** of a deferred fill varies per caller.
+- **Per-caller curation.** The published schema MUST be caller-independent. A caller-dependent schema would break the catalog snapshot, the generation stamp and the `listChanged` fan-out ([transport.md](transport.md)), all three of which assume a single global generation. Only the **value** of a deferred fill varies per caller. Family membership is global for the same reason ([tool-families.md](tool-families.md) §Membership).
 - **Reordering arguments.** The order of `properties` and `required` is normative; curation renames in place.
-- **A general tool-transformation hook.** Curation is a named, single-purpose declaration that the tool-definition factory and the request composer read as an **input**; neither gains a hook, and no new extension point is added for it. A general callback over the finished tool would let a host reshape the published schema without the template that enforces it, and the drift would be invisible until a call failed.
+- **A general tool-transformation hook.** Curation is a named, single-purpose declaration that the tool-definition factory and the request composer read as an **input**; neither gains a hook, and no new extension point is added for it. A general callback over the finished tool would let a host reshape the published schema without the template that enforces it, and the drift would be invisible until a call failed. A family source is not such a hook: it returns data that is lowered into variants before the factory runs, and the factory builds the schema and the template from that one input.
 - **Deleting a description.** A curated description is at least one character: an empty string cannot be told apart from "no declaration" in a JSON fixture.
 - **Deriving a value from another argument.** Not specified here. The provider contract is written so that it can be specified later without a second mechanism.

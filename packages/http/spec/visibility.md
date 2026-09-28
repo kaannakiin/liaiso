@@ -113,7 +113,7 @@ For an endpoint the declarative tier left as `unknown`, the probe obtains the fr
 
 - **Verdict:** `401`/`403` → `deny`, with or without the cut marker: if a middleware rejected before the authorization layer, the handler did not run (this is the path for backends whose auth lives in custom middleware). Cut marker plus success → `allow`. Every other response — an unmarked 2xx in particular — → `unknown`; the probe is permanently disabled for that endpoint and a warning is logged, because the handler may have run and MUST NOT be tried a second time. An unmarked `404` means the route did not match: the host declares the placeholder value.
 - **Budget:** only after ranking, only for those left as `unknown`, and only the first K candidates (default 25). Anything outside the budget is handled by the `unknown` policy. `total` is the declarative count; the probe does not change it.
-- **Request shape:** path parameters are filled with a placeholder derived from the route constraint (numeric → `1`, guid → the empty guid, bool → `true`, date → `2000-01-01`, otherwise → `probe`); the host MAY declare a value by parameter name. Query and body are not sent — the cut is before model binding, so no formatter runs.
+- **Request shape:** path parameters are filled with a placeholder derived from the route constraint (numeric → `1`, guid → the empty guid, bool → `true`, date → `2000-01-01`, otherwise → `probe`); the host MAY declare a value by parameter name. A path parameter hidden with a constant is written with that constant instead of either, because it is the only value that routes to the tool ([tool-families.md](tool-families.md)). Query and body are not sent — the cut is before model binding, so no formatter runs.
 
 ## `load_tool` is subject to visibility
 

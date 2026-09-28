@@ -41,6 +41,8 @@ export interface EndpointDescriptor {
   tags?: string[];
   arguments?: ArgumentCuration[];
   variants?: [ToolVariant, ...ToolVariant[]];
+  family?: ToolFamily;
+  annotations?: ToolAnnotations;
 }
 export interface Parameter {
   name: string;
@@ -141,4 +143,19 @@ export interface ToolVariant {
   name: string;
   description: string;
   arguments?: ArgumentCuration[];
+  requestBody?: VariantRequestBody;
+  annotations?: ToolAnnotations;
+}
+export interface VariantRequestBody {
+  schema: JsonSchemaObject;
+  required?: boolean;
+  description?: string;
+}
+export interface ToolAnnotations {
+  readOnlyHint?: boolean;
+  destructiveHint?: boolean;
+  idempotentHint?: boolean;
+}
+export interface ToolFamily {
+  parameter: string;
 }

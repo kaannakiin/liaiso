@@ -1,0 +1,33 @@
+{
+  "kind": "argument-mapping",
+  "description": "Sending the dispatch parameter does not switch members: its name is not an argument of the member, so the call is refused rather than routed to another capability",
+  "input": {
+    "template": {
+      "method": "POST",
+      "route": "/Rest/InvokeDynamicMethod/{methodId}",
+      "parameters": [
+        {
+          "name": "methodId",
+          "in": "path",
+          "type": "string",
+          "fill": {
+            "kind": "constant",
+            "value": "3f2c9a1e-8b4d-4c6a-9e21-7d5b0c4a1f10"
+          }
+        }
+      ],
+      "body": {
+        "properties": [
+          "minBalance"
+        ]
+      }
+    },
+    "arguments": {
+      "minBalance": 1000,
+      "methodId": "b27e5d04-61a3-4f8e-a0c9-2e8d7f13b5a6"
+    }
+  },
+  "expected": {
+    "error": "unknown_argument"
+  }
+}

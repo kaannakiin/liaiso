@@ -25,6 +25,7 @@ const scenarioNames: ReadonlySet<string> = new Set<ScenarioName>([
   "validation-retry",
   "error-envelope",
   "upload",
+  "family",
 ]);
 
 function isScenarioName(value: string): value is ScenarioName {

@@ -89,6 +89,12 @@
         "$ref": "#/$defs/ToolVariant"
       },
       "description": "When present, the operation produces exactly one tool per variant and its own toolName and description are unused."
+    },
+    "family": {
+      "$ref": "#/$defs/ToolFamily"
+    },
+    "annotations": {
+      "$ref": "tool-definition.schema.json#/$defs/ToolAnnotations"
     }
   },
   "$defs": {
@@ -295,6 +301,44 @@
             "$ref": "#/$defs/ArgumentCuration"
           },
           "description": "Merged with the endpoint's own arguments by whole-record replacement per wire name."
+        },
+        "requestBody": {
+          "$ref": "#/$defs/VariantRequestBody"
+        },
+        "annotations": {
+          "$ref": "tool-definition.schema.json#/$defs/ToolAnnotations"
+        }
+      }
+    },
+    "ToolFamily": {
+      "title": "ToolFamily",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parameter"],
+      "description": "The operation dispatches on one parameter: every variant is a member, and each member writes its own key into that parameter as a hidden constant.",
+      "properties": {
+        "parameter": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The wire name of the dispatch parameter: a declared, scalar, non-body parameter."
+        }
+      }
+    },
+    "VariantRequestBody": {
+      "title": "VariantRequestBody",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema"],
+      "description": "A family member's own body. It replaces the operation's body schema and requiredness for that member; the media type stays the operation's.",
+      "properties": {
+        "schema": {
+          "$ref": "#/$defs/JsonSchemaObject"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },

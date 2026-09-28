@@ -27,6 +27,7 @@ treat a file as binding without reading it.
 | `argument-mapping.md`        | Flat arguments → HTTP request                    | **normative candidate**                  |
 | `request-bodies.md`          | Body media types, form and multipart, file parts | normative, two implementations           |
 | `argument-curation.md`       | Renaming, re-describing and hiding arguments     | normative, two implementations           |
+| `tool-families.md`           | One dispatching operation → one tool per method  | normative, two implementations           |
 | `openapi-ingestion.md`       | OpenAPI document → descriptors, diagnostics      | normative, one implementation            |
 | `credentials.md`             | Backend credentials for a network invoker        | normative, one implementation            |
 

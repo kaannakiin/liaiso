@@ -53,6 +53,7 @@ public static class LiaisoServiceCollectionExtensions
         services.TryAddSingleton<IProtectedResourceMetadataProvider, OptionsProtectedResourceMetadataProvider>();
         services.TryAddSingleton<LiaisoEndpointRegistration>();
         services.TryAddSingleton<ToolListChangePublisher>();
+        services.AddHostedService<Discovery.LiaisoFamilyLoader>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<LiaisoOptions>, LiaisoOptionsValidator>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<McpServerOptions>, ToolCollectionSetup>());
         services.AddOptions<LiaisoOptions>().ValidateOnStart();

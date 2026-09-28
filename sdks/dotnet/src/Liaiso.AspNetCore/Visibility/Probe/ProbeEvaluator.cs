@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -9,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Liaiso.AspNetCore.Discovery;
+using Liaiso.AspNetCore.Requests;
+using Liaiso.AspNetCore.Spec;
 
 namespace Liaiso.AspNetCore.Visibility.Probe;
 
@@ -60,7 +64,7 @@ internal sealed class ProbeEvaluator : IProbeEvaluator
         }
 
         RouteEndpoint endpoint = (RouteEndpoint)entry.Endpoint!;
-        string path = ProbePath(endpoint.RoutePattern, _options.Value.Visibility.ProbeValues);
+        string path = ProbePath(endpoint.RoutePattern, _options.Value.Visibility.ProbeValues, entry.Template);
         ProbeOutcome outcome = await _dispatcher.ProbeAsync(
             new HttpMethod(entry.Descriptor.Method), path, outerRequest, cancellationToken);
 
@@ -85,7 +89,8 @@ internal sealed class ProbeEvaluator : IProbeEvaluator
         return VisibilityDecision.Unknown;
     }
 
-    private static string ProbePath(RoutePattern pattern, IReadOnlyDictionary<string, string> overrides)
+    private static string ProbePath(
+        RoutePattern pattern, IReadOnlyDictionary<string, string> overrides, RequestTemplate? template)
     {
         StringBuilder path = new();
         foreach (RoutePatternPathSegment segment in pattern.PathSegments)
@@ -97,12 +102,34 @@ internal sealed class ProbeEvaluator : IProbeEvaluator
                 {
                     RoutePatternLiteralPart literal => literal.Content,
                     RoutePatternSeparatorPart separator => separator.Content,
-                    RoutePatternParameterPart parameter => Uri.EscapeDataString(Placeholder(parameter, overrides)),
+                    RoutePatternParameterPart parameter => Uri.EscapeDataString(
+                        ConstantFor(template, parameter.Name) ?? Placeholder(parameter, overrides)),
                     _ => string.Empty,
                 });
             }
         }
         return path.Length == 0 ? "/" : path.ToString();
+    }
+
+    /// <summary>
+    /// Guard: a family member is reachable only through its own key, so a placeholder or a host
+    /// probe value would probe a different member, or none, and report its verdict for this one.
+    /// </summary>
+    private static string? ConstantFor(RequestTemplate? template, string name)
+    {
+        ParameterBinding? binding = template?.Parameters.FirstOrDefault(p =>
+            p.Location == ParameterLocation.Path
+            && string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
+        if (binding?.Fill is not { Kind: ArgumentFillKind.Constant, Value: JsonValue value })
+        {
+            return null;
+        }
+        return value.GetValueKind() switch
+        {
+            JsonValueKind.String => value.GetValue<string>(),
+            JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False => value.ToJsonString(),
+            _ => null,
+        };
     }
 
     private static string Placeholder(RoutePatternParameterPart parameter, IReadOnlyDictionary<string, string> overrides)

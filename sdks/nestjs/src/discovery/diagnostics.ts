@@ -1,9 +1,12 @@
 import {
+  familySeverities,
   severityIn,
   type CatalogSeverity,
   type DiagnosticsOptions,
   type SeverityTable,
 } from "@liaiso/core";
+
+import { sdkFamilySeverities } from "../families.js";
 
 export { atLeast } from "@liaiso/core";
 export type {
@@ -13,6 +16,8 @@ export type {
 } from "@liaiso/core";
 
 const defaults: SeverityTable = {
+  ...familySeverities,
+  ...sdkFamilySeverities,
   name_collision: "fatal",
   ambiguous_selection: "fatal",
   invalid_name: "fatal",

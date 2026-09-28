@@ -1,0 +1,84 @@
+{
+  "kind": "search",
+  "description": "A member's key is a hidden constant, so it is in neither the published schema nor the route; searching for it finds nothing",
+  "input": {
+    "tools": [
+      {
+        "name": "list_customer_balances",
+        "description": "Müşteri bakiyelerini listeler.",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "minBalance": {
+              "type": "number",
+              "description": "En düşük bakiye."
+            }
+          }
+        }
+      },
+      {
+        "name": "list_delayed_orders",
+        "description": "Gecikmiş siparişleri listeler.",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "days": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      {
+        "name": "assign_courier",
+        "description": "Siparişe kurye atar.",
+        "route": "/Rest/InvokeDynamicMethod/{methodId}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "orderNumber": {
+              "type": "string"
+            },
+            "courierCode": {
+              "type": "string"
+            },
+            "vehiclePlate": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "list_orders",
+        "description": "Siparişleri listeler.",
+        "route": "/Rest/Orders/List",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "name": "get_customer_by_id",
+        "description": "Müşteri kaydını getirir.",
+        "route": "/Rest/Customers/{id}",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    ],
+    "query": "3f2c9a1e-8b4d-4c6a-9e21-7d5b0c4a1f10"
+  },
+  "expected": {
+    "names": []
+  }
+}

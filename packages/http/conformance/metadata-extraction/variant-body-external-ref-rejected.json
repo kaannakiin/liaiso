@@ -1,0 +1,120 @@
+{
+  "kind": "metadata-extraction",
+  "description": "A member body arrives as host data that nothing upstream resolved, so a reference leaving its own definitions is refused",
+  "input": {
+    "operationId": "InvokeDynamicMethod",
+    "container": "DynamicMethodController",
+    "method": "POST",
+    "route": "/Rest/InvokeDynamicMethod/{methodId}",
+    "description": "Invokes a server method by its id.",
+    "parameters": [
+      {
+        "name": "methodId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "schema": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "family": {
+      "parameter": "methodId"
+    },
+    "variants": [
+      {
+        "name": "list_customer_balances",
+        "description": "Lists customer balances, optionally above a minimum.",
+        "arguments": [
+          {
+            "name": "methodId",
+            "hidden": {
+              "kind": "constant",
+              "value": "3f2c9a1e-8b4d-4c6a-9e21-7d5b0c4a1f10"
+            }
+          }
+        ],
+        "requestBody": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "filter": {
+                "$ref": "https://schemas.example.test/filter.json"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "list_delayed_orders",
+        "description": "Lists orders delivered later than promised.",
+        "arguments": [
+          {
+            "name": "methodId",
+            "hidden": {
+              "kind": "constant",
+              "value": "b27e5d04-61a3-4f8e-a0c9-2e8d7f13b5a6"
+            }
+          }
+        ],
+        "requestBody": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "days": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "days"
+            ]
+          }
+        }
+      },
+      {
+        "name": "assign_courier",
+        "description": "Assigns a courier to an order.",
+        "arguments": [
+          {
+            "name": "methodId",
+            "hidden": {
+              "kind": "constant",
+              "value": "e91b3c7f-0d2a-48e5-b6f4-5a1c9d8e2b07"
+            }
+          }
+        ],
+        "requestBody": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "orderNumber": {
+                "type": "string"
+              },
+              "courierCode": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "orderNumber",
+              "courierCode"
+            ]
+          }
+        }
+      }
+    ],
+    "auth": {
+      "anonymous": "no",
+      "policies": [],
+      "imperative": false
+    }
+  },
+  "expected": {
+    "error": "variant_body_invalid"
+  }
+}

@@ -3,6 +3,8 @@ import { LiaisoModule } from "@liaiso/sdk-nestjs";
 import { AttachmentsController } from "./attachments.controller.js";
 import { DemoAttachmentResolver } from "./attachments.js";
 import { AuthController } from "./auth.controller.js";
+import { DynamicMethodsController } from "./dynamic-methods.controller.js";
+import { dynamicMethods, dynamicMethodsSource } from "./dynamic-methods.js";
 import {
   AdminRoleGuard,
   BusinessHoursGuard,
@@ -29,6 +31,7 @@ import { OrdersController } from "./orders.controller.js";
       };
       options.visibility.tier = "probe";
       options.files.resolver = new DemoAttachmentResolver();
+      options.families.provide(dynamicMethodsSource, () => dynamicMethods);
       if (process.env["DEMOAPI_QUERY_GROUPING"] === "group") {
         options.query.grouping = "group";
       }
@@ -38,6 +41,7 @@ import { OrdersController } from "./orders.controller.js";
     AuthController,
     OrdersController,
     AttachmentsController,
+    DynamicMethodsController,
     McpController,
   ],
   providers: [

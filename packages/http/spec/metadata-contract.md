@@ -133,4 +133,4 @@ read-only members kept.
 | PATCH      | —              | `true`            | —                |
 | DELETE     | —              | `true`            | `true`           |
 
-`—` = the field is not written. Rationale: POST is additive (create) and does not overwrite data; PUT is a replacement (destructive but idempotent). Because a static mapping cannot be correct for every endpoint, SDKs SHOULD offer a per-endpoint override (C#: something like `[McpTool(Destructive = true)]`), and an overridden value beats the table.
+`—` = the field is not written. Rationale: POST is additive (create) and does not overwrite data; PUT is a replacement (destructive but idempotent). Because a static mapping cannot be correct for every endpoint, SDKs SHOULD offer a per-endpoint override (C#: something like `[McpTool(Destructive = true)]`), and an overridden value beats the table. The override is carried on the wire as `EndpointDescriptor.annotations` and `ToolVariant.annotations`, merged per key over this table in that order ([tool-families.md](tool-families.md) §Annotations).
