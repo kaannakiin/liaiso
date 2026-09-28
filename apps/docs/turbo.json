@@ -7,7 +7,12 @@
       "outputs": ["dist/**", ".tanstack/**"]
     },
     "validate": {
-      "inputs": ["scripts/check-content.mjs", "src/content/**"],
+      "dependsOn": ["^build"],
+      "inputs": [
+        "scripts/check-content.mjs",
+        "scripts/gen-reference.mjs",
+        "src/content/**"
+      ],
       "outputs": []
     }
   }

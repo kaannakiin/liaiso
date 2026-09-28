@@ -1,0 +1,86 @@
+# Error codes
+
+> Generated from the error-code union types of `@liaiso/excel-mcp` 0.7.0.
+
+A tool that fails answers with `isError: true` and one text item holding a JSON object with three fields: `error`, a stable machine code from this page; `message`, what went wrong; and `recovery`, what the next call should do differently. Branch on `error`, never on `message`.
+
+This is the answer to `describe_workbook {"filePath":"q3.xlsx"}` in a folder that has no such file:
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"error\":\"file_not_found\",\"message\":\"No source exists under the workbook root.\",\"recovery\":\"Call list_workbooks to see readable files.\"}"
+    }
+  ],
+  "isError": true
+}
+```
+
+The text item, parsed:
+
+```json
+{
+  "error": "file_not_found",
+  "message": "No source exists under the workbook root.",
+  "recovery": "Call list_workbooks to see readable files."
+}
+```
+
+The server has 30 codes.
+
+## Arguments and paging
+
+| Code                       | Meaning                                                                                                                                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `invalid_argument`         | The tool refuses an argument or a combination of arguments, such as `headerScan` together with `headerRow`, or a `cursor` together with `sheetName` or `range`. The message names the conflict. |
+| `invalid_range`            | `range` is not a valid A1 range. Use a form such as `B2:D40`, `B:D` or `2:40`.                                                                                                                  |
+| `range_outside_used_range` | `range` lies outside the sheet's used range. The recovery names the used range.                                                                                                                 |
+| `invalid_cursor`           | `cursor` is not a token that a previous `read_sheet` answer returned, for example because it was cut short or edited. Read again without a cursor.                                              |
+| `stale_cursor`             | The file changed between two pages of the same read. Start again without a cursor.                                                                                                              |
+| `invalid_pattern`          | `find_in_sheet` refused a `regex` query: it is longer than 256 characters, uses a Unicode property escape (`\p{…}`), or is not a valid JavaScript regular expression.                           |
+| `resource_limit`           | The request would exceed a fixed budget: too many groups or cells for `aggregate_sheet`, or a regex search that timed out or found the queue full. See [Limits](/docs/excel-mcp/limits).        |
+
+## Files and paths
+
+| Code                    | Meaning                                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `path_outside_root`     | `filePath` resolves outside the folder the server was started with. Paths are relative to that folder, and `..` cannot leave it.           |
+| `file_not_found`        | No file exists at `filePath`. Call `list_workbooks` for the paths that do.                                                                 |
+| `not_a_file`            | `filePath` names a directory or another entry that is not a regular file.                                                                  |
+| `unsupported_extension` | The file is not `.xlsx`, `.xlsm` or `.csv`.                                                                                                |
+| `file_too_large`        | The file is over the size limit: 50 MB for a workbook, 16 MB for a CSV.                                                                    |
+| `file_changed`          | The file was modified while it was being read. Retry the call.                                                                             |
+| `unsupported_platform`  | The native package that gives the server safe file access is missing for this operating system and CPU. Reinstall on a supported platform. |
+
+## File content
+
+| Code                      | Meaning                                                                                                                                                                                                                                        |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `not_a_workbook`          | The bytes are not a workbook: no zip header, or a zip with no workbook part inside, such as a `.docx` renamed to `.xlsx`.                                                                                                                      |
+| `encrypted_workbook`      | The file is password-protected or saved in the legacy binary `.xls` format. Save an unprotected `.xlsx` copy.                                                                                                                                  |
+| `corrupt_workbook`        | The file is a zip with a workbook part, but the part cannot be parsed. The message carries the parser's own explanation.                                                                                                                       |
+| `undecodable_text`        | A CSV cannot be decoded as text: it contains NUL bytes near its start, which means a binary file or UTF-16 without a byte-order mark, or it starts with a UTF-32 byte-order mark. Pass `encoding: "utf-16le"` or `"utf-16be"` for UTF-16 text. |
+| `ambiguous_delimiter`     | Two delimiters fit the first 20 lines of a CSV equally well. Pass `delimiter`.                                                                                                                                                                 |
+| `numeric_overflow`        | A cell or a comparison value holds a number outside the finite range, such as `Infinity`.                                                                                                                                                      |
+| `unsupported_for_format`  | The file's format cannot carry what was asked for, such as `get_tables` or `headerScan` on a CSV. `describe_workbook` lists what each file supports in its `capabilities` block.                                                               |
+| `unsupported_object_kind` | `get_images` was asked for charts, pivot tables or sparklines. The server cannot read these in any format, so it refuses rather than answer with an empty list.                                                                                |
+
+## Sheets, columns and headers
+
+| Code                   | Meaning                                                                                                                                                                     |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `unknown_sheet`        | No sheet has that name. Names are case-sensitive; the recovery lists the sheets that exist.                                                                                 |
+| `ambiguous_sheet`      | Two sheets have names that are the same after Unicode normalization, so neither can be addressed. Rename one in the workbook.                                               |
+| `empty_sheet`          | The sheet has no cells with values.                                                                                                                                         |
+| `unknown_column`       | A column named in `groupBy`, `metrics` or `where` is neither a header in the range nor an A1 letter. The recovery lists the named columns.                                  |
+| `ambiguous_column`     | A column reference matches more than one column: two columns share the header text, or the text is both a header and another column's letter. Address the column by letter. |
+| `unknown_header_row`   | `headerScan` found no row that qualifies as a header. Pass `headerRow`, or `headerRow: 0` to read without headers.                                                          |
+| `ambiguous_header_row` | `headerScan` found more than one row that qualifies as a header, or more than one Excel Table declares one. The recovery quotes the candidate rows; pass `headerRow`.       |
+
+## Server
+
+| Code             | Meaning                                                                                                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `internal_error` | A defect in the server, not in your file or your call. This is the one code with no `recovery`, because there is no next call that fixes it. The detail is written to the server's stderr. |
