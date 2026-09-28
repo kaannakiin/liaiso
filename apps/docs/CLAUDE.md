@@ -13,7 +13,7 @@ Run from the repo root:
 - `pnpm turbo run build --filter=@liaiso/docs` — production build into `dist/` (Worker in
   `dist/server`, prerendered pages and assets in `dist/client`)
 - `pnpm --filter @liaiso/docs preview` — serve the build locally in `workerd` (requires a build first)
-- `pnpm --filter @liaiso/docs deploy` — `wrangler deploy` to the `liaiso-docs` Worker (requires a build first)
+- `pnpm --filter @liaiso/docs run deploy` — `wrangler deploy` to the `liaiso-docs` Worker (requires a build first)
 - `pnpm --filter @liaiso/docs lint` / `check-types`
 
 Use turbo for `build` so `^build` dependencies resolve; `dev`, `preview` and `deploy` do not need it.
@@ -37,7 +37,7 @@ every link is slash-less; the default `auto-trailing-slash` would answer each pa
   plan. No custom domain is bound.
 - **Deploys are manual.** No CI job deploys this site, so a merged content change is not live until
   someone runs `pnpm turbo run build --filter=@liaiso/docs` and then
-  `pnpm --filter @liaiso/docs deploy`.
+  `pnpm --filter @liaiso/docs run deploy`.
 - A change under `apps/docs` is finished only once it is deployed: after the change is committed,
   ask before deploying (it publishes), then deploy, then confirm with
   `curl -sS -o /dev/null -w "%{http_code}\n" https://liaiso-docs.invokit-docs.workers.dev/docs/<product>/<slug>`
