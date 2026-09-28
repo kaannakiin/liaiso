@@ -1,6 +1,6 @@
 {
   "name": "@liaiso/pdf-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read-only MCP server that lets AI agents extract text from local PDF documents, with optional pluggable OCR. Never reaches the network.",
   "keywords": [
     "mcp",

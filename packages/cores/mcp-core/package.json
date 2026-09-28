@@ -1,6 +1,6 @@
 {
   "name": "@liaiso/mcp-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Source-agnostic machinery for read-only MCP servers: tool typing, response budget, error envelope, cursor codec, stdio server.",
   "keywords": [
     "mcp",
