@@ -16,7 +16,7 @@
       {
         "title": "Arguments and paging",
         "codes": {
-          "invalid_argument": "The tool refuses an argument or a combination of arguments: an address that matches no node, a prefix bound twice, two columns with the same label, a metric other than `count` with no column. The message names the problem.",
+          "invalid_argument": "An argument the tool does not declare, a value of the wrong type, a missing required argument, or a combination the tool refuses: an address that matches no node, a prefix bound twice, two columns with the same label, a metric other than `count` with no column. The message names the problem. For an undeclared or mistyped argument the recovery lists the arguments the tool accepts.",
           "invalid_cursor": "`cursor` is not a token this tool returned, belongs to a different tool, or is more than ten minutes old. Call the tool again without a cursor.",
           "stale_cursor": "The document changed between two pages of the same read. Start again without a cursor.",
           "query_not_supported": "`select_xpath` was given something outside XPath 1.0 as this engine provides it: a function from XPath 2.0 or later, or the namespace axis, whose nodes the engine cannot report. `describe_document` lists every namespace instead.",
