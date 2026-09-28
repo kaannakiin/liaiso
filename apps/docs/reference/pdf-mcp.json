@@ -1,0 +1,111 @@
+{
+  "errors": {
+    "example": {
+      "tool": "describe_document",
+      "arguments": {
+        "filePath": "annual-report.pdf"
+      }
+    },
+    "sources": [
+      ["packages/cores/mcp-core/src/errors.ts", "SourceErrorCode"],
+      ["packages/cores/file-core/src/errors.ts", "CoreErrorCode"],
+      ["packages/servers/pdf-mcp/src/platform/errors.ts", "LiaisoPdfErrorCode"]
+    ],
+    "sections": [
+      {
+        "title": "Arguments and paging",
+        "codes": {
+          "invalid_argument": "An argument the tool does not declare, a value of the wrong type, a missing required argument, or a combination the tool refuses: a page number the document does not have, `cursor` together with `pages`, or a cursor passed with different options than the call that produced it. The message names the problem. For an undeclared or mistyped argument the recovery lists the arguments the tool accepts.",
+          "invalid_cursor": "`cursor` is not a token this tool returned, belongs to a different tool, or is more than ten minutes old. Call the tool again without a cursor.",
+          "stale_cursor": "The document changed between two pages of the same read, or a page the cursor resumes inside was transcribed again and its text differs. Start again without a cursor.",
+          "resource_limit": "The request would exceed a fixed budget: the document has more than 2,000 pages, extraction took longer than 20 seconds, too many documents are already being read, an OCR run is already in progress, too many `list_documents` calls are running, or not even part of one page fits the response. See [Limits](/docs/pdf-mcp/limits)."
+        }
+      },
+      {
+        "title": "Files and paths",
+        "codes": {
+          "path_outside_root": "`filePath` resolves outside the folder the server was started with. Paths are relative to that folder, and `..` cannot leave it.",
+          "file_not_found": "No file exists at `filePath`. Call `list_documents` for the paths that do.",
+          "not_a_file": "`filePath` names a directory or another entry that is not a regular file.",
+          "unsupported_extension": "The file does not end in `.pdf`, the only extension this server reads.",
+          "file_too_large": "The file is over 32 MiB. Every PDF is extracted whole, so there is no mode for a larger one; split the document.",
+          "file_changed": "The file was modified while it was being read. Retry the call.",
+          "unsupported_for_format": "Not raised by this server. Every readable PDF is extracted whole, so there is no reduced mode that refuses a tool.",
+          "unsupported_platform": "The native package that gives the server safe file access is missing for this operating system and CPU. Reinstall on a supported platform."
+        }
+      },
+      {
+        "title": "Document content",
+        "codes": {
+          "malformed_pdf": "The file is not a readable PDF: it is truncated, or it is something else with a `.pdf` extension.",
+          "encrypted_pdf": "The document is password-protected. The server never asks for a password; supply an unprotected copy.",
+          "extraction_failed": "The PDF engine could not read a document that is otherwise a PDF, usually because it uses a feature the engine does not support. Retrying the same call does not help."
+        }
+      },
+      {
+        "title": "OCR",
+        "codes": {
+          "ocr_unavailable": "A call passed `ocr: true`, but the server was started without an OCR binding. `describe_document` reports `capabilities.ocr: false` in that case. Omit `ocr` to read the text layer alone, or start the server with `--ocr`.",
+          "ocr_failed": "The rasterizer or the OCR provider failed, or OCR took longer than its budget (two minutes at most). The pages keep their `needsOcr` marking; no text is invented for them."
+        }
+      },
+      {
+        "title": "Server",
+        "codes": {
+          "internal_error": "A defect in the server, not in your document or your call. This is the one code with no `recovery`, because there is no next call that fixes it. The detail is written to the server's stderr."
+        }
+      }
+    ]
+  },
+  "limits": {
+    "module": "packages/servers/pdf-mcp/dist/index.js",
+    "sections": [
+      {
+        "title": "Files and extraction",
+        "keys": {
+          "maxPdfBytes": "Largest document the server opens",
+          "maxPages": "Most pages a document may have; a longer one is refused before it is extracted",
+          "maxExtractMs": "Time one extraction may take before the call fails with `resource_limit`",
+          "maxConcurrentExtractions": "Documents that may be extracted at once before a new read fails with `resource_limit`",
+          "documentCacheSize": "Extracted documents kept in memory between calls",
+          "maxListScan": "Directory entries `list_documents` walks before it reports `scanTruncated`",
+          "defaultListResults": "Documents `list_documents` returns when `maxResults` is omitted",
+          "maxListResults": "Largest `maxResults` for `list_documents`",
+          "maxConcurrentListings": "`list_documents` calls that may run at once"
+        }
+      },
+      {
+        "title": "Responses",
+        "keys": {
+          "maxPayloadBytes": "Largest serialized answer; a longer page is clamped and continues through `nextCursor`",
+          "defaultReadPages": "Pages `read_pages` returns when `maxPages` is omitted",
+          "maxReadPages": "Largest `maxPages` for `read_pages`, and the most page numbers `pages` may name"
+        }
+      },
+      {
+        "title": "Search",
+        "keys": {
+          "defaultFindResults": "Matches `find_in_document` returns when `maxResults` is omitted",
+          "maxFindResults": "Largest `maxResults` for `find_in_document`",
+          "maxMatchContextChars": "Longest `context` returned around one match",
+          "maxQueryChars": "Longest `query`, in characters"
+        }
+      },
+      {
+        "title": "OCR",
+        "keys": {
+          "ocrDpi": "Resolution pages are rendered at when the binding sets no `dpi`",
+          "maxOcrPagesPerCall": "Pages sent to the provider in one call; a binding's `maxPagesPerCall` can lower it, never raise it",
+          "maxOcrMs": "Time one OCR run may take; a binding's `timeoutMs` can lower it, never raise it",
+          "maxConcurrentOcr": "OCR runs that may be in progress at once before a new one fails with `resource_limit`",
+          "ocrCacheEntries": "Transcribed pages kept in memory, keyed by document content and page number"
+        }
+      }
+    ],
+    "hidden": {
+      "catalogTtlMs": "a cache hint on the `tools/list` answer, not a limit on a call",
+      "maxFileBytes": "the file layer's ceiling; `maxPdfBytes` is lower and is what this server enforces",
+      "maxStringChars": "not applied by this server; a page's Markdown is bounded by `maxPayloadBytes` instead"
+    }
+  }
+}

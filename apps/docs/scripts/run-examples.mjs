@@ -43,9 +43,47 @@ const products = {
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
   },
+  "pdf-mcp": {
+    bins: { "liaiso-pdf": "packages/servers/pdf-mcp/dist/cli.js" },
+    folder: "liaiso-pdf",
+    samples: { default: ["annual-report.pdf", "supply-agreement.pdf"] },
+    preamble: [
+      `pdf() {
+  npx -y @modelcontextprotocol/inspector --cli liaiso-pdf ~/liaiso-pdf \\
+    --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
+}`,
+      `pdfocr() {
+  npx -y @modelcontextprotocol/inspector --cli liaiso-pdf ~/liaiso-pdf --ocr ~/liaiso-ocr/binding.mjs \\
+    -- --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
+}`,
+    ],
+    ollama: ["how-to/04-read-scanned-pages-with-ocr.md"],
+  },
 };
 
-const skipped = [/^npm install -g /, /^claude mcp add /, /^npx -y @liaiso\//];
+const ollama = process.env.LIAISO_DOCS_OLLAMA;
+
+/**
+ * Guard: the MCP Inspector starts the server with a fixed environment allow-list, so an Ollama
+ * address cannot reach the OCR binding through the environment. The binding a page shows uses the
+ * default `127.0.0.1:11434`, and a remote Ollama is reached by forwarding that port for the page.
+ */
+const forward = (upstream) => {
+  const [host, port] = upstream.split(":");
+  const source = `require("net").createServer((c)=>{const u=require("net").connect(${Number(port)},${JSON.stringify(host)});c.pipe(u).pipe(c);u.on("error",()=>c.destroy());c.on("error",()=>u.destroy())}).listen(11434,"127.0.0.1")`;
+  return [
+    `node -e '${source}' & forward=$!`,
+    `trap 'kill $forward' EXIT`,
+    "sleep 1",
+  ].join("\n");
+};
+
+const skipped = [
+  /^npm install -g /,
+  /^claude mcp add /,
+  /^npx -y @liaiso\//,
+  /^ollama /,
+];
 const helper = /^[a-z]+\(\) \{/;
 const volatile = [/"modifiedAt": "[^"]+"/g, /"nextCursor": "[^"]+"/g];
 const mask = (text) =>
@@ -111,6 +149,9 @@ function sandbox(product, config, file) {
   return { home, bin };
 }
 
+const preamblesOf = (config) =>
+  Array.isArray(config.preamble) ? config.preamble : [config.preamble];
+
 function run(product, config, file) {
   const markdown = readFileSync(file, "utf8");
   const blocks = blocksOf(markdown);
@@ -119,7 +160,7 @@ function run(product, config, file) {
     if (block.lang !== "sh") continue;
     const body = block.body.trim();
     if (helper.test(body)) {
-      if (body !== config.preamble) {
+      if (!preamblesOf(config).includes(body)) {
         drift.push(
           `${path.relative(repo, file)}: its shell helper differs from the preamble`,
         );
@@ -135,12 +176,24 @@ function run(product, config, file) {
     });
   }
   if (pairs.length === 0) return { file, failures: [], markdown };
+  const page = path.relative(path.join(contentDir, product), file);
+  const needsOllama = (config.ollama ?? []).includes(page);
+  if (needsOllama && ollama === undefined) {
+    return {
+      file,
+      failures: [],
+      markdown,
+      skipped: "set LIAISO_DOCS_OLLAMA to host:port, or local",
+    };
+  }
+  const needsForward = needsOllama && ollama !== "local";
   const { home, bin } = sandbox(product, config, file);
   const marker = "__LIAISO_EXAMPLE_END__";
   const script = [
     "set -o pipefail",
     `cd "$HOME"`,
-    config.preamble,
+    ...(needsForward ? [forward(ollama)] : []),
+    ...preamblesOf(config),
     ...pairs.map((pair) => `{\n${pair.command.body}} 2>&1\necho "${marker}"`),
   ].join("\n");
   const result = spawnSync("bash", ["-c", script], {
@@ -181,6 +234,10 @@ for (const [product, config] of Object.entries(products)) {
   for (const file of pagesOf(product)) {
     const outcome = run(product, config, file);
     const name = path.relative(repo, file);
+    if (outcome.skipped !== undefined) {
+      process.stdout.write(`skip  ${name} (${outcome.skipped})\n`);
+      continue;
+    }
     if (outcome.failures.length === 0) {
       process.stdout.write(`ok    ${name}\n`);
       continue;

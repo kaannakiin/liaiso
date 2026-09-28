@@ -96,7 +96,16 @@ output with the fenced block directly below its command (`--write` fills them in
 byte-identical to the script's preamble. It needs the network for `npx`, so it is not in CI: run it
 after any change to a server or a page, and before deploying. It runs servers, not test suites.
 
-`scripts/make-samples.mjs` writes the downloadable samples under `public/samples/<product>/`.
+A product may define several helpers (`pdf` and `pdfocr`); each helper on a page must equal one of
+them. A page listed under the product's `ollama` key runs only when `LIAISO_DOCS_OLLAMA` is set —
+`local` for an Ollama on `127.0.0.1:11434`, or `host:port`, which the script forwards to
+`127.0.0.1:11434` for that page, because the Inspector starts the server with a fixed environment
+allow-list and the page's binding uses the default address. Without it the page is reported as
+`skip`, not `ok`.
+
+`scripts/make-samples.mjs` (Excel) and `scripts/make-pdf-samples.mjs` (PDF, whose scanned page is
+drawn with `@napi-rs/canvas` from `@liaiso/pdf-raster-pdfjs`'s dependencies) write the downloadable
+samples under `public/samples/<product>/`.
 Regenerating them changes byte sizes that appear in page outputs, so rerun `run-examples --write`
 afterwards and review the diff.
 

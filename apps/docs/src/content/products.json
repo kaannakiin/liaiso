@@ -13,5 +13,10 @@
     "id": "xml-mcp",
     "label": "XML MCP",
     "tagline": "A read-only MCP server that lets an agent read, search, query and tabulate the XML documents in one folder."
+  },
+  {
+    "id": "pdf-mcp",
+    "label": "PDF MCP",
+    "tagline": "A read-only MCP server that lets an agent read and search the PDF documents in one folder, with optional OCR for scanned pages."
   }
 ]
