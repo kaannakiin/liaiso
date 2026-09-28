@@ -2,7 +2,7 @@
 
 > Generated from the `tools/list` answer (server name `liaiso-xml`) of `@liaiso/xml-mcp` 0.5.0.
 
-The descriptions are the text the server publishes to every client, so your agent reads exactly what this page shows.
+The descriptions are the text the server publishes to every client, so your agent reads exactly what this page shows. Every input schema is closed: an argument a tool does not list here, or a value of the wrong type, is refused with `invalid_argument` and never silently ignored.
 
 7 tools: `list_documents`, `describe_document`, `read_node`, `find_in_document`, `select_xpath`, `project_records`, `aggregate_document`.
 

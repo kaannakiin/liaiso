@@ -16,7 +16,7 @@
       {
         "title": "Arguments and paging",
         "codes": {
-          "invalid_argument": "The tool refuses an argument or a combination of arguments, such as `headerScan` together with `headerRow`, or a `cursor` together with `sheetName` or `range`. The message names the conflict.",
+          "invalid_argument": "An argument the tool does not declare, a value of the wrong type, a missing required argument, or a combination the tool refuses, such as `headerScan` together with `headerRow`, or a `cursor` together with `sheetName` or `range`. The message names the conflict. For an undeclared or mistyped argument the recovery lists the arguments the tool accepts.",
           "invalid_range": "`range` is not a valid A1 range. Use a form such as `B2:D40`, `B:D` or `2:40`.",
           "range_outside_used_range": "`range` lies outside the sheet's used range. The recovery names the used range.",
           "invalid_cursor": "`cursor` is not a token that a previous `read_sheet` answer returned, for example because it was cut short or edited. Read again without a cursor.",

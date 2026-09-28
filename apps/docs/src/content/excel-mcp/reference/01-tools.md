@@ -2,7 +2,7 @@
 
 > Generated from the `tools/list` answer (server name `liaiso-excel`) of `@liaiso/excel-mcp` 0.7.0.
 
-The descriptions are the text the server publishes to every client, so your agent reads exactly what this page shows.
+The descriptions are the text the server publishes to every client, so your agent reads exactly what this page shows. Every input schema is closed: an argument a tool does not list here, or a value of the wrong type, is refused with `invalid_argument` and never silently ignored.
 
 10 tools: `list_workbooks`, `describe_workbook`, `read_sheet`, `get_merged_ranges`, `get_data_validations`, `get_tables`, `get_conditional_formats`, `get_images`, `aggregate_sheet`, `find_in_sheet`.
 

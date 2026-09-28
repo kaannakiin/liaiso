@@ -225,7 +225,7 @@ function toolsPage(server, { serverInfo, tools }) {
       `the \`tools/list\` answer (server name \`${serverInfo.name}\`)`,
     ),
     "",
-    "The descriptions are the text the server publishes to every client, so your agent reads exactly what this page shows.",
+    "The descriptions are the text the server publishes to every client, so your agent reads exactly what this page shows. Every input schema is closed: an argument a tool does not list here, or a value of the wrong type, is refused with `invalid_argument` and never silently ignored.",
     "",
     `${tools.length} tools: ${tools.map((tool) => `\`${tool.name}\``).join(", ")}.`,
   ];
