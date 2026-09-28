@@ -23,6 +23,11 @@ public sealed class ProbeFilter
     public Dictionary<string, string>? Meta { get; set; }
 }
 
+public sealed class OpaqueFilter
+{
+    public Dictionary<string, string>? Meta { get; set; }
+}
+
 [ApiController]
 [Route("/probe")]
 public sealed class QueryObjectProbeController : ControllerBase
@@ -33,6 +38,9 @@ public sealed class QueryObjectProbeController : ControllerBase
 
     [HttpGet("aliased")]
     public IActionResult Aliased([FromQuery(Name = "f")] ProbeFilter filter) => Ok(filter);
+
+    [HttpGet("opaque")]
+    public IActionResult Opaque([FromQuery] OpaqueFilter filter) => Ok(filter);
 }
 
 /// <remarks>

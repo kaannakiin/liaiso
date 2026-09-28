@@ -45,21 +45,8 @@ internal static class QueryObjectGrouper
         HashSet<ApiParameterDescription> consumed = [];
         List<Parameter> groups = [];
 
-        IEnumerable<IGrouping<ParameterDescriptor, ApiParameterDescription>> owned =
-            api.ParameterDescriptions
-                .Where(leaf => leaf.ParameterDescriptor is not null
-                    && EndpointCatalog.Locate(leaf.Source) == "query")
-                .GroupBy(leaf => leaf.ParameterDescriptor);
-
-        foreach (IGrouping<ParameterDescriptor, ApiParameterDescription> leaves in owned)
+        foreach ((IGrouping<ParameterDescriptor, ApiParameterDescription> leaves, Type ownerType) in WholeObjectBindings(api))
         {
-            Type ownerType = Nullable.GetUnderlyingType(leaves.Key.ParameterType)
-                ?? leaves.Key.ParameterType;
-            if (!leaves.Any(leaf => leaf.ModelMetadata?.ContainerType == ownerType))
-            {
-                continue;
-            }
-
             string group = leaves.Key.BindingInfo?.BinderModelName ?? leaves.Key.Name;
             List<ApiParameterDescription> expressible = [];
             List<string> dropped = [];
@@ -107,6 +94,57 @@ internal static class QueryObjectGrouper
         }
 
         return new Plan(consumed, groups);
+    }
+
+    /// <remarks>
+    /// Guard: a binding with no expressible member is left whole, so its object-valued leaf fails
+    /// the template with <c>unsupported_object_style</c> and the endpoint is dropped. Omitting every
+    /// member instead would publish a tool that silently ignores all of its filters, the case
+    /// <c>unresolved_query_shape</c> drops for (schema-conversion-rules.md Table 7).
+    /// </remarks>
+    internal static IReadOnlySet<ApiParameterDescription> Unexpressible(
+        ApiDescription api,
+        SchemaMapperOptions schema,
+        IReadOnlySet<ApiParameterDescription> consumed,
+        List<CatalogDiagnostic> diagnostics,
+        string target)
+    {
+        HashSet<ApiParameterDescription> omitted = [];
+        foreach ((IGrouping<ParameterDescriptor, ApiParameterDescription> leaves, _) in WholeObjectBindings(api))
+        {
+            List<ApiParameterDescription> remaining = [.. leaves.Where(leaf => !consumed.Contains(leaf))];
+            List<ApiParameterDescription> dropped = [.. remaining.Where(leaf =>
+                !Queryable(JsonSchemaMapper.Map(leaf.Type ?? typeof(string), schema)))];
+            if (dropped.Count == 0 || dropped.Count == remaining.Count)
+            {
+                continue;
+            }
+            string group = leaves.Key.BindingInfo?.BinderModelName ?? leaves.Key.Name;
+            diagnostics.Add(new CatalogDiagnostic(
+                DiagnosticCodes.UnboundQueryObject,
+                $"{target} binds '{group}' as a query object; {string.Join(", ", dropped.Select(leaf => leaf.Name).Order(StringComparer.Ordinal))} cannot be expressed as query values and are omitted from the tool's arguments."));
+            omitted.UnionWith(dropped);
+        }
+        return omitted;
+    }
+
+    private static IEnumerable<(IGrouping<ParameterDescriptor, ApiParameterDescription> Leaves, Type OwnerType)> WholeObjectBindings(
+        ApiDescription api)
+    {
+        IEnumerable<IGrouping<ParameterDescriptor, ApiParameterDescription>> owned =
+            api.ParameterDescriptions
+                .Where(leaf => leaf.ParameterDescriptor is not null
+                    && EndpointCatalog.Locate(leaf.Source) == "query")
+                .GroupBy(leaf => leaf.ParameterDescriptor);
+        foreach (IGrouping<ParameterDescriptor, ApiParameterDescription> leaves in owned)
+        {
+            Type ownerType = Nullable.GetUnderlyingType(leaves.Key.ParameterType)
+                ?? leaves.Key.ParameterType;
+            if (leaves.Any(leaf => leaf.ModelMetadata?.ContainerType == ownerType))
+            {
+                yield return (leaves, ownerType);
+            }
+        }
     }
 
     private static JsonObject SchemaFor(

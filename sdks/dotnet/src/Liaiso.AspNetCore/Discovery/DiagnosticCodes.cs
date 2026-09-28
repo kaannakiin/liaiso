@@ -62,6 +62,8 @@ public static class DiagnosticCodes
             [FormAntiforgeryRequired] = CatalogSeverity.EndpointDropped,
             [MissingHttpMethod] = CatalogSeverity.EndpointDropped,
             [TemplateRejected] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.UnsupportedObjectStyle] = CatalogSeverity.EndpointDropped,
+            [LiaisoTemplateException.UnsupportedObjectNesting] = CatalogSeverity.EndpointDropped,
             [LiaisoTemplateException.CurationUnresolved] = CatalogSeverity.EndpointDropped,
             [LiaisoTemplateException.InvalidFillConstant] = CatalogSeverity.EndpointDropped,
             [LiaisoTemplateException.HiddenRequiredOmitted] = CatalogSeverity.EndpointDropped,

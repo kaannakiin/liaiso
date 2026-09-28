@@ -25,12 +25,12 @@ public sealed class QueryObjectGroupingHostTests
     }
 
     [Fact]
-    public async Task D1_FlattenLeavesEveryLeafATopLevelParameter()
+    public async Task D1_FlattenLeavesEveryExpressibleLeafATopLevelParameter()
     {
         EndpointDescriptor descriptor =
             await DescriptorAsync("/probe/filters", QueryObjectGrouping.Flatten);
         Assert.Equal(
-            ["Meta", "Range.Max", "Range.Min", "Status", "Tags", "Threshold", "q"],
+            ["Range.Max", "Range.Min", "Status", "Tags", "Threshold", "q"],
             descriptor.Parameters!.Select(p => p.Name).Order(StringComparer.Ordinal));
         Assert.All(descriptor.Parameters!, p => Assert.Null(p.Style));
     }
@@ -81,6 +81,32 @@ public sealed class QueryObjectGroupingHostTests
         {
             Assert.Contains(dropped, note.Message, StringComparison.Ordinal);
         }
+    }
+
+    [Fact]
+    public async Task D7_FlattenOmitsTheMembersThatHaveNoQueryFormAndStaysInvocable()
+    {
+        await using SchemaHost host = await SchemaHost.StartAsync(
+            configure: options => options.Query.Grouping = QueryObjectGrouping.Flatten);
+        CatalogDiagnostic note = host.Catalog.Result.Diagnostics.Single(d =>
+            d.Code == DiagnosticCodes.UnboundQueryObject
+            && d.Message.Contains("/probe/filters", StringComparison.Ordinal));
+        Assert.Contains("Meta", note.Message, StringComparison.Ordinal);
+        Assert.NotNull(host.Catalog.Result.Entries
+            .Single(e => e.Descriptor.Route == "/probe/filters").Template);
+    }
+
+    [Theory]
+    [InlineData(QueryObjectGrouping.Flatten)]
+    [InlineData(QueryObjectGrouping.Group)]
+    public async Task D8_AQueryObjectWithNoExpressibleMemberDropsTheEndpoint(QueryObjectGrouping grouping)
+    {
+        await using SchemaHost host = await SchemaHost.StartAsync(
+            configure: options => options.Query.Grouping = grouping);
+        Assert.DoesNotContain(host.Catalog.Result.Entries, e => e.Descriptor.Route == "/probe/opaque");
+        Assert.Contains(host.Catalog.Result.Diagnostics, d =>
+            d.Code == LiaisoTemplateException.UnsupportedObjectStyle
+            && d.Message.Contains("/probe/opaque", StringComparison.Ordinal));
     }
 
     /// <remarks>

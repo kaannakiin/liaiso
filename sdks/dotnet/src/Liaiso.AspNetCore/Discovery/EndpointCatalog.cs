@@ -369,10 +369,12 @@ internal static partial class EndpointCatalog
             ? QueryObjectGrouper.Build(
                 api, schema, diagnostics, $"{api.HttpMethod} {route}")
             : QueryObjectGrouper.Empty;
+        IReadOnlySet<ApiParameterDescription> omitted = QueryObjectGrouper.Unexpressible(
+            api, schema, grouped.Consumed, diagnostics, $"{api.HttpMethod} {route}");
 
         foreach (ApiParameterDescription parameter in api.ParameterDescriptions)
         {
-            if (grouped.Consumed.Contains(parameter))
+            if (grouped.Consumed.Contains(parameter) || omitted.Contains(parameter))
             {
                 continue;
             }

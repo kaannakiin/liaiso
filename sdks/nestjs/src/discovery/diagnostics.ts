@@ -34,6 +34,8 @@ const defaults: SeverityTable = {
   schema_def_conflict: "endpointDropped",
   template_rejected: "endpointDropped",
   duplicate_argument: "endpointDropped",
+  unsupported_object_style: "endpointDropped",
+  unsupported_object_nesting: "endpointDropped",
   unresolved_query_shape: "endpointDropped",
   curation_unresolved: "endpointDropped",
   invalid_fill_constant: "endpointDropped",
