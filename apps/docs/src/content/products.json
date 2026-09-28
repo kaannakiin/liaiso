@@ -8,5 +8,10 @@
     "id": "excel-mcp",
     "label": "Excel MCP",
     "tagline": "A read-only MCP server that lets an agent read the .xlsx, .xlsm and .csv files in one folder."
+  },
+  {
+    "id": "xml-mcp",
+    "label": "XML MCP",
+    "tagline": "A read-only MCP server that lets an agent read, search, query and tabulate the XML documents in one folder."
   }
 ]

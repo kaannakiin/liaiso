@@ -73,7 +73,7 @@ slugs, a `# Title` on every page, the how-to/reference title patterns, and that 
 
 ### Server products: generated reference and runnable examples
 
-A server product (`excel-mcp`, later `xml-mcp`, `pdf-mcp`, `mssql-mcp`, `llm-mcp`) gets its
+A server product (`excel-mcp`, `xml-mcp`, later `pdf-mcp`, `mssql-mcp`, `llm-mcp`) gets its
 `reference/` pages from `scripts/gen-reference.mjs` — **never hand-edit them**:
 
 - `01-tools.md` from the built server's own `tools/list` answer, so every argument and description
