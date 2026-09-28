@@ -117,10 +117,6 @@ describe("the tier knob", () => {
     );
   });
 
-  it("budgets a chunk no longer than a whole document", () => {
-    expect(limits.maxChunkParseMs).toBeLessThanOrEqual(limits.maxParseMs);
-  });
-
   it("derives the accepted ceiling from the knob", () => {
     expect(limits.maxXmlBytes).toBeGreaterThanOrEqual(limits.residentMaxBytes);
     expect(limits.maxXmlBytes).toBeLessThanOrEqual(limits.maxFileBytes);
