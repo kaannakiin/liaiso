@@ -251,7 +251,7 @@ internal static partial class EndpointCatalog
                     descriptor, alternates.GetValueOrDefault(FoldKey(descriptor)), diagnostics);
                 (RequestTemplate? template, string? failure) = BuildTemplate(
                     descriptor, diagnostics, variant, relief, refDescription);
-                if (failure is not null)
+                if (failure is not null && severityOf(failure) >= CatalogSeverity.EndpointDropped)
                 {
                     dropped += 1;
                     continue;
