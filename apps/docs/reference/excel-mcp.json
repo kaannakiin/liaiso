@@ -127,8 +127,7 @@
       }
     ],
     "hidden": {
-      "catalogTtlMs": "a cache hint on the `tools/list` answer, not a limit on a call",
-      "maxValidationCountEntries": "declared but not read by any code path"
+      "catalogTtlMs": "a cache hint on the `tools/list` answer, not a limit on a call"
     }
   }
 }
