@@ -1,0 +1,124 @@
+{
+  "errors": {
+    "example": {
+      "tool": "describe_document",
+      "arguments": { "filePath": "orders.xml" }
+    },
+    "sources": [
+      ["packages/cores/mcp-core/src/errors.ts", "SourceErrorCode"],
+      ["packages/cores/file-core/src/errors.ts", "CoreErrorCode"],
+      [
+        "packages/servers/xml-mcp/src/host/platform/errors.ts",
+        "LiaisoXmlErrorCode"
+      ]
+    ],
+    "sections": [
+      {
+        "title": "Arguments and paging",
+        "codes": {
+          "invalid_argument": "The tool refuses an argument or a combination of arguments: an address that matches no node, a prefix bound twice, two columns with the same label, a metric other than `count` with no column. The message names the problem.",
+          "invalid_cursor": "`cursor` is not a token this tool returned, belongs to a different tool, or is more than ten minutes old. Call the tool again without a cursor.",
+          "stale_cursor": "The document changed between two pages of the same read. Start again without a cursor.",
+          "query_not_supported": "`select_xpath` was given something outside XPath 1.0 as this engine provides it: a function from XPath 2.0 or later, or the namespace axis, whose nodes the engine cannot report. `describe_document` lists every namespace instead.",
+          "resource_limit": "The request would exceed a fixed budget: parsing took longer than two seconds, too many reads are already queued, or too many `list_documents` calls are running. See [Limits](/docs/xml-mcp/limits)."
+        }
+      },
+      {
+        "title": "Files and paths",
+        "codes": {
+          "path_outside_root": "`filePath` resolves outside the folder the server was started with. Paths are relative to that folder, and `..` cannot leave it.",
+          "file_not_found": "No file exists at `filePath`. Call `list_documents` for the paths that do.",
+          "not_a_file": "`filePath` names a directory or another entry that is not a regular file.",
+          "unsupported_extension": "The file's extension is not one the server reads: `.xml`, `.xsd`, `.xhtml`, `.svg`, `.csproj`, `.props`, `.targets`, `.config` or `.resx`.",
+          "file_too_large": "The file is over the 50 MB ceiling. Between 8 MB and 50 MB a document is read in chunked mode instead.",
+          "file_changed": "The file was modified while it was being read. Retry the call.",
+          "unsupported_platform": "The native package that gives the server safe file access is missing for this operating system and CPU. Reinstall on a supported platform."
+        }
+      },
+      {
+        "title": "Document content",
+        "codes": {
+          "malformed_xml": "The document, or one record of a chunked document, is not well-formed XML. A file with an XML extension is a candidate, not a guarantee; `.config` files in particular are often not XML.",
+          "doctype_not_allowed": "The document has a DOCTYPE declaration. The server refuses every DOCTYPE before parsing, because an internal DTD subset can expand entities that no parser flag fully blocks. Remove the declaration to read the file.",
+          "unsupported_encoding": "The document is encoded in a UCS-4 or EBCDIC family, which the server cannot read. Re-encode it as UTF-8 or UTF-16.",
+          "numeric_precision": "`aggregate_document` met a value with more digits than a binary64 number holds, so `sum`, `avg`, `min` or `max` would change it. Use a counting metric, or project the rows and total them elsewhere.",
+          "unsupported_for_format": "The tool needs the whole document in memory and this document is read in chunked mode because it is over 8 MB. `select_xpath`, `find_in_document` and `aggregate_document` are unavailable there; `project_records` still works."
+        }
+      },
+      {
+        "title": "Server",
+        "codes": {
+          "internal_error": "A defect in the server, not in your document or your call. This is the one code with no `recovery`, because there is no next call that fixes it. The detail is written to the server's stderr."
+        }
+      }
+    ]
+  },
+  "limits": {
+    "module": "packages/servers/xml-mcp/dist/index.js",
+    "sections": [
+      {
+        "title": "Files and parsing",
+        "keys": {
+          "maxXmlBytes": "Largest document the server opens",
+          "residentMaxBytes": "Largest document read whole into memory; a larger one is read in chunked mode",
+          "maxChunkBytes": "Largest single record in chunked mode",
+          "maxLiveChunkDoms": "Records of a chunked document held parsed at once",
+          "maxParseMs": "Time one parse may take before it fails with `resource_limit`",
+          "maxDomDepth": "Deepest element nesting an address may reach",
+          "prologScanBytes": "Bytes at the start of a document scanned for its encoding and a DOCTYPE before parsing",
+          "maxQueueDepth": "Parse requests that may wait at once before a new one fails with `resource_limit`",
+          "documentCacheSize": "Parsed documents kept in memory between calls",
+          "workerCacheEntries": "Documents the parse worker keeps alive, derived as twice `documentCacheSize`",
+          "maxListScan": "Directory entries `list_documents` walks before it reports `scanTruncated`",
+          "defaultListResults": "Documents `list_documents` returns when `maxResults` is omitted",
+          "maxListResults": "Largest `maxResults` for `list_documents`",
+          "maxConcurrentListings": "`list_documents` calls that may run at once"
+        }
+      },
+      {
+        "title": "Responses",
+        "keys": {
+          "maxPayloadBytes": "Largest serialized answer; a longer one is cut short and continues through `nextCursor`",
+          "maxStringChars": "Longest text, in characters, returned for one node or value",
+          "defaultDescribePaths": "Repeated-element candidates `describe_document` returns when `maxPaths` is omitted",
+          "maxDescribePaths": "Largest `maxPaths` for `describe_document`",
+          "maxDescribeVisits": "Elements `describe_document` counts before it stops and reports the survey incomplete",
+          "defaultReadNodes": "Nodes `read_node` returns when `maxNodes` is omitted",
+          "maxReadNodes": "Largest `maxNodes` for `read_node`"
+        }
+      },
+      {
+        "title": "Search and XPath",
+        "keys": {
+          "defaultFindResults": "Matches `find_in_document` returns when `maxResults` is omitted",
+          "maxFindResults": "Largest `maxResults` for `find_in_document`",
+          "maxFindVisits": "Nodes `find_in_document` examines before it stops and reports the search incomplete",
+          "maxXpathChars": "Longest `select_xpath` expression, in characters",
+          "maxNamespaceBindings": "Prefix bindings one `select_xpath` call may pass",
+          "defaultXpathResults": "Node-set members `select_xpath` returns when `maxResults` is omitted",
+          "maxXpathResults": "Largest `maxResults` for `select_xpath`"
+        }
+      },
+      {
+        "title": "Records and aggregation",
+        "keys": {
+          "defaultRows": "Rows `project_records` returns when `maxRows` is omitted",
+          "maxRows": "Largest `maxRows` for `project_records`",
+          "maxColumns": "Columns one `project_records` or `aggregate_document` call may declare",
+          "maxColumnDepth": "Steps in one column's `ancestors` path",
+          "maxCellValues": "Values one cell returns under `onMultiple: \"list\"`",
+          "maxConditions": "Conditions in one `where` filter",
+          "maxInValues": "Values in one `in` condition",
+          "maxMetrics": "Metrics in one `aggregate_document` call",
+          "defaultGroups": "Groups `aggregate_document` returns when `maxGroups` is omitted",
+          "maxGroups": "Largest `maxGroups` for `aggregate_document`",
+          "maxItemVisits": "Records one `project_records` or `aggregate_document` call examines before it stops and reports the scan incomplete"
+        }
+      }
+    ],
+    "hidden": {
+      "catalogTtlMs": "a cache hint on the `tools/list` answer, not a limit on a call",
+      "maxFileBytes": "the file layer's ceiling; `maxXmlBytes` is the same value and is what this server enforces"
+    }
+  }
+}

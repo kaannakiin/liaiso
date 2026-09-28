@@ -34,6 +34,15 @@ const products = {
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
   },
+  "xml-mcp": {
+    bins: { "liaiso-xml": "packages/servers/xml-mcp/dist/cli.js" },
+    folder: "liaiso-xml",
+    samples: { default: ["orders.xml"] },
+    preamble: `xml() {
+  npx -y @modelcontextprotocol/inspector --cli liaiso-xml ~/liaiso-xml \\
+    --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
+}`,
+  },
 };
 
 const skipped = [/^npm install -g /, /^claude mcp add /, /^npx -y @liaiso\//];

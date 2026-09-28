@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orders xmlns="urn:example:orders" xmlns:pay="urn:example:payments" exported="2026-01-31">
+  <order id="1001" status="shipped">
+    <date>2026-01-05</date>
+    <region>North</region>
+    <customer>Ada</customer>
+    <line sku="DESK" qty="4" price="250.00"/>
+    <pay:payment method="card">1000.00</pay:payment>
+  </order>
+  <order id="1002" status="shipped">
+    <date>2026-01-06</date>
+    <region>South</region>
+    <customer>Emre</customer>
+    <line sku="CHAIR" qty="10" price="85.00"/>
+    <pay:payment method="transfer">850.00</pay:payment>
+  </order>
+  <order id="1003" status="pending">
+    <date>2026-01-08</date>
+    <region>East</region>
+    <customer>Lena</customer>
+    <line sku="LAMP" qty="12" price="30.00"/>
+    <line sku="DESK" qty="1" price="250.00"/>
+    <pay:payment method="card">610.00</pay:payment>
+  </order>
+  <order id="1004" status="shipped">
+    <date>2026-01-09</date>
+    <region>North</region>
+    <customer>Ada</customer>
+    <line sku="CHAIR" qty="6" price="85.00"/>
+    <pay:payment method="card">510.00</pay:payment>
+  </order>
+  <order id="1005" status="cancelled">
+    <date>2026-01-12</date>
+    <region>West</region>
+    <customer>Omar</customer>
+    <line sku="DESK" qty="2" price="250.00"/>
+  </order>
+  <order id="1006" status="shipped">
+    <date>2026-01-13</date>
+    <customer>Emre</customer>
+    <line sku="LAMP" qty="7" price="30.00"/>
+    <pay:payment method="transfer">210.00</pay:payment>
+  </order>
+</orders>
