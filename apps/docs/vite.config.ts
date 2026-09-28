@@ -9,7 +9,17 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
     cloudflare({ viteEnvironment: { name: "ssr" } }),
-    tanstackStart({ prerender: { enabled: true, crawlLinks: true } }),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+        /**
+         * Guard: the crawler follows every link, reads the response with `text()` and writes it
+         * over the copy from `public/`, so a linked `.xlsx` sample was served as a corrupt zip.
+         */
+        filter: (page) => !page.path.startsWith("/samples/"),
+      },
+    }),
     viteReact(),
     tailwindcss(),
   ],
