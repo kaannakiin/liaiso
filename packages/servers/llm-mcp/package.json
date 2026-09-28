@@ -1,6 +1,6 @@
 {
   "name": "@liaiso/llm-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server that lets a planning agent (Codex, Claude Code, Cursor) hand bounded language work to a local Ollama model.",
   "keywords": [
     "mcp",
