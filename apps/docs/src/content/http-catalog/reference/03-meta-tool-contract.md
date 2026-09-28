@@ -33,7 +33,7 @@ A client that caches tool definitions can compare the stamp instead of diffing t
   "type": "object",
   "properties": {
     "query": {
-      "description": "Keywords matched by prefix against operation names, descriptions, routes, argument names and tag text; keywords rank results, they do not filter them. Empty lists everything. To require a whole tag, use tags.",
+      "description": "Keywords matched by prefix against operation names, descriptions, declared search terms, routes, argument names and tag text; keywords rank results, they do not filter them. Empty lists everything. To require a whole tag, use tags.",
       "type": "string",
       "default": ""
     },

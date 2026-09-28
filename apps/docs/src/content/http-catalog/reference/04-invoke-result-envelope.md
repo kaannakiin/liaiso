@@ -94,10 +94,15 @@ These either never reached your backend, or reached it and got an answer liaiso 
 }
 ```
 
-The sixteen codes are `unknown_argument`, `invalid_path_type`, `missing_path_parameter`,
+The seventeen codes are `unknown_argument`, `invalid_path_type`, `missing_path_parameter`,
 `header_injection`, `null_not_allowed`, `invalid_type`, `deferred_value_missing`,
 `deferred_value_invalid`, `invalid_file_argument`, `file_too_large`, `file_unresolved`,
-`unknown_tool`, `not_invocable`, `response_too_large`, `invoke_timeout` and `internal_error`.
+`unknown_tool`, `not_invocable`, `response_too_large`, `invoke_timeout`,
+`search_ranker_unavailable` and `internal_error`.
+
+`search_ranker_unavailable` is a `search_tools` answer, not an invoke one: it appears only when you
+bound a search ranker and told the SDK to refuse rather than fall back when it fails, and it is
+`retryable: true`. See [how to plug in your own search](/docs/http-catalog/plug-in-your-own-search).
 
 The three file codes are described in
 [how to accept form bodies and file uploads](/docs/http-catalog/accept-form-and-file-uploads);
@@ -107,10 +112,10 @@ The three file codes are described in
 the way your server answers it, a 500 with no body, so it reaches the agent as `backend_error` and
 its message is never forwarded.
 
-The last three come from the invoke guards rather than from argument composition, and two of them
-carry more than the envelope above: `response_too_large` adds a `payload` block and a `fields` list
-naming the arguments that narrow the call, and `invoke_timeout` is the one SDK-side code with
-`retryable: true`. See
+`response_too_large`, `invoke_timeout` and `internal_error` come from the invoke guards rather than
+from argument composition, and two of them carry more than the envelope above: `response_too_large`
+adds a `payload` block and a `fields` list naming the arguments that narrow the call, and
+`invoke_timeout` is the one invoke guard with `retryable: true`. See
 [how to keep a response from flooding the agent](/docs/http-catalog/keep-a-response-from-flooding-the-agent).
 
 This list is deliberately not tabulated with meanings here. Unlike the backend codes it has no

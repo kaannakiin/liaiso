@@ -79,4 +79,7 @@ tag can still see the others and widen.
 Tags are search text as well as filter keys. Replacing `Orders` with `billing` removes `order` as a
 matching term for every operation in that container, so a query of `orders` that used to rank them
 stops doing so. It also lengthens each document, which lowers every other term's score on it
-slightly. Pick tags an agent would plausibly also type, and keep them short.
+slightly. Pick tags an agent would plausibly also type, and keep them short. For vocabulary that should
+match but is not a grouping, declare search terms instead
+([plug in your own search](/docs/http-catalog/plug-in-your-own-search)); they are indexed without
+becoming filter keys.

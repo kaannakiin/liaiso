@@ -172,8 +172,13 @@ Six internals are replaceable, addressed by `extensionTokens` and overridden thr
 second argument (`useClass`, `useFactory` or `useValue`):
 
 ```text
-cache · callerScopeResolver · invokeResultMapper · sessionStore · visibilityEvaluator · probeEvaluator
+cache · callerScopeResolver · invokeResultMapper · visibilityEvaluator · probeEvaluator · toolRanker
 ```
+
+`toolRanker` defaults to none, which keeps BM25. Bound, it replaces the ranking of a non-empty
+`search_tools` query; `options.search.rankerTimeoutMs` and `options.search.onRankerFailure` govern
+it. The ASP.NET Core equivalent is an `IToolRanker` registered in DI, with `options.Search`. See
+[plug in your own search](/docs/http-catalog/plug-in-your-own-search).
 
 Cache invalidation is a service, not an option:
 
