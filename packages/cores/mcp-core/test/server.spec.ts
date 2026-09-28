@@ -156,27 +156,40 @@ describe("createMcpSourceServer", () => {
     expect(body(result as CallToolResult)).toEqual({ pattern: "*.probe" });
   });
 
-  it("refuses arguments the schema does not accept before the handler runs", async () => {
+  it("reports a shape failure as invalid_argument in the error envelope", async () => {
     const result = (await client.callTool({
       name: "read_document",
       arguments: {},
     })) as CallToolResult;
-    const first = result.content[0];
     expect(result.isError).toBe(true);
-    expect(first?.type).toBe("text");
-    expect(String(first?.type === "text" ? first.text : "")).toContain(
-      "Input validation error",
+    expect(body(result)).toEqual({
+      error: "invalid_argument",
+      message:
+        "Invalid arguments for read_document: filePath: Invalid input: expected string, received undefined.",
+      recovery: "Accepted arguments: filePath.",
+    });
+  });
+
+  it("refuses an argument the tool does not declare instead of dropping it", async () => {
+    const result = (await client.callTool({
+      name: "list_documents",
+      arguments: { pattern: "*.probe", patern: "*.other" },
+    })) as CallToolResult;
+    expect(result.isError).toBe(true);
+    expect(body(result)).toMatchObject({
+      error: "invalid_argument",
+      recovery: "Accepted arguments: pattern.",
+    });
+    expect(String((body(result) as { message: string }).message)).toContain(
+      '"patern"',
     );
   });
 
-  it("keeps a shape failure out of the structured error envelope", async () => {
-    const result = (await client.callTool({
-      name: "read_document",
-      arguments: {},
-    })) as CallToolResult;
-    const first = result.content[0];
-    const text = first?.type === "text" ? first.text : "";
-    expect(() => JSON.parse(text)).toThrow();
+  it("publishes every input schema as closed to unknown arguments", async () => {
+    const { tools } = await client.listTools();
+    for (const tool of tools) {
+      expect(tool.inputSchema).toMatchObject({ additionalProperties: false });
+    }
   });
 });
 

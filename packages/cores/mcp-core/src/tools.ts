@@ -113,7 +113,7 @@ function errorResult(envelope: ErrorEnvelope): CallToolResult {
  * half-written secret that no pattern matches any more.
  */
 export function toToolError(
-  error: McpSourceError,
+  error: Pick<McpSourceError, "code" | "message" | "recovery">,
   context: ErrorContext = {},
   maxBytes: number = mcpCoreLimits.maxPayloadBytes,
 ): CallToolResult {

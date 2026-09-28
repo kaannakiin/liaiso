@@ -52,6 +52,12 @@ is what makes the `mcpCoreLimits.maxPayloadBytes` response budget unbypassable.
   `OwnOutputToolDefinition`, `ToolCatalog` and `createMcpOutputServer` are never re-exported by
   `file-core` or `db-core`. The rules for writing to disk (one folder, `wx`, the server picks the
   name) belong to the consumer.
+- **Every input schema is closed, and every argument failure is an envelope.** The SDK is handed a
+  schema that publishes the tool's schema with `additionalProperties: false` but validates nothing;
+  the strict parse runs in `buildServer`, before the handler, and a failure becomes
+  `invalid_argument` whose recovery lists the accepted arguments. Left to the SDK, zod's default
+  object drops an unknown key — a misspelt `caseSensitiv` then succeeds with the default — and a
+  wrong type is answered with plain text that carries no `error` code.
 - **`zod` and `@modelcontextprotocol/server` are peer dependencies.** Two resolved copies would
   break `z.infer` type identity, and the SDK's schema introspection does an `instanceof` check.
 - **The `Fingerprint` brand is declared only here.** A second `unique symbol` declaration is not
