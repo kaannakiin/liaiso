@@ -23,25 +23,34 @@ const sessionStatements = (timeoutMs: number): readonly QuerySpec[] => [
   },
 ];
 
-export const mssqlDialect = {
-  id: "mssql",
-  secretPatterns,
-  sessionSetup: () => sessionStatements(limits.queryTimeoutMs),
-  /**
-   * Guard: MSSQL has no equivalent of a read-only session default.
-   * `ApplicationIntent=ReadOnly` only routes to a readable secondary inside an
-   * availability group and guarantees nothing on a standalone instance, so
-   * claiming one here would be a lie the agent cannot check. The guarantee is
-   * the database principal.
-   */
-  sessionIntent: () => "none" as const,
-  quoteIdentifier,
-  quoteQualified,
-  describeType,
-  introspection: createIntrospection(limits.queryTimeoutMs, {
-    maxColumns: limits.maxColumns,
-    maxKeys: limits.maxKeys,
-  }),
-  mapDriverError,
-  readOnlyGuard,
-} as const satisfies Dialect<MssqlConfig>;
+/**
+ * Builds the dialect for one connection's query deadline.
+ *
+ * @param queryTimeoutMs the deadline the session's `lock_timeout` and the catalogue queries run under
+ */
+export function createMssqlDialect(queryTimeoutMs: number) {
+  return {
+    id: "mssql",
+    secretPatterns,
+    sessionSetup: () => sessionStatements(queryTimeoutMs),
+    /**
+     * Guard: MSSQL has no equivalent of a read-only session default.
+     * `ApplicationIntent=ReadOnly` only routes to a readable secondary inside an
+     * availability group and guarantees nothing on a standalone instance, so
+     * claiming one here would be a lie the agent cannot check. The guarantee is
+     * the database principal.
+     */
+    sessionIntent: () => "none" as const,
+    quoteIdentifier,
+    quoteQualified,
+    describeType,
+    introspection: createIntrospection(queryTimeoutMs, {
+      maxColumns: limits.maxColumns,
+      maxKeys: limits.maxKeys,
+    }),
+    mapDriverError,
+    readOnlyGuard,
+  } as const satisfies Dialect<MssqlConfig>;
+}
+
+export const mssqlDialect = createMssqlDialect(limits.queryTimeoutMs);

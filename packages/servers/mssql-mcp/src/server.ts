@@ -6,7 +6,7 @@ import {
   createDbSource,
   type DbSource,
 } from "@liaiso/db-core";
-import { mssqlDialect } from "./dialect/index.js";
+import { createMssqlDialect } from "./dialect/index.js";
 import { createMssqlDriver, type MssqlDriverDeps } from "./driver/adapter.js";
 import { asMssqlError, fail } from "./platform/errors.js";
 import { limits } from "./platform/limits.js";
@@ -21,8 +21,24 @@ export function createMssqlSource(
   config: MssqlConfig,
   deps: MssqlDriverDeps = {},
 ): DbSource<MssqlConfig> {
+  /**
+   * Guard: the two timeouts from the environment have to reach db-core's limits
+   * as well as the driver. The driver's `requestTimeout` does not interrupt a
+   * running statement, so db-core's `queryTimeoutMs` is the deadline that is
+   * actually enforced, and it is also what `describe_connection` reports.
+   */
+  const bound = {
+    ...limits,
+    queryTimeoutMs: config.queryTimeoutMs,
+    connectTimeoutMs: config.connectTimeoutMs,
+  };
   return createDbSource(
-    { dialect: mssqlDialect, vocabulary, fail, limits },
+    {
+      dialect: createMssqlDialect(config.queryTimeoutMs),
+      vocabulary,
+      fail,
+      limits: bound,
+    },
     {
       alias: config.database,
       secret: connectionSecret(config),

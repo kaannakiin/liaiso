@@ -27,7 +27,15 @@ export function createQueryRunner<TConfig>(
   const { pool, dialect, driver, limits, fail } = spec;
   return {
     async run(query: QuerySpec, signal?: AbortSignal): Promise<QueryResult> {
-      const lease = await pool.acquire(signal);
+      /**
+       * Guard: opening a connection is where a wrong host or a refused login
+       * surfaces, so the pool's failure goes through the same classification as
+       * a query's. Left unclassified, it reached the agent as internal_error,
+       * which says "a defect in the server" about a mistyped address.
+       */
+      const lease = await pool.acquire(signal).catch((error: unknown) => {
+        throw classify(error, dialect, fail);
+      });
       try {
         return await runCancellable(lease, query, signal, limits, fail);
       } catch (error) {

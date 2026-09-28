@@ -101,8 +101,15 @@ const catalogRows: Record<string, Script> = {
   ),
 };
 
-function build(respond: (spec: QuerySpec) => Script, limits?: DbLimits) {
-  const driver = createFakeDriver({ respond });
+function build(
+  respond: (spec: QuerySpec) => Script,
+  limits?: DbLimits,
+  openError?: () => unknown,
+) {
+  const driver = createFakeDriver({
+    respond,
+    ...(openError === undefined ? {} : { openError }),
+  });
   const source = createDbSource(
     {
       dialect: createFakeDialect(),
@@ -125,8 +132,9 @@ let client: Client;
 async function connect(
   respond: (spec: QuerySpec) => Script,
   limits?: DbLimits,
+  openError?: () => unknown,
 ): Promise<void> {
-  const { source } = build(respond, limits);
+  const { source } = build(respond, limits, openError);
   const server = createDbMcpServer(
     { name: "probe-db", version: "9.9.9" },
     source,
@@ -678,6 +686,37 @@ describe("run_query", () => {
     );
   });
 
+  it("publishes precision and scale for an exact numeric and for nothing else", async () => {
+    await connect((spec) =>
+      spec.sql === "select amount, id from ledger"
+        ? rows(
+            [
+              {
+                ...column("amount", 0, "decimal"),
+                precision: 38,
+                scale: 4,
+                lossy: "precision",
+              },
+              { ...column("id", 1, "integer"), precision: 10, scale: 0 },
+            ],
+            [[12.5, 1]],
+          )
+        : catalogOnly(spec),
+    );
+    const result = (await client.callTool({
+      name: "run_query",
+      arguments: { sql: "select amount, id from ledger" },
+    })) as TextResult;
+    const [amount, id] = body(result)["columns"] as Record<string, unknown>[];
+    expect(amount).toMatchObject({
+      precision: 38,
+      scale: 4,
+      lossy: "precision",
+    });
+    expect(id).not.toHaveProperty("precision");
+    expect(id).not.toHaveProperty("scale");
+  });
+
   it("classifies a driver failure through the dialect and redacts the secret", async () => {
     await connect((spec) =>
       spec.sql === "select 1"
@@ -695,6 +734,21 @@ describe("run_query", () => {
     const envelope = body(result);
     expect(envelope["error"]).toBe("authentication_failed");
     expect(String(envelope["message"])).toContain("18456");
+    expect(JSON.stringify(envelope)).not.toContain("hunter2");
+  });
+
+  it("classifies a failure to open the connection through the dialect", async () => {
+    await connect(
+      catalogOnly,
+      undefined,
+      () => new Error("login failed for mssql://sa:hunter2@db.internal"),
+    );
+    const result = (await client.callTool({
+      name: "run_query",
+      arguments: { sql: "select 1" },
+    })) as TextResult;
+    const envelope = body(result);
+    expect(envelope["error"]).toBe("authentication_failed");
     expect(JSON.stringify(envelope)).not.toContain("hunter2");
   });
 

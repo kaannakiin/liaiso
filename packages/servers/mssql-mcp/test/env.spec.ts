@@ -5,6 +5,7 @@ import {
   requiredNames,
 } from "../src/platform/env.js";
 import { redact, fail } from "../src/platform/errors.js";
+import { createMssqlSource } from "../src/server.js";
 
 const complete = {
   LIAISO_MSSQL_SERVER: "db.internal",
@@ -111,5 +112,19 @@ describe("the mssql redactor", () => {
     expect(redact("Invalid object name 'dbo.Orders'.")).toBe(
       "Invalid object name 'dbo.Orders'.",
     );
+  });
+});
+
+describe("createMssqlSource", () => {
+  it("enforces the timeouts the environment sets, not the defaults", () => {
+    const outcome = readMssqlEnv({
+      ...complete,
+      LIAISO_MSSQL_QUERY_TIMEOUT_MS: "5000",
+      LIAISO_MSSQL_CONNECT_TIMEOUT_MS: "2000",
+    });
+    if (outcome.kind !== "config") throw new Error(outcome.kind);
+    const source = createMssqlSource(outcome.config);
+    expect(source.limits.queryTimeoutMs).toBe(5_000);
+    expect(source.limits.connectTimeoutMs).toBe(2_000);
   });
 });

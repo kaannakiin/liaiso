@@ -17,7 +17,7 @@ export {
 } from "./platform/errors.js";
 export { limits } from "./platform/limits.js";
 export { vocabulary } from "./platform/vocabulary.js";
-export { mssqlDialect } from "./dialect/index.js";
+export { createMssqlDialect, mssqlDialect } from "./dialect/index.js";
 export { readOnlyGuard } from "./dialect/guard.js";
 export { quoteIdentifier, quoteQualified } from "./dialect/quote.js";
 export { describeType } from "./dialect/types.js";

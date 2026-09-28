@@ -34,14 +34,28 @@ interface WireColumn {
   readonly kind: string;
   readonly nativeType: string;
   readonly nullable: boolean;
+  readonly precision?: number;
+  readonly scale?: number;
   readonly lossy?: string;
 }
 
+/**
+ * Guard: precision and scale are published for exact numerics only. There they
+ * are part of the type, and the only way to tell a column that is flagged
+ * `lossy: "precision"` from one that is not; on an integer or a timestamp they
+ * are engine bookkeeping an agent would read as a constraint.
+ */
 const wireColumn = (column: ColumnDescriptor): WireColumn => ({
   name: column.name,
   kind: column.kind,
   nativeType: column.nativeType,
   nullable: column.nullable,
+  ...(column.kind === "decimal" && column.precision !== undefined
+    ? { precision: column.precision }
+    : {}),
+  ...(column.kind === "decimal" && column.scale !== undefined
+    ? { scale: column.scale }
+    : {}),
   ...(column.lossy === undefined ? {} : { lossy: column.lossy }),
 });
 

@@ -5,7 +5,7 @@ import { describeType } from "../src/dialect/types.js";
 import { mapDriverError } from "../src/dialect/errors.js";
 import { readOnlyGuard } from "../src/dialect/guard.js";
 import { quoteIdentifier, quoteQualified } from "../src/dialect/quote.js";
-import { mssqlDialect } from "../src/dialect/index.js";
+import { createMssqlDialect, mssqlDialect } from "../src/dialect/index.js";
 
 const fail: ErrorFactory<DbErrorCode> = (code, message, recovery) =>
   new DbSourceError(code, message, recovery);
@@ -254,6 +254,16 @@ describe("mapDriverError", () => {
     });
   });
 
+  it("names a next step for every failure it maps", () => {
+    for (const failure of [
+      { code: "ETIMEOUT", message: "..." },
+      { code: "ECANCEL", message: "..." },
+      { code: "EREQUEST", number: 99999, message: "..." },
+    ]) {
+      expect(mapDriverError(failure)?.recovery ?? "").not.toBe("");
+    }
+  });
+
   it("falls back to query_failed for an unmapped server number", () => {
     expect(
       mapDriverError({ code: "EREQUEST", number: 99999, message: "..." }),
@@ -278,6 +288,12 @@ describe("the dialect as a whole", () => {
     const setup = mssqlDialect.sessionSetup();
     expect(setup).toHaveLength(1);
     expect(setup[0]?.sql).toContain("lock_timeout");
+  });
+
+  it("sets the lock timeout from the connection's query deadline", () => {
+    expect(createMssqlDialect(5_000).sessionSetup()[0]?.sql).toContain(
+      "lock_timeout 5000;",
+    );
   });
 
   it("carries connection-string patterns beyond the core's", () => {

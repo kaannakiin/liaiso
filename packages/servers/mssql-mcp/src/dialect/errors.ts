@@ -16,7 +16,20 @@ interface RequestErrorShape {
  * a stored-procedure call, so `selct 1` answers "Could not find stored
  * procedure".
  */
-const byNumber: Readonly<Record<number, DbErrorCode>> = {
+type MappedCode = Extract<
+  DbErrorCode,
+  | "object_not_found"
+  | "invalid_argument"
+  | "permission_denied"
+  | "deadlock"
+  | "query_failed"
+  | "query_cancelled"
+  | "query_timeout"
+  | "authentication_failed"
+  | "connection_failed"
+>;
+
+const byNumber: Readonly<Record<number, MappedCode>> = {
   208: "object_not_found",
   2812: "invalid_argument",
   229: "permission_denied",
@@ -32,7 +45,7 @@ const byNumber: Readonly<Record<number, DbErrorCode>> = {
   4145: "invalid_argument",
 };
 
-const byCode: Readonly<Record<string, DbErrorCode>> = {
+const byCode: Readonly<Record<string, MappedCode>> = {
   ECANCEL: "query_cancelled",
   ETIMEOUT: "query_timeout",
   ELOGIN: "authentication_failed",
@@ -43,7 +56,13 @@ const byCode: Readonly<Record<string, DbErrorCode>> = {
   EINSTLOOKUP: "connection_failed",
 };
 
-const recoveries: Partial<Record<DbErrorCode, string>> = {
+/**
+ * Guard: total over every code this mapping produces, so a code added to either
+ * table without a recovery does not compile. A partial table let
+ * query_timeout, query_cancelled and query_failed reach the agent with no next
+ * step, which the envelope reserves for internal_error.
+ */
+const recoveries: Readonly<Record<MappedCode, string>> = {
   object_not_found:
     "Call search_catalog for the names this connection can read.",
   permission_denied:
@@ -54,6 +73,12 @@ const recoveries: Partial<Record<DbErrorCode, string>> = {
     "This is a server configuration problem, not something the call can fix.",
   connection_failed:
     "The database was not reachable; retrying may succeed once it is.",
+  query_timeout:
+    "Narrow the query with a filter or a paging clause, or pass a larger timeoutMs.",
+  query_cancelled:
+    "The call ended before the statement finished; call again if the answer is still needed.",
+  query_failed:
+    "Read the engine's message, correct the statement and call again.",
 };
 
 export function mapDriverError(error: unknown): DriverFailure | undefined {
@@ -75,9 +100,7 @@ export function mapDriverError(error: unknown): DriverFailure | undefined {
       code: mapped,
       message,
       ...(number === undefined ? {} : { engineCode: number }),
-      ...(recoveries[mapped] === undefined
-        ? {}
-        : { recovery: recoveries[mapped] }),
+      recovery: recoveries[mapped],
     };
   }
 
@@ -87,9 +110,7 @@ export function mapDriverError(error: unknown): DriverFailure | undefined {
       code: mapped,
       message,
       engineCode: code,
-      ...(recoveries[mapped] === undefined
-        ? {}
-        : { recovery: recoveries[mapped] }),
+      recovery: recoveries[mapped],
     };
   }
 
