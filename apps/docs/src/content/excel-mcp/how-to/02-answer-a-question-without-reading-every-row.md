@@ -22,8 +22,9 @@ excel aggregate_sheet --tool-arg filePath=sales.xlsx \
 [6625,12]
 ```
 
-`count` without a `column` counts rows; with a `column` it counts that column's cells. The other
-functions are `countValues`, `countDistinct`, `avg`, `min`, `max` and `stddev`.
+`count` counts rows and takes no `column`. To count a column, use `countValues` for its non-empty
+cells or `countDistinct` for its distinct values. `sum`, `avg` and `stddev` read numeric cells;
+`min` and `max` also compare dates or text, as long as the column holds one kind.
 
 ## Group and filter
 
@@ -47,8 +48,10 @@ excel aggregate_sheet --tool-arg filePath=sales.xlsx \
 ```
 
 `matchedRows` says how many rows passed the filter, so the agent can tell an empty group from a
-filter that matched nothing. The operators are `eq`, `ne`, `lt`, `lte`, `gt`, `gte`, `contains`,
-`startsWith`, `endsWith`, `in`, `between`, `isEmpty`, `isNotEmpty` and `isError`.
+filter that matched nothing. The comparison operators `eq`, `ne`, `lt`, `lte`, `gt` and `gte` and
+the text operators `contains`, `startsWith` and `endsWith` take a `value`; `in` takes `values`, and
+`between` takes `values` as `[low, high]`, both inclusive. `isEmpty`, `isNotEmpty`, `isError`,
+`isNumber` and `isText` take neither.
 
 A cell of a different kind from the value never matches: `{"op":"gt","value":100}` skips a cell
 holding the text `"250"`. Pass `coerceText: true` to read numeric text as a number.

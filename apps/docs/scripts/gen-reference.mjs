@@ -166,24 +166,31 @@ function typeOf(schema) {
   return `${type}${bounds(schema, unit)}${pattern}`;
 }
 
-function rows(schema, prefix, out) {
+/**
+ * Guard: an argument with no description reaches the agent as a bare name and type, so the page
+ * refuses to render one instead of printing an empty cell.
+ */
+function rows(schema, prefix, out, owner) {
   const required = new Set(schema.required ?? []);
   for (const [name, property] of Object.entries(schema.properties ?? {})) {
     const key = `${prefix}${name}`;
+    if (!property.description && property.const === undefined) {
+      problems.push(`${owner}: argument \`${key}\` has no description`);
+    }
     out.push(
       `| \`${key}\` | ${typeOf(property)} | ${required.has(name) ? "yes" : ""} | ${cell(property.description ?? "")} |`,
     );
     const item = property.type === "array" ? property.items : undefined;
-    if (item?.type === "object") rows(item, `${key}[].`, out);
+    if (item?.type === "object") rows(item, `${key}[].`, out, owner);
     if (property.type === "object" && property.properties) {
-      rows(property, `${key}.`, out);
+      rows(property, `${key}.`, out, owner);
     }
-    if (property.oneOf) variants(property.oneOf, key, out);
-    if (item?.oneOf) variants(item.oneOf, `${key}[]`, out);
+    if (property.oneOf) variants(property.oneOf, key, out, owner);
+    if (item?.oneOf) variants(item.oneOf, `${key}[]`, out, owner);
   }
 }
 
-function variants(options, key, out) {
+function variants(options, key, out, owner) {
   for (const option of options) {
     const tag = Object.entries(option.properties ?? {}).find(
       ([, value]) => value.const !== undefined,
@@ -191,7 +198,7 @@ function variants(options, key, out) {
     const label = tag
       ? `${tag[0]}: ${JSON.stringify(tag[1].const)}`
       : "variant";
-    rows(option, `${key} (${label}).`, out);
+    rows(option, `${key} (${label}).`, out, owner);
   }
 }
 
@@ -229,7 +236,7 @@ function toolsPage(server, { serverInfo, tools }) {
       lines.push("", `Annotations: ${facts.join(", ")}.`);
     }
     const table = [];
-    rows(tool.inputSchema, "", table);
+    rows(tool.inputSchema, "", table, `${server.pkg} ${tool.name}`);
     if (table.length === 0) {
       lines.push("", "Takes no arguments.");
     } else {
