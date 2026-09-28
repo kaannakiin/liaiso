@@ -27,6 +27,7 @@ export type SdkErrorCode =
   | "file_unresolved"
   | "response_too_large"
   | "invoke_timeout"
+  | "search_ranker_unavailable"
   | "internal_error";
 export type PayloadShapeKind = "array" | "object" | "text";
 

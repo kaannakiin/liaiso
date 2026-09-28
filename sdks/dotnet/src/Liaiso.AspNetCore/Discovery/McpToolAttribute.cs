@@ -41,6 +41,13 @@ public sealed class McpToolAttribute : Attribute, IMcpSelectionMetadata
     /// </remarks>
     public string[]? Tags { get; set; }
 
+    /// <summary>
+    /// Search vocabulary the operation's own text does not contain: indexed like the description,
+    /// never a filter key and never shown to the agent.
+    /// </summary>
+    /// <remarks>Written <c>SearchTerms = new[] { "sipariş" }</c>, for the reason given on <see cref="Tags"/>.</remarks>
+    public string[]? SearchTerms { get; set; }
+
     /// <summary>The body's media type, replacing the one discovery chooses.</summary>
     /// <remarks>It must be one the endpoint accepts; a declaration the backend would answer with 415 drops the endpoint.</remarks>
     public string? Consumes { get; set; }

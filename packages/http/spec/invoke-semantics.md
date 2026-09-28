@@ -68,7 +68,7 @@ The response is {bytes} bytes; the limit is {limit} bytes. It is refused, not tr
 
 ## The invoke deadline
 
-Only `invoke_tool` has one: `search_tools` and `load_tool` never wait on a backend.
+Only `invoke_tool` has one: `search_tools` and `load_tool` never wait on a backend. A host-bound search ranker runs under a deadline of its own, with its own failure rules ([search-semantics.md](search-semantics.md), Replaceable ranker).
 
 The clock starts when the request enters the backend pipeline and stops when the pipeline produces a response. On expiry the implementation stops waiting and emits `invoke_timeout` with `retryable: true`:
 

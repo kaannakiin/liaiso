@@ -1,0 +1,27 @@
+{
+  "kind": "search",
+  "description": "searchTerms aciklama ile ayni agirliktadir (1.5): esit uzunlukta berabere kalir ve ad ordinaline gore siralanir; 1.5'ten dusuk bir agirlik beta_probe'u one gecirirdi",
+  "input": {
+    "tools": [
+      {
+        "name": "alpha_probe",
+        "route": "/a",
+        "searchTerms": [
+          "invoice"
+        ]
+      },
+      {
+        "name": "beta_probe",
+        "route": "/b",
+        "description": "invoice"
+      }
+    ],
+    "query": "invoice"
+  },
+  "expected": {
+    "names": [
+      "alpha_probe",
+      "beta_probe"
+    ]
+  }
+}

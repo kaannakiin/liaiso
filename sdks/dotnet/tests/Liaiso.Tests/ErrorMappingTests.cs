@@ -190,6 +190,7 @@ public sealed class ErrorMappingTests
                     : null)),
             "invoke_timeout" => SdkErrors.RefuseTimedOut(
                 input.TryGetProperty("limitMs", out JsonElement limitMs) ? limitMs.GetInt32() : 0),
+            "search_ranker_unavailable" => SdkErrors.RefuseRankerUnavailable(),
             _ when input.TryGetProperty("reason", out JsonElement reason) => SdkErrors.RefuseUnresolvedFile(
                 input.TryGetProperty("field", out JsonElement field) ? field.GetString()! : string.Empty,
                 reason.GetString()!,

@@ -1,0 +1,35 @@
+{
+  "kind": "ranked-search",
+  "description": "bos cevap hata degildir: ranker hicbir tool'u ilgili bulmadi, sonuc bostur",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}",
+        "tags": [
+          "Orders"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health",
+        "tags": [
+          "System"
+        ]
+      },
+      {
+        "name": "list_orders",
+        "route": "/orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    ],
+    "query": "order",
+    "rankerAnswer": []
+  },
+  "expected": {
+    "names": [],
+    "fallback": false
+  }
+}

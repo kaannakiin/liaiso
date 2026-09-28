@@ -104,6 +104,7 @@ A host MAY configure the output schema as omitted for a backend whose responses 
 
 - `operationId` becomes the descriptor's `operationId`. One whose snake_case form cannot satisfy the tool-name pattern is not passed on (`operation_id_unusable`, warning), and route-based naming applies.
 - The operation's **first tag** becomes its `container`; every tag becomes a descriptor tag. An operation without tags has no container and no prefix.
+- An operation's `x-liaiso-search-terms` becomes the descriptor's `searchTerms` ([metadata-contract.md](metadata-contract.md)). It MUST be an array of strings; any other value is `search_terms_invalid` (warning) and nothing is carried, and a blank entry is dropped the way a blank tag is. The extension is the document author's declaration; a host that cannot edit the document declares the same vocabulary in its own configuration, which replaces the extension for that operation.
 - Duplicate `operationId`s, and route-derived names that collide, reach the existing fatal `name_collision` ([naming.md](naming.md)). The host resolves them with a `names` override. Nothing is renamed automatically.
 - A host MAY hoist a common path prefix into the server base (`/Rest` in `/Rest/Tasks/{id}`), so that it does not become a segment of every derived name. Hoisting is a declaration and is applied to every operation whose path starts with the prefix; an operation that does not start with it keeps its full path.
 
@@ -151,6 +152,7 @@ How a requirement is satisfied at invocation time is [credentials.md](credential
 | `identity_cookie_uncovered`                              | warning                        |
 | `request_media_type_alternative_ignored`                 | warning                        |
 | `operation_id_unusable`                                  | warning                        |
+| `search_terms_invalid`                                   | warning                        |
 | `callbacks_ignored`, `links_ignored`, `webhooks_ignored` | warning                        |
 
 Template-production codes of the core catalog (`unsupported_array_style`, `identity_carrier_parameter`, …) keep their own severities; ingestion does not re-grade them.

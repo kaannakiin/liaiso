@@ -197,6 +197,15 @@ export function refuseTimedOutInvoke(limitMs: number): SdkError {
   };
 }
 
+export function refuseRankerUnavailable(): SdkError {
+  return {
+    error: "search_ranker_unavailable",
+    message:
+      "Search is unavailable: the ranker did not answer this query. Call search_tools again later.",
+    retryable: true,
+  };
+}
+
 function shapeSentence(shape: PayloadShape): string {
   if (shape.count === undefined) {
     return "The body is not a JSON array or object.";

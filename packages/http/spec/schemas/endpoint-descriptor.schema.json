@@ -75,6 +75,13 @@
         "type": "string"
       }
     },
+    "searchTerms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Host-declared search vocabulary. Indexed by search_tools like the description; never shown to the agent and never a filter key."
+    },
     "arguments": {
       "type": "array",
       "items": {

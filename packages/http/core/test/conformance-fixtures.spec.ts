@@ -21,8 +21,11 @@ import {
   describePayload,
   mapInvokeResult,
   refuseOversizeResponse,
+  refuseRankerUnavailable,
   refuseTimedOutInvoke,
   refuseUnresolvedFile,
+  isListQuery,
+  normalizeRanking,
   searchParameters,
   sdkError,
   simplifySchema,
@@ -572,6 +575,9 @@ function sdkResultFrom(input: SdkInput): InvokeResult {
   if (input.sdkError === "invoke_timeout") {
     return refuseTimedOutInvoke(input.limitMs ?? 0);
   }
+  if (input.sdkError === "search_ranker_unavailable") {
+    return refuseRankerUnavailable();
+  }
   if (input.reason !== undefined) {
     return refuseUnresolvedFile(
       input.field ?? "",
@@ -606,30 +612,35 @@ describe("conformance: error-mapping", () => {
   }
 });
 
+type SearchTool = FixtureOf<"search">["input"]["tools"][number];
+
+function searchIndexOf(tools: readonly SearchTool[]): ToolIndex {
+  return new ToolIndex(
+    tools.map((t) => ({
+      name: t.name,
+      ...(t.description === undefined ? {} : { description: t.description }),
+      ...(t.tags === undefined ? {} : { tags: t.tags }),
+      ...(t.searchTerms === undefined ? {} : { searchTerms: t.searchTerms }),
+      route: t.route,
+      ...(t.alternateRoutes === undefined
+        ? {}
+        : { alternateRoutes: t.alternateRoutes }),
+      ...(t.inputSchema === undefined
+        ? {}
+        : {
+            parameters: searchParameters(
+              t.inputSchema,
+              new Set(t.groupedParameters ?? []),
+            ),
+          }),
+    })),
+  );
+}
+
 describe("conformance: search", () => {
   for (const [file, fixture] of fixturesOf("search")) {
     it(file, () => {
-      const index = new ToolIndex(
-        fixture.input.tools.map((t) => ({
-          name: t.name,
-          ...(t.description === undefined
-            ? {}
-            : { description: t.description }),
-          ...(t.tags === undefined ? {} : { tags: t.tags }),
-          route: t.route,
-          ...(t.alternateRoutes === undefined
-            ? {}
-            : { alternateRoutes: t.alternateRoutes }),
-          ...(t.inputSchema === undefined
-            ? {}
-            : {
-                parameters: searchParameters(
-                  t.inputSchema,
-                  new Set(t.groupedParameters ?? []),
-                ),
-              }),
-        })),
-      );
+      const index = searchIndexOf(fixture.input.tools);
       expect(
         index.search(
           fixture.input.query,
@@ -637,6 +648,30 @@ describe("conformance: search", () => {
           fixture.input.tags,
         ),
       ).toEqual(fixture.expected.names);
+    });
+  }
+});
+
+describe("conformance: ranked-search", () => {
+  for (const [file, fixture] of fixturesOf("ranked-search")) {
+    it(file, () => {
+      const { tools, query, tags, rankerAnswer } = fixture.input;
+      const limit = fixture.input.limit ?? 20;
+      const index = searchIndexOf(tools);
+      const bm25 = (): string[] => index.search(query, limit, tags);
+      const normalized = isListQuery(query)
+        ? { names: bm25(), unknown: [], duplicate: [] }
+        : normalizeRanking(index, rankerAnswer, tags);
+      expect({
+        names: normalized?.names.slice(0, limit) ?? bm25(),
+        fallback: normalized === undefined,
+        unknown: normalized?.unknown ?? [],
+        duplicate: normalized?.duplicate ?? [],
+      }).toEqual({
+        unknown: [],
+        duplicate: [],
+        ...fixture.expected,
+      });
     });
   }
 });

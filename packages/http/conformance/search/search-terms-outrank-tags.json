@@ -1,0 +1,29 @@
+{
+  "kind": "search",
+  "description": "searchTerms (1.5) tag'den (1.0) agirdir: ayni kelimeyi terim olarak bildiren tool tag olarak bildirenin onune gecer",
+  "input": {
+    "tools": [
+      {
+        "name": "alpha_probe",
+        "route": "/a",
+        "tags": [
+          "invoice"
+        ]
+      },
+      {
+        "name": "beta_probe",
+        "route": "/b",
+        "searchTerms": [
+          "invoice"
+        ]
+      }
+    ],
+    "query": "invoice"
+  },
+  "expected": {
+    "names": [
+      "beta_probe",
+      "alpha_probe"
+    ]
+  }
+}

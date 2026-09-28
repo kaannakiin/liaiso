@@ -21,6 +21,7 @@ import {
   unknownTool,
   wrongArgumentType,
   type CatalogEntry,
+  type SearchRankerOptions,
   type VisibilityDecision,
 } from "@liaiso/core";
 import { z } from "zod";
@@ -62,10 +63,18 @@ function decide(entry: CatalogEntry<GatewaySource>): VisibilityDecision {
 
 const visible = (decision: VisibilityDecision): boolean => decision !== "deny";
 
+/**
+ * @param options.ranker a host ranker for `search_tools`, for an embedder; the CLI binds none
+ */
+export interface OpenApiMcpServerOptions {
+  readonly ranker?: SearchRankerOptions;
+}
+
 export function createOpenApiMcpServer(
   gateway: GatewayCatalog,
   fetcher: BoundedFetch,
   limits: InvokeLimits,
+  options: OpenApiMcpServerOptions = {},
 ): McpServer {
   const { catalog } = gateway;
   const budget = (): number => limits.maxResponseBytes;
@@ -94,9 +103,10 @@ export function createOpenApiMcpServer(
           .meta({ default: null }),
       }),
     },
-    async ({ query, limit, detail, tags }) =>
+    async ({ query, limit, detail, tags }, ctx) =>
       emitGuarded(budget, async () => {
         assertCatalogValid(catalog.fatal);
+        const signal = (ctx as ToolContext | undefined)?.mcpReq?.signal;
         return searchCatalog({
           catalog,
           query,
@@ -105,6 +115,8 @@ export function createOpenApiMcpServer(
           tags,
           decide,
           visible,
+          ...(options.ranker === undefined ? {} : { ranker: options.ranker }),
+          ...(signal === undefined ? {} : { signal }),
         });
       }),
   );

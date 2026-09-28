@@ -12,10 +12,18 @@ import type { ToolDefinition } from "../generated/tool-definition.js";
 import {
   describePayload,
   refuseOversizeResponse,
+  refuseRankerUnavailable,
   sdkError,
 } from "../invoke-guard.js";
 import { forwardable } from "../leak-filter.js";
 import type { RequestTemplate } from "../request-template.js";
+import {
+  consultRanker,
+  isListQuery,
+  normalizeRanking,
+  type RankerFailureReason,
+  type SearchRankerOptions,
+} from "../ranker.js";
 import { foldToken } from "../search.js";
 import type { VisibilityDecision } from "../visibility.js";
 
@@ -25,7 +33,7 @@ export const searchDescription =
   'Find operations when you do not know their exact names. Keywords rank matches; an empty query lists everything by name. Keep queries short: a term matches operation text by prefix. Results are compact cards — name, short description and a parameter summary. Set detail="schema" to get the full definition of every result in the same answer, which pays off only when you expect to invoke one of them immediately; pair it with a small limit because a schema page is much larger. When you already hold an exact operation name, call load_tool instead of searching for it.';
 
 export const searchQueryDescription =
-  "Keywords matched by prefix against operation names, descriptions, routes, argument names and tag text; keywords rank results, they do not filter them. Empty lists everything. To require a whole tag, use tags.";
+  "Keywords matched by prefix against operation names, descriptions, declared search terms, routes, argument names and tag text; keywords rank results, they do not filter them. Empty lists everything. To require a whole tag, use tags.";
 
 export const searchLimitDescription = "Maximum number of results, 1-50.";
 
@@ -186,6 +194,65 @@ export interface SearchRequest<Source extends object> {
     canProbe(entry: CatalogEntry<Source>): boolean;
     run(entry: CatalogEntry<Source>): Promise<VisibilityDecision>;
   };
+  readonly ranker?: SearchRankerOptions;
+  readonly signal?: AbortSignal;
+}
+
+type Ranking =
+  | { readonly kind: "names"; readonly names: readonly string[] }
+  | { readonly kind: "refused" };
+
+async function rank<Source extends object>(
+  request: SearchRequest<Source>,
+): Promise<Ranking> {
+  const { catalog, ranker } = request;
+  const query = request.query ?? "";
+  const tags = request.tags === undefined ? undefined : [...request.tags];
+  const bm25 = (): Ranking => ({
+    kind: "names",
+    names: catalog.index.search(
+      query,
+      Math.max(catalog.entries.length, 1),
+      tags,
+    ),
+  });
+  if (ranker === undefined || isListQuery(query)) {
+    return bm25();
+  }
+  const consultation = await consultRanker(
+    ranker,
+    query,
+    catalog.rankCatalog,
+    request.signal,
+  );
+  let failure: { reason: RankerFailureReason; error?: unknown };
+  if (consultation.kind === "answered") {
+    const normalized = normalizeRanking(
+      catalog.index,
+      consultation.answer,
+      tags,
+    );
+    if (normalized !== undefined) {
+      if (normalized.unknown.length > 0 || normalized.duplicate.length > 0) {
+        ranker.report?.({
+          kind: "ignored",
+          unknown: normalized.unknown,
+          duplicate: normalized.duplicate,
+        });
+      }
+      return { kind: "names", names: normalized.names };
+    }
+    failure = { reason: "invalid_answer" };
+  } else {
+    failure = {
+      reason: consultation.reason,
+      ...(consultation.error === undefined
+        ? {}
+        : { error: consultation.error }),
+    };
+  }
+  ranker.report?.({ kind: "fallback", ...failure });
+  return ranker.onFailure === "error" ? { kind: "refused" } : bm25();
 }
 
 export async function searchCatalog<Source extends object>(
@@ -197,11 +264,11 @@ export async function searchCatalog<Source extends object>(
     maxSearchLimit,
   );
   const wantsSchema = request.detail === "schema";
-  const ranked = catalog.index.search(
-    request.query ?? "",
-    Math.max(catalog.entries.length, 1),
-    request.tags === undefined ? undefined : [...request.tags],
-  );
+  const ranking = await rank(request);
+  if (ranking.kind === "refused") {
+    return textResult(refuseRankerUnavailable(), true);
+  }
+  const ranked = ranking.names;
 
   const declarative = new Map<string, VisibilityDecision>();
   for (const name of ranked) {

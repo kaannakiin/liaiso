@@ -15,7 +15,9 @@ public static class DiagnosticCodes
     public const string CurationLeaksNameInArgument = "curation_leaks_name_in_argument";
     public const string CurationUnusedOnKeptRoute = "curation_unused_on_kept_route";
     public const string DuplicateArgument = "duplicate_argument";
+    public const string DuplicateSearchTerm = "duplicate_search_term";
     public const string DuplicateTag = "duplicate_tag";
+    public const string EmptySearchTerm = "empty_search_term";
     public const string EmptyTag = "empty_tag";
     public const string EnumFormatUnresolved = "enum_format_unresolved";
     public const string InvalidName = "invalid_name";

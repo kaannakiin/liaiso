@@ -1,0 +1,25 @@
+{
+  "kind": "search",
+  "description": "searchTerms alani aranir: aciklamada gecmeyen 'siparis' yalniz o terimi bildiren tool'u bulur",
+  "input": {
+    "tools": [
+      {
+        "name": "create_order",
+        "route": "/orders",
+        "searchTerms": [
+          "siparis"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health"
+      }
+    ],
+    "query": "siparis"
+  },
+  "expected": {
+    "names": [
+      "create_order"
+    ]
+  }
+}

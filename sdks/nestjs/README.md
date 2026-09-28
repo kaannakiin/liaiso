@@ -321,6 +321,14 @@ A declaration replaces the controller-derived tag rather than adding to it, and 
 the same thing centrally for controllers you cannot decorate. Tags are search text too, so changing
 them changes ranking — see the how-to on grouping operations.
 
+Words an agent may type that your operation's text does not contain go in `searchTerms`
+(`@McpTool({ searchTerms: ["sipariş"] })`, or `options.searchTerms` centrally): indexed like the
+description, never a filter key, never shown to the agent. To rank with your own retriever instead
+of BM25, bind a `ToolRanker` through `forRoot`'s overrides (`{ toolRanker: { useClass: MyRanker } }`);
+`options.search.rankerTimeoutMs` (10000 by default) and `options.search.onRankerFailure`
+(`"fallback"` or `"error"`) govern it. Visibility, the tag filter and the payload budget still apply
+to its answer — see the how-to on plugging in your own search.
+
 This repository ships a client:
 
 ```bash

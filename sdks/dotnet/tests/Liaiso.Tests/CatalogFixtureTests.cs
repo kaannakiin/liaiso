@@ -233,35 +233,20 @@ public sealed class CatalogFixtureTests
         bool projected = false;
         bool filtered = false;
         bool memberIndexed = false;
+        bool termed = false;
         foreach (JsonElement root in Fixtures("search"))
         {
             Assert.Equal("search", root.GetProperty("kind").GetString());
             JsonElement input = root.GetProperty("input");
-            List<SearchDocument> documents = [];
+            List<SearchDocument> documents = SearchDocumentsOf(input);
             foreach (JsonElement tool in input.GetProperty("tools").EnumerateArray())
             {
-                documents.Add(new SearchDocument(
-                    tool.GetProperty("name").GetString()!,
-                    tool.TryGetProperty("description", out JsonElement description) ? description.GetString() : null,
-                    tool.TryGetProperty("tags", out JsonElement tags)
-                        ? [.. tags.EnumerateArray().Select(t => t.GetString()!)]
-                        : [],
-                    tool.GetProperty("route").GetString()!,
-                    tool.TryGetProperty("alternateRoutes", out JsonElement alternates)
-                        ? [.. alternates.EnumerateArray().Select(a => a.GetString()!)]
-                        : null,
-                    tool.TryGetProperty("inputSchema", out JsonElement inputSchema)
-                        ? SearchParameters.From(JsonObject.Create(inputSchema), Grouped(tool))
-                        : null));
                 projected |= tool.TryGetProperty("inputSchema", out _);
                 memberIndexed |= Grouped(tool) is not null;
+                termed |= tool.TryGetProperty("searchTerms", out _);
             }
-            int limit = input.TryGetProperty("limit", out JsonElement declared)
-                ? declared.GetInt32()
-                : LiaisoMetaTools.DefaultLimit;
-            IReadOnlyList<string>? tagFilter = input.TryGetProperty("tags", out JsonElement declaredTags)
-                ? [.. declaredTags.EnumerateArray().Select(t => t.GetString()!)]
-                : null;
+            int limit = LimitOf(input);
+            IReadOnlyList<string>? tagFilter = TagFilterOf(input);
             filtered |= tagFilter is not null;
 
             string[] expected = root.GetProperty("expected").GetProperty("names")
@@ -275,7 +260,75 @@ public sealed class CatalogFixtureTests
         Assert.True(projected, "no search fixture carried an inputSchema");
         Assert.True(filtered, "no search fixture carried a tags filter");
         Assert.True(memberIndexed, "no search fixture carried groupedParameters");
+        Assert.True(termed, "no search fixture carried searchTerms");
     }
+
+    [Fact]
+    public void C5b_RankedSearchFixtures_AllPass()
+    {
+        // Guard: the same structural blind spot as C5. A runner that stopped honouring the list
+        // mode or the invalid-answer fallback would still pass every fixture that exercises neither.
+        bool listed = false;
+        bool fellBack = false;
+        foreach (JsonElement root in Fixtures("ranked-search"))
+        {
+            Assert.Equal("ranked-search", root.GetProperty("kind").GetString());
+            JsonElement input = root.GetProperty("input");
+            ToolIndex index = new(SearchDocumentsOf(input));
+            string query = input.GetProperty("query").GetString()!;
+            int limit = LimitOf(input);
+            IReadOnlyList<string>? tagFilter = TagFilterOf(input);
+            JsonElement answer = input.GetProperty("rankerAnswer");
+            IReadOnlyList<string?>? names = answer.ValueKind == JsonValueKind.Array
+                ? [.. answer.EnumerateArray().Select(n => n.ValueKind == JsonValueKind.String ? n.GetString() : null)]
+                : null;
+
+            NormalizedRanking? normalized = ToolIndex.IsListQuery(query)
+                ? new NormalizedRanking(index.Search(query, limit, tagFilter), [], [])
+                : Ranking.Normalize(index, names, tagFilter);
+            listed |= ToolIndex.IsListQuery(query);
+            fellBack |= normalized is null;
+
+            JsonElement expected = root.GetProperty("expected");
+            Assert.Equal(Strings(expected, "names"),
+                normalized is null ? index.Search(query, limit, tagFilter) : normalized.Names.Take(limit).ToArray());
+            Assert.Equal(expected.GetProperty("fallback").GetBoolean(), normalized is null);
+            Assert.Equal(Strings(expected, "unknown"), normalized?.Unknown ?? []);
+            Assert.Equal(Strings(expected, "duplicate"), normalized?.Duplicate ?? []);
+        }
+
+        Assert.True(listed, "no ranked-search fixture carried a listing query");
+        Assert.True(fellBack, "no ranked-search fixture carried an invalid answer");
+    }
+
+    private static string[] Strings(JsonElement parent, string name) =>
+        parent.TryGetProperty(name, out JsonElement values)
+            ? [.. values.EnumerateArray().Select(v => v.GetString()!)]
+            : [];
+
+    private static List<SearchDocument> SearchDocumentsOf(JsonElement input) =>
+    [
+        .. input.GetProperty("tools").EnumerateArray().Select(tool => new SearchDocument(
+            tool.GetProperty("name").GetString()!,
+            tool.TryGetProperty("description", out JsonElement description) ? description.GetString() : null,
+            Strings(tool, "tags"),
+            tool.GetProperty("route").GetString()!,
+            tool.TryGetProperty("alternateRoutes", out JsonElement alternates)
+                ? [.. alternates.EnumerateArray().Select(a => a.GetString()!)]
+                : null,
+            tool.TryGetProperty("inputSchema", out JsonElement inputSchema)
+                ? SearchParameters.From(JsonObject.Create(inputSchema), Grouped(tool))
+                : null,
+            tool.TryGetProperty("searchTerms", out _) ? Strings(tool, "searchTerms") : null)),
+    ];
+
+    private static int LimitOf(JsonElement input) =>
+        input.TryGetProperty("limit", out JsonElement declared) ? declared.GetInt32() : LiaisoMetaTools.DefaultLimit;
+
+    private static IReadOnlyList<string>? TagFilterOf(JsonElement input) =>
+        input.TryGetProperty("tags", out JsonElement declaredTags)
+            ? [.. declaredTags.EnumerateArray().Select(t => t.GetString()!)]
+            : null;
 
     private static IReadOnlySet<string>? Grouped(JsonElement tool) =>
         tool.TryGetProperty("groupedParameters", out JsonElement grouped)

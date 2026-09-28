@@ -122,6 +122,11 @@ export interface McpToolOptions {
    */
   readonly tags?: readonly string[];
   /**
+   * Search vocabulary the operation's own text does not contain. Indexed like the description,
+   * never a filter key and never shown to the agent ([search-semantics.md]).
+   */
+  readonly searchTerms?: readonly string[];
+  /**
    * The body's media type, replacing the one discovery chooses. It is the host's own claim that a
    * parser for it is registered; when `@ApiConsumes` also lists types, it must be one of them.
    */

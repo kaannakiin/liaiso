@@ -28,7 +28,8 @@ internal sealed class LiaisoMetaTools(
     ICallerScopeResolver scopeResolver,
     IOptions<LiaisoOptions> options,
     IHttpContextAccessor httpContextAccessor,
-    ILogger<LiaisoMetaTools> logger)
+    ILogger<LiaisoMetaTools> logger,
+    IToolRanker? ranker = null)
 {
     public const int DefaultLimit = 20;
     public const int MaxLimit = 50;
@@ -57,7 +58,7 @@ internal sealed class LiaisoMetaTools(
     [McpServerTool(Name = "search_tools", ReadOnly = true, Idempotent = true)]
     [Description("Find operations when you do not know their exact names. Keywords rank matches; an empty query lists everything by name. Keep queries short: a term matches operation text by prefix. Results are compact cards — name, short description and a parameter summary. Set detail=\"schema\" to get the full definition of every result in the same answer, which pays off only when you expect to invoke one of them immediately; pair it with a small limit because a schema page is much larger. When you already hold an exact operation name, call load_tool instead of searching for it.")]
     public async Task<CallToolResult> SearchTools(
-        [Description("Keywords matched by prefix against operation names, descriptions, routes, argument names and tag text; keywords rank results, they do not filter them. Empty lists everything. To require a whole tag, use tags.")]
+        [Description("Keywords matched by prefix against operation names, descriptions, declared search terms, routes, argument names and tag text; keywords rank results, they do not filter them. Empty lists everything. To require a whole tag, use tags.")]
         string query = "",
         [Description("Maximum number of results, 1-50.")]
         int limit = DefaultLimit,
@@ -77,7 +78,12 @@ internal sealed class LiaisoMetaTools(
             ? Math.Max(0, options.Value.Visibility.ProbeTopK)
             : 0;
 
-        List<CatalogEntry> ranked = [.. catalog.Search(query, everything, tags)];
+        IReadOnlyList<CatalogEntry>? ordered = await RankedAsync(query, everything, tags, cancellationToken);
+        if (ordered is null)
+        {
+            return Respond(SdkErrors.RefuseRankerUnavailable(), isError: true);
+        }
+        List<CatalogEntry> ranked = [.. ordered];
         Dictionary<string, VisibilityDecision> decisions = new(StringComparer.Ordinal);
         List<CatalogEntry> probeQueue = [];
         foreach (CatalogEntry entry in ranked)
@@ -256,6 +262,60 @@ internal sealed class LiaisoMetaTools(
                 SdkErrors.Create(JsonSerializer.Deserialize<SdkErrorCode>($"\"{ex.Code}\"", LiaisoJson.Wire), ex.Message),
                 isError: true);
         }
+    }
+
+    /// <returns><see langword="null"/> when the ranker failed and the host chose to refuse.</returns>
+    private async Task<IReadOnlyList<CatalogEntry>?> RankedAsync(
+        string query, int everything, IReadOnlyList<string>? tags, CancellationToken cancellationToken)
+    {
+        if (ranker is null || ToolIndex.IsListQuery(query))
+        {
+            return catalog.Search(query, everything, tags);
+        }
+        (ToolIndex index, RankCatalog rankCatalog, IReadOnlyDictionary<string, CatalogEntry> byName) =
+            catalog.SearchSurface;
+        SearchOptions search = options.Value.Search;
+        RankerFailureReason reason;
+        Exception? error = null;
+        using CancellationTokenSource deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        if (search.RankerTimeout > TimeSpan.Zero)
+        {
+            deadline.CancelAfter(search.RankerTimeout);
+        }
+        try
+        {
+            IReadOnlyList<string>? answer = await ranker
+                .RankAsync(new ToolRankRequest(query, rankCatalog), deadline.Token)
+                .AsTask()
+                .WaitAsync(deadline.Token);
+            if (Ranking.Normalize(index, answer, tags) is { } normalized)
+            {
+                if (normalized.Unknown.Count > 0 || normalized.Duplicate.Count > 0)
+                {
+                    logger.LogWarning(
+                        "search_tools: the search ranker named tools that were dropped (unknown: {Unknown}, repeated: {Duplicate}).",
+                        normalized.Unknown, normalized.Duplicate);
+                }
+                return normalized.Names.Select(name => byName[name]).ToArray();
+            }
+            reason = RankerFailureReason.InvalidAnswer;
+        }
+        // Guard: the caller's own cancellation is not a ranker failure and propagates. Falling back
+        // would spend a BM25 pass on an answer nobody reads, and an Error host would publish a
+        // retryable refusal for a call that is never retried.
+        catch (OperationCanceledException) when (deadline.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            reason = RankerFailureReason.Timeout;
+        }
+        catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            reason = RankerFailureReason.Threw;
+            error = exception;
+        }
+        logger.LogWarning(error, "{Message}", Ranking.FailureMessage(reason, search.OnRankerFailure));
+        return search.OnRankerFailure == RankerFailureMode.Error
+            ? null
+            : index.Search(query, everything, tags).Select(name => byName[name]).ToArray();
     }
 
     private async Task<DecisionContext> DecideAsync(CancellationToken cancellationToken)

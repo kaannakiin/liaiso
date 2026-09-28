@@ -32,6 +32,7 @@ public sealed record EndpointDescriptor
     public IReadOnlyDictionary<string, ResponseBody>? Responses { get; init; }
     public required Auth Auth { get; init; }
     public IReadOnlyList<string>? Tags { get; init; }
+    public IReadOnlyList<string>? SearchTerms { get; init; }
     public IReadOnlyList<ArgumentCuration>? Arguments { get; init; }
     public IReadOnlyList<ToolVariant>? Variants { get; init; }
     public ToolFamily? Family { get; init; }
@@ -166,7 +167,7 @@ public sealed record InvokeSuccess
     public string? Location { get; init; }
 }
 
-public enum SdkErrorCode { UnknownTool, NotInvocable, UnknownArgument, InvalidPathType, MissingPathParameter, HeaderInjection, NullNotAllowed, InvalidType, DeferredValueMissing, DeferredValueInvalid, InvalidCookieValue, CookieCarrierCollision, InvalidFileArgument, FileTooLarge, FileUnresolved, ResponseTooLarge, InvokeTimeout, InternalError }
+public enum SdkErrorCode { UnknownTool, NotInvocable, UnknownArgument, InvalidPathType, MissingPathParameter, HeaderInjection, NullNotAllowed, InvalidType, DeferredValueMissing, DeferredValueInvalid, InvalidCookieValue, CookieCarrierCollision, InvalidFileArgument, FileTooLarge, FileUnresolved, ResponseTooLarge, InvokeTimeout, SearchRankerUnavailable, InternalError }
 
 public enum PayloadShapeKind { Array, Object, Text }
 

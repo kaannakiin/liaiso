@@ -1,0 +1,41 @@
+{
+  "kind": "ranked-search",
+  "description": "ranker'in sirasi sonuctur: metinde gecmeyen health bile ranker onu once koyarsa ilk gelir, disarida birakilan get_order gelmez",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}",
+        "tags": [
+          "Orders"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health",
+        "tags": [
+          "System"
+        ]
+      },
+      {
+        "name": "list_orders",
+        "route": "/orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    ],
+    "query": "order",
+    "rankerAnswer": [
+      "health",
+      "list_orders"
+    ]
+  },
+  "expected": {
+    "names": [
+      "health",
+      "list_orders"
+    ],
+    "fallback": false
+  }
+}

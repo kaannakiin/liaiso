@@ -1,0 +1,27 @@
+{
+  "kind": "ranked-search",
+  "description": "string olmayan tek bir eleman bile cevabi gecersiz kilar: kismen kullanilmaz, BM25'e dusulur",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}"
+      },
+      {
+        "name": "health",
+        "route": "/health"
+      }
+    ],
+    "query": "order",
+    "rankerAnswer": [
+      "health",
+      7
+    ]
+  },
+  "expected": {
+    "names": [
+      "get_order"
+    ],
+    "fallback": true
+  }
+}

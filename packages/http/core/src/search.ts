@@ -2,6 +2,7 @@ export interface SearchDocument {
   readonly name: string;
   readonly description?: string;
   readonly tags?: readonly string[];
+  readonly searchTerms?: readonly string[];
   readonly route: string;
   readonly alternateRoutes?: readonly string[];
   readonly parameters?: readonly string[];
@@ -9,6 +10,7 @@ export interface SearchDocument {
 
 export const nameWeight = 3.0;
 export const descriptionWeight = 1.5;
+export const searchTermWeight = 1.5;
 export const tagWeight = 1.0;
 export const routeWeight = 1.0;
 export const parameterWeight = 1.0;
@@ -142,6 +144,7 @@ function addPostingFrequencies(
 
 export class ToolIndex {
   private readonly documents: IndexedDocument[] = [];
+  private readonly documentIds = new Map<string, number>();
   private readonly averageLength: number;
   private readonly ordinalDocumentIds: Uint32Array;
   private readonly ordinalRanks: Uint32Array;
@@ -171,6 +174,9 @@ export class ToolIndex {
         }
       }
       documentTags.push(foldedTags);
+      for (const term of document.searchTerms ?? []) {
+        accumulate(terms, term, searchTermWeight);
+      }
       accumulate(terms, document.route, routeWeight);
       for (const alternate of document.alternateRoutes ?? []) {
         accumulate(terms, alternate, routeWeight);
@@ -184,6 +190,7 @@ export class ToolIndex {
       }
       const documentId = this.documents.length;
       this.documents.push({ name: document.name, length });
+      this.documentIds.set(document.name, documentId);
       for (const [term, frequency] of terms) {
         let posting = mutablePostings.get(term);
         if (posting === undefined) {
@@ -294,6 +301,24 @@ export class ToolIndex {
 
   get count(): number {
     return this.documents.length;
+  }
+
+  has(name: string): boolean {
+    return this.documentIds.has(name);
+  }
+
+  retainTagged(
+    names: readonly string[],
+    tags: readonly string[] | undefined,
+  ): string[] {
+    const filterIds = this.tagFilterIds(tags);
+    return names.filter((name) => {
+      const documentId = this.documentIds.get(name);
+      return (
+        documentId !== undefined &&
+        (filterIds === undefined || this.carriesEveryTag(documentId, filterIds))
+      );
+    });
   }
 
   search(

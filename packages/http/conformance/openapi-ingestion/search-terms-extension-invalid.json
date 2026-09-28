@@ -1,0 +1,63 @@
+{
+  "kind": "openapi-ingestion",
+  "description": "string dizisi olmayan x-liaiso-search-terms uyarilir ve hic tasinmaz; operasyon dusmez",
+  "input": {
+    "document": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "t",
+        "version": "1"
+      },
+      "servers": [
+        {
+          "url": "https://api.test"
+        }
+      ],
+      "paths": {
+        "/orders": {
+          "post": {
+            "operationId": "createOrder",
+            "x-liaiso-search-terms": [
+              "siparis",
+              3
+            ],
+            "responses": {
+              "200": {
+                "description": "ok"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected": {
+    "endpoints": [
+      {
+        "key": "POST /orders",
+        "baseUrl": "https://api.test",
+        "descriptor": {
+          "operationId": "createOrder",
+          "method": "POST",
+          "route": "/orders",
+          "responses": {
+            "200": {
+              "description": "ok"
+            }
+          },
+          "auth": {
+            "anonymous": "unknown",
+            "policies": [],
+            "imperative": false
+          }
+        }
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "search_terms_invalid",
+        "at": "/paths/~1orders/post/x-liaiso-search-terms"
+      }
+    ]
+  }
+}

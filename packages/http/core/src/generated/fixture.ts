@@ -5,6 +5,7 @@ export type Fixture =
   | SelectionFixture
   | VisibilityFixture
   | SearchFixture
+  | RankedSearchFixture
   | ErrorMappingFixture
   | SchemaSimplificationFixture
   | CardFixture
@@ -137,6 +138,7 @@ export type SdkErrorCode =
   | "file_unresolved"
   | "response_too_large"
   | "invoke_timeout"
+  | "search_ranker_unavailable"
   | "internal_error";
 export type InvokeResult = InvokeSuccess | MappedError | SdkError;
 export type BackendErrorCode =
@@ -235,6 +237,7 @@ export interface EndpointDescriptor {
   };
   auth: Auth;
   tags?: string[];
+  searchTerms?: string[];
   arguments?: ArgumentCuration[];
   variants?: [ToolVariant, ...ToolVariant[]];
   family?: ToolFamily;
@@ -543,6 +546,7 @@ export interface SearchTool {
   name: string;
   description?: string;
   tags?: string[];
+  searchTerms?: string[];
   route: string;
   alternateRoutes?: string[];
   inputSchema?: JsonSchemaObject;
@@ -550,6 +554,26 @@ export interface SearchTool {
 }
 export interface SearchExpectation {
   names: string[];
+}
+export interface RankedSearchFixture {
+  kind: "ranked-search";
+  description: string;
+  input: {
+    tools: [SearchTool, ...SearchTool[]];
+    query: string;
+    limit?: number;
+    tags?: string[];
+    rankerAnswer: {
+      [k: string]: unknown;
+    };
+  };
+  expected: RankedSearchExpectation;
+}
+export interface RankedSearchExpectation {
+  names: string[];
+  fallback: boolean;
+  unknown?: string[];
+  duplicate?: string[];
 }
 export interface ErrorMappingFixture {
   kind: "error-mapping";

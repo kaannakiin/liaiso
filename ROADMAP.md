@@ -6,6 +6,11 @@ spec, a guard comment or the package README.
 
 ## HTTP catalog and the OpenAPI gateway
 
+- **A search ranker for the gateway CLI.** `createOpenApiMcpServer` takes a host ranker
+  ([search-semantics.md](packages/http/spec/search-semantics.md), Replaceable ranker), but the
+  `liaiso-openapi` CLI has no way to bind one: loading a module would cross the gateway's file
+  boundary, and calling a remote ranker by URL would be a second network egress beside
+  `src/net/fetch.ts`. Either needs its own allowlist rule before it lands.
 - **Whole-document validation.** Ingestion validates by point checks on the constructs it lowers
   ([openapi-ingestion.md](packages/http/spec/openapi-ingestion.md), pipeline step 3). A defect in a
   part nothing reads produces no diagnostic. Validate against the version's own meta-schema, still

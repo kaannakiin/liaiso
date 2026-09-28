@@ -65,6 +65,7 @@ export const configSchema = z
     names: z
       .record(z.string(), z.string().regex(/^[a-z][a-z0-9_]{0,255}$/))
       .default({}),
+    searchTerms: z.record(z.string(), z.array(z.string())).default({}),
     credentials: z.record(z.string(), credential).default({}),
     allowHosts: z.array(z.string().min(1)).default([]),
     /**

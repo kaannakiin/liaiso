@@ -42,6 +42,15 @@ export function collectConfigurationFailures(
     failures.push("invoke.maxFileBytes must be at least 1.");
   }
   if (
+    !Number.isInteger(options.search.rankerTimeoutMs) ||
+    options.search.rankerTimeoutMs < 0
+  ) {
+    failures.push("search.rankerTimeoutMs must be zero or a positive integer.");
+  }
+  if (!["fallback", "error"].includes(options.search.onRankerFailure)) {
+    failures.push('search.onRankerFailure must be "fallback" or "error".');
+  }
+  if (
     !Number.isInteger(options.families.loadTimeoutMs) ||
     options.families.loadTimeoutMs < 1
   ) {

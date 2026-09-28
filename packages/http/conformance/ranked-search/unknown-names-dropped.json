@@ -1,0 +1,43 @@
+{
+  "kind": "ranked-search",
+  "description": "katalogda olmayan isim duser ve raporlanir; kalan sira korunur",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}",
+        "tags": [
+          "Orders"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health",
+        "tags": [
+          "System"
+        ]
+      },
+      {
+        "name": "list_orders",
+        "route": "/orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    ],
+    "query": "order",
+    "rankerAnswer": [
+      "ghost",
+      "get_order"
+    ]
+  },
+  "expected": {
+    "names": [
+      "get_order"
+    ],
+    "fallback": false,
+    "unknown": [
+      "ghost"
+    ]
+  }
+}

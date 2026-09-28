@@ -114,6 +114,13 @@ internal static class SdkErrors
         Retryable = true,
     };
 
+    public static SdkError RefuseRankerUnavailable() => new()
+    {
+        Error = SdkErrorCode.SearchRankerUnavailable,
+        Message = "Search is unavailable: the ranker did not answer this query. Call search_tools again later.",
+        Retryable = true,
+    };
+
     /// <summary>Refuses a call whose <c>ref</c> file argument the resolver did not deliver.</summary>
     /// <remarks>
     /// Guard: <c>not_found</c> and <c>forbidden</c> produce one message. A ref is a string the agent

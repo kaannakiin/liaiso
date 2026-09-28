@@ -27,6 +27,7 @@ public sealed class LiaisoOptions
 
     public ToolFamilyOptions Families { get; } = new();
     public InvokeOptions Invoke { get; } = new();
+    public Search.SearchOptions Search { get; } = new();
 
     /// <summary>
     /// Grouping labels for a container the host cannot decorate, keyed by the container's full
@@ -34,6 +35,12 @@ public sealed class LiaisoOptions
     /// container-derived default, and like a declaration it replaces that default.
     /// </summary>
     public Func<string, IReadOnlyList<string>?>? Tags { get; set; }
+
+    /// <summary>
+    /// Search vocabulary for a container the host cannot decorate, keyed like <see cref="Tags"/>. It
+    /// sits below a <c>[McpTool(SearchTerms = ...)]</c> declaration; there is no default.
+    /// </summary>
+    public Func<string, IReadOnlyList<string>?>? SearchTerms { get; set; }
 }
 
 /// <summary>What a per-endpoint budget or timeout override sees.</summary>

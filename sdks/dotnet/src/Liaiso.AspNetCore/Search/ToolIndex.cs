@@ -6,12 +6,14 @@ namespace Liaiso.AspNetCore.Search;
 internal sealed record SearchDocument(
     string Name, string? Description, IReadOnlyList<string> Tags, string Route,
     IReadOnlyList<string>? AlternateRoutes = null,
-    IReadOnlyList<string>? Parameters = null);
+    IReadOnlyList<string>? Parameters = null,
+    IReadOnlyList<string>? SearchTerms = null);
 
 internal sealed class ToolIndex
 {
     public const double NameWeight = 3.0;
     public const double DescriptionWeight = 1.5;
+    public const double SearchTermWeight = 1.5;
     public const double TagWeight = 1.0;
     public const double RouteWeight = 1.0;
     public const double ParameterWeight = 1.0;
@@ -22,6 +24,7 @@ internal sealed class ToolIndex
         string Name, Dictionary<string, double> Terms, double Length, HashSet<string> Tags);
 
     private readonly List<IndexedDocument> _documents = [];
+    private readonly Dictionary<string, IndexedDocument> _byName = new(StringComparer.Ordinal);
     private readonly double _averageLength;
 
     public ToolIndex(IEnumerable<SearchDocument> documents)
@@ -39,6 +42,10 @@ internal sealed class ToolIndex
                 Accumulate(terms, tag, TagWeight);
                 foldedTags.Add(FoldToken(tag));
             }
+            foreach (string term in document.SearchTerms ?? [])
+            {
+                Accumulate(terms, term, SearchTermWeight);
+            }
             Accumulate(terms, document.Route, RouteWeight);
             foreach (string alternate in document.AlternateRoutes ?? [])
             {
@@ -49,7 +56,9 @@ internal sealed class ToolIndex
                 Accumulate(terms, parameter, ParameterWeight);
             }
 
-            _documents.Add(new IndexedDocument(document.Name, terms, terms.Values.Sum(), foldedTags));
+            IndexedDocument indexed = new(document.Name, terms, terms.Values.Sum(), foldedTags);
+            _documents.Add(indexed);
+            _byName[document.Name] = indexed;
         }
 
         _averageLength = _documents.Count == 0 ? 0 : _documents.Average(d => d.Length);
@@ -57,13 +66,28 @@ internal sealed class ToolIndex
 
     public int Count => _documents.Count;
 
+    public bool Has(string name) => _byName.ContainsKey(name);
+
+    public static bool IsListQuery(string? query) => Tokenize(query).Count == 0;
+
+    public IReadOnlyList<string> RetainTagged(IReadOnlyList<string> names, IReadOnlyList<string>? tags)
+    {
+        HashSet<string>? required = RequiredTags(tags);
+        return names
+            .Where(name => _byName.TryGetValue(name, out IndexedDocument? document) && Survives(document, required))
+            .ToArray();
+    }
+
+    private static HashSet<string>? RequiredTags(IReadOnlyList<string>? tags) =>
+        tags is null || tags.Count == 0
+            ? null
+            : new HashSet<string>(tags.Select(FoldToken), StringComparer.Ordinal);
+
     public IReadOnlyList<string> Search(string? query, int limit, IReadOnlyList<string>? tags = null)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(limit);
 
-        HashSet<string>? required = tags is null || tags.Count == 0
-            ? null
-            : new HashSet<string>(tags.Select(FoldToken), StringComparer.Ordinal);
+        HashSet<string>? required = RequiredTags(tags);
 
         IReadOnlyList<string> queryTerms = Tokenize(query);
         if (queryTerms.Count == 0)

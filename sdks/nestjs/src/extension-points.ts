@@ -1,5 +1,5 @@
 import type { InjectionToken, Provider, Type } from "@nestjs/common";
-import type { LiaisoCache } from "@liaiso/core";
+import type { LiaisoCache, ToolRanker } from "@liaiso/core";
 import type { CallerScopeResolver } from "./cache.js";
 import type { InvokeResultMapper } from "./invoke-result-mapper.js";
 import type { VisibilityEvaluator } from "./visibility/evaluator.js";
@@ -11,6 +11,7 @@ export interface ExtensionPoints {
   invokeResultMapper: InvokeResultMapper;
   visibilityEvaluator: VisibilityEvaluator;
   probeEvaluator: ProbeEvaluator;
+  toolRanker: ToolRanker | null;
 }
 
 export const extensionTokens = {
@@ -19,6 +20,7 @@ export const extensionTokens = {
   invokeResultMapper: Symbol("LIAISO_INVOKE_RESULT_MAPPER"),
   visibilityEvaluator: Symbol("LIAISO_VISIBILITY_EVALUATOR"),
   probeEvaluator: Symbol("LIAISO_PROBE_EVALUATOR"),
+  toolRanker: Symbol("LIAISO_TOOL_RANKER"),
 } as const satisfies { readonly [K in keyof ExtensionPoints]: symbol };
 
 export type OverrideProvider<T> =

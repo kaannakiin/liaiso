@@ -15,3 +15,4 @@ export type { InvokeLimits, InvokeTarget } from "./invoke/invoke.js";
 export { configSchema, readConfig } from "./platform/config.js";
 export type { GatewayConfig, ResolvedCredential } from "./platform/config.js";
 export { createOpenApiMcpServer } from "./server.js";
+export type { OpenApiMcpServerOptions } from "./server.js";

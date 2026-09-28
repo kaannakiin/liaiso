@@ -32,6 +32,7 @@ const expectedKinds = [
   "metadata-extraction",
   "naming",
   "openapi-ingestion",
+  "ranked-search",
   "schema-simplification",
   "search",
   "selection",

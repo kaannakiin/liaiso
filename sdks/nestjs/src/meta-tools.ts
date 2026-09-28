@@ -31,8 +31,10 @@ import {
   vocabularyOf,
   wrongArgumentType,
   defaultSearchLimit,
+  describeRankerEvent,
   type CallerScope,
   type MetaResponse,
+  type SearchRankerOptions,
   type VisibilityDecision,
   type WireResult,
 } from "@liaiso/core";
@@ -104,6 +106,31 @@ function budgetFor(
   const override =
     target === undefined ? undefined : invoke.maxResponseBytesFor?.(target);
   return override ?? invoke.maxResponseBytes;
+}
+
+function rankerFor(deps: MetaToolDependencies): {
+  ranker?: SearchRankerOptions;
+} {
+  const ranker = deps.catalog.ranker ?? null;
+  if (ranker === null) {
+    return {};
+  }
+  const { rankerTimeoutMs, onRankerFailure } = deps.options.search;
+  return {
+    ranker: {
+      ranker,
+      timeoutMs: rankerTimeoutMs,
+      onFailure: onRankerFailure,
+      report: (event) => {
+        const message = describeRankerEvent(event, onRankerFailure);
+        if (event.kind === "fallback" && event.error !== undefined) {
+          logger.warn(message, event.error);
+        } else {
+          logger.warn(message);
+        }
+      },
+    },
+  };
 }
 
 /**
@@ -214,6 +241,8 @@ export function registerLiaisoTools(
           tags,
           decide,
           visible: (decision) => deps.visibility.visible(decision),
+          ...rankerFor(deps),
+          ...deadlineFrom(ctx),
           ...(visibility.tier === "probe"
             ? {
                 probe: {

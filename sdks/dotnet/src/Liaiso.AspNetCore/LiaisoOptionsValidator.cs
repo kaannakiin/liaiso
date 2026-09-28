@@ -46,6 +46,14 @@ internal sealed class LiaisoOptionsValidator : IValidateOptions<LiaisoOptions>
         {
             failures.Add("Invoke.Timeout must be zero or positive.");
         }
+        if (options.Search.RankerTimeout < TimeSpan.Zero)
+        {
+            failures.Add("Search.RankerTimeout must be zero or positive.");
+        }
+        if (!Enum.IsDefined(options.Search.OnRankerFailure))
+        {
+            failures.Add("Search.OnRankerFailure must be Fallback or Error.");
+        }
         if (options.Synthetic.Scheme is not (null or "http" or "https"))
         {
             failures.Add("Synthetic.Scheme must be null, 'http' or 'https'.");

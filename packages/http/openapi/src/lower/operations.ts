@@ -166,6 +166,30 @@ function sitesOf(
   return sites;
 }
 
+function searchTermsOf(
+  context: SchemaContext,
+  operation: Record<string, unknown>,
+  at: JsonPointer,
+): string[] | undefined {
+  const declared = operation["x-liaiso-search-terms"];
+  if (declared === undefined) {
+    return undefined;
+  }
+  if (
+    !Array.isArray(declared) ||
+    !declared.every((term: unknown) => typeof term === "string")
+  ) {
+    context.diagnostics.report(
+      "search_terms_invalid",
+      childPointer(at, "x-liaiso-search-terms"),
+      "x-liaiso-search-terms must be an array of strings; the operation carries no search terms.",
+    );
+    return undefined;
+  }
+  const terms = declared.filter((term) => term.trim() !== "");
+  return terms.length === 0 ? undefined : terms;
+}
+
 function lowerOperation(
   context: SchemaContext,
   site: OperationSite,
@@ -236,6 +260,7 @@ function lowerOperation(
   const tags = arrayOf(operation["tags"])
     .map(stringOf)
     .filter((tag): tag is string => tag !== undefined && tag.trim() !== "");
+  const searchTerms = searchTermsOf(context, operation, at);
   const { route, prefix } = hoisted(site.path, options.hoistPathPrefix);
   const description = descriptionOf(operation);
   const carriers = [...credentialSlots, ...lowered.carriers];
@@ -253,6 +278,7 @@ function lowerOperation(
     ...(responses === undefined ? {} : { responses }),
     auth: authOf(security, carriers),
     ...(tags.length === 0 ? {} : { tags }),
+    ...(searchTerms === undefined ? {} : { searchTerms }),
   };
   const server = serverOf(
     [

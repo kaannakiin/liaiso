@@ -19,7 +19,7 @@ public sealed class TagsDeclaredController : ControllerBase
 
 [ApiController]
 [Route("/tags/inherited")]
-[McpTool(Tags = new[] { "billing" })]
+[McpTool(Tags = new[] { "billing" }, SearchTerms = new[] { "fatura" })]
 public sealed class TagsContainerController : ControllerBase
 {
     [HttpGet("list")]

@@ -15,7 +15,13 @@ import {
   routePlaceholderNames,
   type RequestTemplate,
 } from "../request-template.js";
-import { foldToken, tokenize, ToolIndex } from "../search.js";
+import { rankCatalogOf, type RankCatalog } from "../ranker.js";
+import {
+  foldToken,
+  tokenize,
+  ToolIndex,
+  type SearchDocument,
+} from "../search.js";
 import {
   isSelected,
   resolveRules,
@@ -62,6 +68,7 @@ export interface CatalogCandidate<Source extends object = object> {
   readonly container?: SelectionMarker;
   readonly operation?: SelectionMarker;
   readonly tags?: readonly string[];
+  readonly searchTerms?: readonly string[];
   readonly declare: (tags: readonly string[] | undefined) => EndpointDescriptor;
 }
 
@@ -95,6 +102,7 @@ export interface CatalogBuild<Source extends object = object> {
   readonly entries: readonly CatalogEntry<Source>[];
   readonly byName: ReadonlyMap<string, CatalogEntry<Source>>;
   readonly index: ToolIndex;
+  readonly rankCatalog: RankCatalog;
   readonly diagnostics: readonly CatalogDiagnostic[];
   readonly fatal: readonly CatalogDiagnostic[];
   readonly policyNames: ReadonlySet<string>;
@@ -148,16 +156,26 @@ export function buildCatalog<Source extends object>(
   }
 
   const tagsOf = new Map<CatalogCandidate<Source>, readonly string[]>();
+  const termsOf = new Map<CatalogCandidate<Source>, readonly string[]>();
   for (const candidate of chosen) {
     if (candidate.tags !== undefined) {
       tagsOf.set(candidate, cleanTags(candidate.tags, candidate.owner, report));
     }
+    const terms = candidate.searchTerms ?? candidate.descriptor.searchTerms;
+    if (terms !== undefined) {
+      termsOf.set(candidate, cleanSearchTerms(terms, candidate.owner, report));
+    }
   }
+  const declare = (candidate: CatalogCandidate<Source>): EndpointDescriptor =>
+    withSearchTerms(
+      candidate.declare(tagsOf.get(candidate)),
+      termsOf.get(candidate),
+    );
 
   const alternates = new Map<CatalogCandidate<Source>, string[]>();
   const operations = deduplicateOperations(
     chosen,
-    (candidate) => candidate.declare(tagsOf.get(candidate)),
+    declare,
     ({ kept, folded }) => {
       const routes = folded.map((candidate) => candidate.descriptor.route);
       alternates.set(kept, routes);
@@ -175,9 +193,7 @@ export function buildCatalog<Source extends object>(
    * the whole list under one guard let a single conflict empty the catalog without a fatal
    * diagnostic. Naming then walks the same productions, so the positional zip below stays aligned.
    */
-  const declaredList = operations.map((candidate) =>
-    candidate.declare(tagsOf.get(candidate)),
-  );
+  const declaredList = operations.map(declare);
   const sourceOf = new Map<EndpointDescriptor, CatalogCandidate<Source>>();
   operations.forEach((candidate, index) => {
     const declared = declaredList[index];
@@ -310,28 +326,32 @@ export function buildCatalog<Source extends object>(
 
   reportIndistinguishableVariants(entries, report);
 
+  const documents: SearchDocument[] = entries.map((entry) => ({
+    name: entry.tool.name,
+    ...(entry.tool.description === undefined
+      ? {}
+      : { description: entry.tool.description }),
+    ...(entry.descriptor.tags === undefined
+      ? {}
+      : { tags: entry.descriptor.tags }),
+    ...(entry.descriptor.searchTerms === undefined
+      ? {}
+      : { searchTerms: entry.descriptor.searchTerms }),
+    route: entry.descriptor.route,
+    ...(entry.alternateRoutes === undefined
+      ? {}
+      : { alternateRoutes: entry.alternateRoutes }),
+    parameters: searchParameters(
+      entry.tool.inputSchema,
+      groupedParametersOf(entry.descriptor),
+    ),
+  }));
+
   return {
     entries,
     byName,
-    index: new ToolIndex(
-      entries.map((entry) => ({
-        name: entry.tool.name,
-        ...(entry.tool.description === undefined
-          ? {}
-          : { description: entry.tool.description }),
-        ...(entry.descriptor.tags === undefined
-          ? {}
-          : { tags: entry.descriptor.tags }),
-        route: entry.descriptor.route,
-        ...(entry.alternateRoutes === undefined
-          ? {}
-          : { alternateRoutes: entry.alternateRoutes }),
-        parameters: searchParameters(
-          entry.tool.inputSchema,
-          groupedParametersOf(entry.descriptor),
-        ),
-      })),
-    ),
+    index: new ToolIndex(documents),
+    rankCatalog: rankCatalogOf(documents),
     diagnostics,
     fatal,
     policyNames,
@@ -512,37 +532,79 @@ function reportIndistinguishableVariants(
   }
 }
 
+interface VocabularyRules {
+  readonly empty: { readonly code: string; readonly why: string };
+  readonly duplicate: { readonly code: string; readonly noun: string };
+}
+
+const tagRules = {
+  empty: { code: "empty_tag", why: "no caller can ask for it" },
+  duplicate: { code: "duplicate_tag", noun: "tag" },
+} as const satisfies VocabularyRules;
+
+const searchTermRules = {
+  empty: { code: "empty_search_term", why: "it contributes no search text" },
+  duplicate: { code: "duplicate_search_term", noun: "search term" },
+} as const satisfies VocabularyRules;
+
 /**
- * Drops the tags that cannot survive folding: one that folds to nothing can never be matched, and
- * two that fold alike are one filter key but two index contributions, which doubles that term's
- * search weight for what looks like a spelling choice. The host's own spelling is kept.
+ * Guard: two entries that fold alike are two index contributions, which doubles that term's
+ * search weight for what looks like a spelling choice, and one that folds to nothing can never be
+ * matched. The host's own spelling of the first is kept.
  */
-export function cleanTags(
+function cleanVocabulary(
   declared: readonly string[],
   owner: string,
   report: DiagnosticReporter,
+  rules: VocabularyRules,
 ): readonly string[] {
   const kept = new Map<string, string>();
-  for (const tag of declared) {
-    const folded = foldToken(tag);
+  for (const entry of declared) {
+    const folded = foldToken(entry);
     if (folded === "") {
       report({
-        code: "empty_tag",
-        message: `${owner} declares a tag that is empty once folded; no caller can ask for it, so it was dropped.`,
+        code: rules.empty.code,
+        message: `${owner} declares a ${rules.duplicate.noun} that is empty once folded; ${rules.empty.why}, so it was dropped.`,
       });
       continue;
     }
     const first = kept.get(folded);
     if (first !== undefined) {
       report({
-        code: "duplicate_tag",
-        message: `${owner} declares '${tag}' and '${first}', which fold to the same tag; the later one was dropped because two equal tags double that term's search weight.`,
+        code: rules.duplicate.code,
+        message: `${owner} declares '${entry}' and '${first}', which fold to the same ${rules.duplicate.noun}; the later one was dropped because two equal ${rules.duplicate.noun}s double that term's search weight.`,
       });
       continue;
     }
-    kept.set(folded, tag);
+    kept.set(folded, entry);
   }
   return [...kept.values()];
+}
+
+export function cleanTags(
+  declared: readonly string[],
+  owner: string,
+  report: DiagnosticReporter,
+): readonly string[] {
+  return cleanVocabulary(declared, owner, report, tagRules);
+}
+
+export function cleanSearchTerms(
+  declared: readonly string[],
+  owner: string,
+  report: DiagnosticReporter,
+): readonly string[] {
+  return cleanVocabulary(declared, owner, report, searchTermRules);
+}
+
+function withSearchTerms(
+  descriptor: EndpointDescriptor,
+  terms: readonly string[] | undefined,
+): EndpointDescriptor {
+  const { searchTerms: _declared, ...rest } = descriptor;
+  return terms === undefined || terms.length === 0
+    ? rest
+    : { ...rest, searchTerms: [...terms] };
 }
 
 function reportBodyRoot(

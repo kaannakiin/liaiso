@@ -59,7 +59,8 @@ internal static partial class EndpointCatalog
         bool groupQueryObjects = false,
         string? refDescription = null,
         ToolFamilyOptions? families = null,
-        IReadOnlyDictionary<string, FamilyLoad>? familyLoads = null)
+        IReadOnlyDictionary<string, FamilyLoad>? familyLoads = null,
+        Func<string, IReadOnlyList<string>?>? containerSearchTerms = null)
     {
         ArgumentNullException.ThrowIfNull(apiDescriptions);
         severityOf ??= DiagnosticCodes.SeverityOf;
@@ -127,7 +128,7 @@ internal static partial class EndpointCatalog
 
                 EndpointDescriptor? descriptor = Describe(
                     api, route, action, metadata, useOperationIds, schema, hasFallbackPolicy,
-                    containerPrefix, containerTags, diagnostics,
+                    containerPrefix, containerTags, containerSearchTerms, diagnostics,
                     curation ?? new ArgumentCurationOptions(), groupQueryObjects);
                 if (descriptor is null)
                 {
@@ -348,6 +349,7 @@ internal static partial class EndpointCatalog
         bool hasFallbackPolicy,
         Func<string, string?>? containerPrefix,
         Func<string, IReadOnlyList<string>?>? containerTags,
+        Func<string, IReadOnlyList<string>?>? containerSearchTerms,
         List<CatalogDiagnostic> diagnostics,
         ArgumentCurationOptions curation,
         bool groupQueryObjects)
@@ -504,6 +506,7 @@ internal static partial class EndpointCatalog
             Responses = responses.Count == 0 ? null : responses,
             Auth = ReadAuth(metadata, hasFallbackPolicy),
             Tags = TagsFor(action, metadata, api, containerTags, diagnostics),
+            SearchTerms = SearchTermsFor(action, metadata, api, containerSearchTerms, diagnostics),
         };
     }
 
@@ -627,6 +630,11 @@ internal static partial class EndpointCatalog
         return metadata.OfType<McpToolAttribute>().LastOrDefault();
     }
 
+    private static string OwnerOf(ActionDescriptor action, ApiDescription api) =>
+        action is ControllerActionDescriptor named
+            ? $"{named.ControllerName}.{named.ActionName}"
+            : api.RelativePath ?? string.Empty;
+
     private static IReadOnlyList<string>? TagsFor(
         ActionDescriptor action,
         IReadOnlyList<object> metadata,
@@ -634,68 +642,93 @@ internal static partial class EndpointCatalog
         Func<string, IReadOnlyList<string>?>? containerTags,
         List<CatalogDiagnostic> diagnostics)
     {
-        string owner = action is ControllerActionDescriptor named
-            ? $"{named.ControllerName}.{named.ActionName}"
-            : api.RelativePath ?? string.Empty;
-        if (DeclaredTags(action, metadata) is { } declared)
+        string owner = OwnerOf(action, api);
+        if (Declared(action, metadata, attribute => attribute.Tags) is { } declared)
         {
-            return CleanTags(declared, owner, diagnostics);
+            return CleanVocabulary(declared, owner, diagnostics, TagRules);
         }
-        if (containerTags is not null
-            && action is ControllerActionDescriptor typed
-            && containerTags(typed.ControllerTypeInfo.FullName ?? typed.ControllerName) is { } central)
+        if (Central(action, containerTags) is { } central)
         {
-            return CleanTags(central, owner, diagnostics);
+            return CleanVocabulary(central, owner, diagnostics, TagRules);
         }
         return action is ControllerActionDescriptor controller
             ? [controller.ControllerName]
             : api.GroupName is null ? null : [api.GroupName];
     }
 
-    private static IReadOnlyList<string>? DeclaredTags(
-        ActionDescriptor action, IReadOnlyList<object> metadata)
+    private static IReadOnlyList<string>? SearchTermsFor(
+        ActionDescriptor action,
+        IReadOnlyList<object> metadata,
+        ApiDescription api,
+        Func<string, IReadOnlyList<string>?>? containerSearchTerms,
+        List<CatalogDiagnostic> diagnostics)
+    {
+        IReadOnlyList<string>? declared = Declared(action, metadata, attribute => attribute.SearchTerms)
+            ?? Central(action, containerSearchTerms);
+        if (declared is null)
+        {
+            return null;
+        }
+        IReadOnlyList<string> kept = CleanVocabulary(declared, OwnerOf(action, api), diagnostics, SearchTermRules);
+        return kept.Count == 0 ? null : kept;
+    }
+
+    private static IReadOnlyList<string>? Central(
+        ActionDescriptor action, Func<string, IReadOnlyList<string>?>? rule) =>
+        rule is not null && action is ControllerActionDescriptor typed
+            ? rule(typed.ControllerTypeInfo.FullName ?? typed.ControllerName)
+            : null;
+
+    private static IReadOnlyList<string>? Declared(
+        ActionDescriptor action, IReadOnlyList<object> metadata, Func<McpToolAttribute, string[]?> read)
     {
         if (action is not ControllerActionDescriptor controller)
         {
-            return metadata.OfType<McpToolAttribute>().LastOrDefault()?.Tags;
+            return metadata.OfType<McpToolAttribute>().LastOrDefault() is { } marker ? read(marker) : null;
         }
         // Guard: read both levels rather than reusing SelectionAttribute, which returns the method
         // attribute alone whenever one exists. A bare [McpTool] on a method would otherwise erase
-        // the container's declared tags, which the NestJS key-by-key merge keeps.
-        return controller.MethodInfo.GetCustomAttribute<McpToolAttribute>(inherit: true)?.Tags
-            ?? controller.ControllerTypeInfo.GetCustomAttribute<McpToolAttribute>(inherit: true)?.Tags;
+        // the container's declaration, which the NestJS key-by-key merge keeps.
+        McpToolAttribute? method = controller.MethodInfo.GetCustomAttribute<McpToolAttribute>(inherit: true);
+        McpToolAttribute? container = controller.ControllerTypeInfo.GetCustomAttribute<McpToolAttribute>(inherit: true);
+        return (method is null ? null : read(method)) ?? (container is null ? null : read(container));
     }
 
-    /// <summary>Drops the tags that cannot survive folding, keeping the host's own spelling.</summary>
-    /// <remarks>
-    /// A tag that folds to nothing can never be matched. Two that fold alike are one filter key but
-    /// two index contributions, which doubles that term's search weight for what looks like a
-    /// spelling choice.
-    /// </remarks>
-    private static IReadOnlyList<string> CleanTags(
-        IReadOnlyList<string> declared, string owner, List<CatalogDiagnostic> diagnostics)
+    private sealed record VocabularyRules(string EmptyCode, string EmptyReason, string DuplicateCode, string Noun);
+
+    private static readonly VocabularyRules TagRules = new(
+        DiagnosticCodes.EmptyTag, "no caller can ask for it", DiagnosticCodes.DuplicateTag, "tag");
+
+    private static readonly VocabularyRules SearchTermRules = new(
+        DiagnosticCodes.EmptySearchTerm, "it contributes no search text", DiagnosticCodes.DuplicateSearchTerm, "search term");
+
+    // Guard: two entries that fold alike are two index contributions, which doubles that term's
+    // search weight for what looks like a spelling choice, and one that folds to nothing can never
+    // be matched. The host's own spelling of the first is kept.
+    private static IReadOnlyList<string> CleanVocabulary(
+        IReadOnlyList<string> declared, string owner, List<CatalogDiagnostic> diagnostics, VocabularyRules rules)
     {
         Dictionary<string, string> kept = new(StringComparer.Ordinal);
         List<string> order = [];
-        foreach (string tag in declared)
+        foreach (string entry in declared)
         {
-            string folded = ToolIndex.FoldToken(tag);
+            string folded = ToolIndex.FoldToken(entry);
             if (folded.Length == 0)
             {
                 diagnostics.Add(new CatalogDiagnostic(
-                    DiagnosticCodes.EmptyTag,
-                    $"{owner} declares a tag that is empty once folded; no caller can ask for it, so it was dropped."));
+                    rules.EmptyCode,
+                    $"{owner} declares a {rules.Noun} that is empty once folded; {rules.EmptyReason}, so it was dropped."));
                 continue;
             }
             if (kept.TryGetValue(folded, out string? first))
             {
                 diagnostics.Add(new CatalogDiagnostic(
-                    DiagnosticCodes.DuplicateTag,
-                    $"{owner} declares '{tag}' and '{first}', which fold to the same tag; the later one was dropped because two equal tags double that term's search weight."));
+                    rules.DuplicateCode,
+                    $"{owner} declares '{entry}' and '{first}', which fold to the same {rules.Noun}; the later one was dropped because two equal {rules.Noun}s double that term's search weight."));
                 continue;
             }
-            kept[folded] = tag;
-            order.Add(tag);
+            kept[folded] = entry;
+            order.Add(entry);
         }
         return order;
     }

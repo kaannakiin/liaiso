@@ -1,0 +1,22 @@
+{
+  "kind": "search",
+  "description": "searchTerms filtre anahtari degildir: yalniz terim olarak bildirilen 'billing' tag filtresinde hicbir tool secmez",
+  "input": {
+    "tools": [
+      {
+        "name": "create_invoice",
+        "route": "/invoices",
+        "searchTerms": [
+          "billing"
+        ]
+      }
+    ],
+    "query": "",
+    "tags": [
+      "billing"
+    ]
+  },
+  "expected": {
+    "names": []
+  }
+}

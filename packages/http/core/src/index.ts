@@ -147,6 +147,28 @@ export { createRequestTemplateFromEndpoint, createTool } from "./tool.js";
 export type { Tool } from "./tool.js";
 export { foldToken, ToolIndex, tokenize } from "./search.js";
 export {
+  consultRanker,
+  defaultRankerTimeoutMs,
+  describeRankerEvent,
+  isListQuery,
+  isNameList,
+  normalizeRanking,
+  rankCatalogOf,
+  rankerFailureMessages,
+} from "./ranker.js";
+export type {
+  NormalizedRanking,
+  RankCatalog,
+  RankDocument,
+  RankerConsultation,
+  RankerEvent,
+  RankerFailureMode,
+  RankerFailureReason,
+  RankRequest,
+  SearchRankerOptions,
+  ToolRanker,
+} from "./ranker.js";
+export {
   curatedDescriptions,
   curationShapeOf,
   emptyCuration,
@@ -211,6 +233,7 @@ export {
   narrowingArguments,
   narrowingFallback,
   refuseOversizeResponse,
+  refuseRankerUnavailable,
   refuseTimedOutInvoke,
   refuseUnresolvedFile,
   sdkError,
@@ -258,6 +281,7 @@ export type {
 export {
   assertCatalogValid,
   buildCatalog,
+  cleanSearchTerms,
   cleanTags,
 } from "./catalog/pipeline.js";
 export type {

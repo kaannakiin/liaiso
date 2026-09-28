@@ -1,0 +1,45 @@
+{
+  "kind": "ranked-search",
+  "description": "tag filtresi ranker cevabina uygulanir ve sirayi bozmaz: System tag'li health duser, Orders'lar ranker sirasinda kalir",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}",
+        "tags": [
+          "Orders"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health",
+        "tags": [
+          "System"
+        ]
+      },
+      {
+        "name": "list_orders",
+        "route": "/orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    ],
+    "query": "order",
+    "tags": [
+      "orders"
+    ],
+    "rankerAnswer": [
+      "health",
+      "list_orders",
+      "get_order"
+    ]
+  },
+  "expected": {
+    "names": [
+      "list_orders",
+      "get_order"
+    ],
+    "fallback": false
+  }
+}

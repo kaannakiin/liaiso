@@ -77,6 +77,7 @@ function defaultProviders(): Provider[] {
       provide: extensionTokens.visibilityEvaluator,
       useClass: DeclarativeVisibilityEvaluator,
     },
+    { provide: extensionTokens.toolRanker, useValue: null },
     {
       provide: extensionTokens.probeEvaluator,
       useFactory: (dispatcher: LiaisoDispatcher, options: LiaisoOptions) =>

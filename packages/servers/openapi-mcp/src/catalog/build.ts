@@ -90,6 +90,7 @@ export async function buildGatewayCatalog(
       return [];
     }
     const name = config.names[endpoint.key];
+    const searchTerms = config.searchTerms[endpoint.key];
     const descriptor =
       name === undefined
         ? endpoint.descriptor
@@ -100,6 +101,7 @@ export async function buildGatewayCatalog(
         owner: endpoint.key,
         descriptor,
         ...(descriptor.tags === undefined ? {} : { tags: descriptor.tags }),
+        ...(searchTerms === undefined ? {} : { searchTerms }),
         declare: (tags: readonly string[] | undefined) => ({
           ...descriptor,
           ...(tags === undefined ? {} : { tags: [...tags] }),

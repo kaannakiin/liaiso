@@ -1,0 +1,27 @@
+{
+  "kind": "search",
+  "description": "aciklama searchTerms ile ayni agirliktadir (1.5): taraflar yer degistirince de berabere kalir; 1.5'ten yuksek bir searchTerms agirligi beta_probe'u one gecirirdi",
+  "input": {
+    "tools": [
+      {
+        "name": "alpha_probe",
+        "route": "/a",
+        "description": "invoice"
+      },
+      {
+        "name": "beta_probe",
+        "route": "/b",
+        "searchTerms": [
+          "invoice"
+        ]
+      }
+    ],
+    "query": "invoice"
+  },
+  "expected": {
+    "names": [
+      "alpha_probe",
+      "beta_probe"
+    ]
+  }
+}

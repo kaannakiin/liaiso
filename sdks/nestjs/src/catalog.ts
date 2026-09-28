@@ -26,6 +26,7 @@ import {
   type EndpointDescriptor,
   type FileOptions,
   type ToolAnnotations,
+  type ToolRanker,
   type ToolVariant,
 } from "@liaiso/core";
 import { severityOf, type CatalogDiagnostic } from "./discovery/diagnostics.js";
@@ -48,6 +49,7 @@ import {
   type CurationRule,
   type LiaisoOptions,
 } from "./options.js";
+import { extensionTokens } from "./extension-points.js";
 import { protectedResourceMetadataPath } from "./transport/protected-resource-metadata.js";
 
 export { cleanTags } from "@liaiso/core";
@@ -79,7 +81,14 @@ export class LiaisoCatalog implements OnApplicationBootstrap {
     private readonly applicationConfig: ApplicationConfig,
     @Inject(LIAISO_OPTIONS) private readonly options: LiaisoOptions,
     @Optional() private readonly adapterHost?: HttpAdapterHost,
+    @Optional()
+    @Inject(extensionTokens.toolRanker)
+    private readonly toolRanker: ToolRanker | null = null,
   ) {}
+
+  get ranker(): ToolRanker | null {
+    return this.toolRanker;
+  }
 
   get generation(): number {
     return this.currentGeneration;
@@ -307,6 +316,9 @@ export class LiaisoCatalog implements OnApplicationBootstrap {
       routed.map((endpoint) => {
         const tags =
           endpoint.hints.tags ?? this.options.tags?.(endpoint.controller.name);
+        const searchTerms =
+          endpoint.hints.searchTerms ??
+          this.options.searchTerms?.(endpoint.controller.name);
         return {
           source: {
             controller: endpoint.controller,
@@ -316,6 +328,7 @@ export class LiaisoCatalog implements OnApplicationBootstrap {
           descriptor: endpoint.descriptor,
           ...markersOf(endpoint),
           ...(tags === undefined ? {} : { tags }),
+          ...(searchTerms === undefined ? {} : { searchTerms }),
           declare: (cleaned) =>
             declaredDescriptor(
               endpoint,

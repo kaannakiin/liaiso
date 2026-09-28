@@ -35,9 +35,17 @@ export { ArgumentCurationOptions, callerOf } from "./options.js";
 export type {
   ArgumentValueProvider,
   CurationTarget,
+  LiaisoSearchOptions,
   McpCaller,
   VerifiedToken,
 } from "./options.js";
+export type {
+  RankCatalog,
+  RankDocument,
+  RankerFailureMode,
+  RankRequest,
+  ToolRanker,
+} from "@liaiso/core";
 export { isLiaisoProbe, isLiaisoRequest } from "./markers.js";
 export {
   currentOuterConnection,

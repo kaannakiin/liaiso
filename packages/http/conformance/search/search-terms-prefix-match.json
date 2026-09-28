@@ -1,0 +1,25 @@
+{
+  "kind": "search",
+  "description": "searchTerms digerleri gibi katlanir ve onek ile eslesir: 'sipar' sorgusu 'Siparişler' terimini bulur",
+  "input": {
+    "tools": [
+      {
+        "name": "create_order",
+        "route": "/orders",
+        "searchTerms": [
+          "Siparişler"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health"
+      }
+    ],
+    "query": "sipar"
+  },
+  "expected": {
+    "names": [
+      "create_order"
+    ]
+  }
+}

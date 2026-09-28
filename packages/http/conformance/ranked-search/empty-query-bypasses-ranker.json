@@ -1,0 +1,41 @@
+{
+  "kind": "ranked-search",
+  "description": "bos sorgu liste modudur ve ranker'a hic gitmez: cevabi yok sayilir, sonuc ada gore siralidir",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}",
+        "tags": [
+          "Orders"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health",
+        "tags": [
+          "System"
+        ]
+      },
+      {
+        "name": "list_orders",
+        "route": "/orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    ],
+    "query": "",
+    "rankerAnswer": [
+      "health"
+    ]
+  },
+  "expected": {
+    "names": [
+      "get_order",
+      "health",
+      "list_orders"
+    ],
+    "fallback": false
+  }
+}

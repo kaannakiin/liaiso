@@ -1,0 +1,12 @@
+{
+  "kind": "error-mapping",
+  "description": "host ranker'i basarisiz oldu ve host fallback yerine error secti; retryable true, standart mesaj",
+  "input": {
+    "sdkError": "search_ranker_unavailable"
+  },
+  "expected": {
+    "error": "search_ranker_unavailable",
+    "message": "Search is unavailable: the ranker did not answer this query. Call search_tools again later.",
+    "retryable": true
+  }
+}

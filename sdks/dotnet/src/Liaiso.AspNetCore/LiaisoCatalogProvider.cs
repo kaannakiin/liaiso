@@ -35,6 +35,7 @@ internal sealed class LiaisoCatalogProvider(
         CatalogBuildResult Result,
         IReadOnlyDictionary<string, CatalogEntry> ByName,
         ToolIndex Index,
+        RankCatalog RankCatalog,
         IReadOnlyList<CatalogDiagnostic> Fatal,
         IReadOnlySet<string> PolicyNames);
 
@@ -171,6 +172,16 @@ internal sealed class LiaisoCatalogProvider(
             .ToArray();
     }
 
+    /// <summary>The index and ranker catalog of one snapshot, read together so a reload cannot split them.</summary>
+    internal (ToolIndex Index, RankCatalog Catalog, IReadOnlyDictionary<string, CatalogEntry> ByName) SearchSurface
+    {
+        get
+        {
+            Snapshot snapshot = Current;
+            return (snapshot.Index, snapshot.RankCatalog, snapshot.ByName);
+        }
+    }
+
     public void EnsureValid()
     {
         Snapshot snapshot = Current;
@@ -239,6 +250,7 @@ internal sealed class LiaisoCatalogProvider(
             prefixMode: options.Value.Naming.PrefixMode,
             containerPrefix: options.Value.Naming.Prefix,
             containerTags: options.Value.Tags,
+            containerSearchTerms: options.Value.SearchTerms,
             severityOf: options.Value.Diagnostics.SeverityOf,
             curation: options.Value.Arguments,
             selectionRules: options.Value.Selection.Rules,
@@ -253,7 +265,7 @@ internal sealed class LiaisoCatalogProvider(
 
         Dictionary<string, CatalogEntry> byName = result.Entries
             .ToDictionary(e => e.Tool.Name, StringComparer.Ordinal);
-        ToolIndex index = new(result.Entries.Select(e => new SearchDocument(
+        SearchDocument[] documents = result.Entries.Select(e => new SearchDocument(
             e.Tool.Name,
             e.Tool.Description,
             e.Descriptor.Tags ?? [],
@@ -265,7 +277,9 @@ internal sealed class LiaisoCatalogProvider(
                     (e.Descriptor.Parameters ?? [])
                         .Where(p => p.Style == "deepObject")
                         .Select(p => p.Name),
-                    StringComparer.Ordinal)))));
+                    StringComparer.Ordinal)),
+            e.Descriptor.SearchTerms)).ToArray();
+        ToolIndex index = new(documents);
         CatalogDiagnostic[] fatal = result.Diagnostics
             .Where(d => options.Value.Diagnostics.SeverityOf(d.Code)
                 >= options.Value.Diagnostics.FailOn)
@@ -274,7 +288,7 @@ internal sealed class LiaisoCatalogProvider(
             .SelectMany(e => e.Descriptor.Auth.Policies)
             .ToHashSet(StringComparer.Ordinal);
 
-        return new Snapshot(result, byName, index, fatal, policyNames);
+        return new Snapshot(result, byName, index, Ranking.CatalogOf(documents), fatal, policyNames);
     }
 
     private (SchemaMapperOptions, IReadOnlyList<CatalogDiagnostic>) ResolveSchemaBinding()

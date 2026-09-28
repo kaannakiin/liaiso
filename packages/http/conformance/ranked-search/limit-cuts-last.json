@@ -1,0 +1,45 @@
+{
+  "kind": "ranked-search",
+  "description": "limit normalizasyondan sonra keser: bilinmeyen isim limiti tuketmez",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}",
+        "tags": [
+          "Orders"
+        ]
+      },
+      {
+        "name": "health",
+        "route": "/health",
+        "tags": [
+          "System"
+        ]
+      },
+      {
+        "name": "list_orders",
+        "route": "/orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    ],
+    "query": "order",
+    "limit": 1,
+    "rankerAnswer": [
+      "ghost",
+      "health",
+      "get_order"
+    ]
+  },
+  "expected": {
+    "names": [
+      "health"
+    ],
+    "fallback": false,
+    "unknown": [
+      "ghost"
+    ]
+  }
+}

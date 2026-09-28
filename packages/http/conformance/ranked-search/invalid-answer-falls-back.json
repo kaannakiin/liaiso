@@ -1,0 +1,24 @@
+{
+  "kind": "ranked-search",
+  "description": "dizi olmayan cevap gecersizdir: BM25'e dusulur ve sonuc BM25 sirasidir",
+  "input": {
+    "tools": [
+      {
+        "name": "get_order",
+        "route": "/orders/{id}"
+      },
+      {
+        "name": "health",
+        "route": "/health"
+      }
+    ],
+    "query": "order",
+    "rankerAnswer": "health"
+  },
+  "expected": {
+    "names": [
+      "get_order"
+    ],
+    "fallback": true
+  }
+}

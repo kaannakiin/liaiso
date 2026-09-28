@@ -201,6 +201,13 @@ A declaration replaces the controller-derived tag rather than adding to it, and 
 the same thing centrally for controllers you cannot decorate. Tags are search text too, so changing
 them changes ranking — see the how-to on grouping operations.
 
+Words an agent may type that your operation's text does not contain go in `SearchTerms`
+(`[McpTool(SearchTerms = new[] { "sipariş" })]`, or `options.SearchTerms` centrally): indexed like
+the description, never a filter key, never shown to the agent. To rank with your own retriever
+instead of BM25, register an `IToolRanker`; `options.Search.RankerTimeout` (10 s by default) and
+`options.Search.OnRankerFailure` (`Fallback` or `Error`) govern it. Visibility, the tag filter and
+the payload budget still apply to its answer — see the how-to on plugging in your own search.
+
 To protect `/mcp`, attach your own authorization:
 
 ```csharp

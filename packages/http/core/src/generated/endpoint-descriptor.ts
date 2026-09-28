@@ -39,6 +39,7 @@ export interface EndpointDescriptor {
   };
   auth: Auth;
   tags?: string[];
+  searchTerms?: string[];
   arguments?: ArgumentCuration[];
   variants?: [ToolVariant, ...ToolVariant[]];
   family?: ToolFamily;

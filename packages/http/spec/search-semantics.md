@@ -110,12 +110,15 @@ The rationale is agglutinative languages. In Turkish descriptions, `siparişi`, 
 | ----------------- | ------ |
 | `name`            | 3.0    |
 | `description`     | 1.5    |
+| `searchTerms`     | 1.5    |
 | `tags`            | 1.0    |
 | `route`           | 1.0    |
 | `alternateRoutes` | 1.0    |
 | `parameters`      | 1.0    |
 
 `tags` carries the operation's grouping labels ([metadata-contract.md](metadata-contract.md)). It is read twice, and the two readings are independent. As an index field it is tokenized like every other field, so the tag `Orders` contributes the token `order` and a query for `order` ranks the tool. As a `search_tools` filter key it is **not** tokenized and is compared whole ([Filtering by tag](#filtering-by-tag)). A host that declares tags is therefore editing the search index as well as the browsing vocabulary: replacing `Orders` with `billing` removes `order` as a matching term for every tool in that container, and lengthens the document, which lowers every other term's score on it.
+
+`searchTerms` carries the host's declared search vocabulary ([metadata-contract.md](metadata-contract.md)): words an agent may type that the operation's own text does not contain, such as a synonym, a business term or a second language. It is tokenized like every other field, at the description's weight, because it is text a person chose to describe the operation with; the name still outweighs it. Unlike `tags` it is read **once**: it is never a filter key, never part of the `tags` vocabulary of a `search_tools` answer, and never shown on the card or the loaded shape. An agent cannot see why a term matched, which is the point: the vocabulary exists for the ranker, not for the reader.
 
 `alternateRoutes` carries the routes that were folded away when one operation was bound to several ([naming.md](naming.md)). They are tokenized at the same weight as `route` so a query naming a compatibility path still finds the tool; the tool's own contract still names the single route it invokes.
 
@@ -143,7 +146,7 @@ score(q,d) = Σ_{t ∈ q} idf(t) · norm(t, d)
 
 `N` is the document count and `df(t)` is the number of documents containing the term. A document scoring zero does not appear in the result. Ordering: score descending, and on a tie name ordinal ascending. Returns up to `limit`.
 
-There is no heavy dependency; the formula is ten lines in any language and is fixed so it can be matched exactly by fixtures. No synonyms, language models or embeddings are used — those are the agent's job, not the SDK's.
+There is no heavy dependency; the formula is ten lines in any language and is fixed so it can be matched exactly by fixtures. The SDK ships no synonyms, language models or embeddings. A host that has them binds a ranker of its own ([Replaceable ranker](#replaceable-ranker)); declared vocabulary that needs no model belongs in `searchTerms`.
 
 ## Filtering by tag
 
@@ -161,6 +164,36 @@ There is no heavy dependency; the formula is ten lines in any language and is fi
 The empty-query list mode is filtered too: an empty `query` with a `tags` filter lists every tool carrying those tags, ordinal sorted by name, up to `limit`. That branch does not score, so there is nothing for the filter to reorder; the cut is still last, so the listing walks past the tools the filter removed rather than truncating first.
 
 `total` is unchanged by the filter, for the same reason it does not depend on `limit`: it is the number of tools the declarative layer counted as visible ([Known limits](#known-limits)), not the number that matched.
+
+## Replaceable ranker
+
+A host MAY bind a ranker of its own — a vector index, an embedding retriever, a search service it already runs — in place of the BM25 ranking above. The ranker replaces **one step**: turning a non-empty query into an ordered list of tool names. Everything before and after that step is unchanged and stays in the SDK, because every guarantee of this document and of [visibility.md](visibility.md) lives there.
+
+**What the ranker receives.** The query text as the caller sent it, and the catalog as a list of documents, one per tool, carrying exactly the index fields of [Fields and weights](#fields-and-weights): `name`, `description`, `tags`, `searchTerms`, `route`, `alternateRoutes` and `parameters`, the last one projected from the **published** schema. A hidden argument therefore never reaches the ranker, for the same structural reason it never reaches the index. The catalog carries a `version` that changes whenever the catalog is rebuilt, so a ranker that embeds documents ahead of time knows when to embed them again. The ranker MUST NOT receive the caller's identity, scope or policy results: a ranker that could see the caller would be the natural place to put an authorization rule, and search filtering is not a security mechanism ([visibility.md](visibility.md)). The ranker sees the whole catalog, including tools this caller may not see, exactly as BM25 scores the whole corpus; visibility is applied to its answer.
+
+**When it runs.** Only for a query that yields at least one token ([Tokenization](#tokenization)). A query that yields none is the list mode and never reaches the ranker, bound or not: a listing is ordinal by name and has nothing to rank, and deciding the mode by one predicate for both rankers keeps a query from being a listing under one and a search under the other.
+
+**What it answers.** An ordered list of tool names, most relevant first. A tool it leaves out does not appear in the result — the ranker decides relevance, as a zero BM25 score does — so an empty list is an empty result, not a failure. The SDK then normalizes the answer, and reports each correction on a host channel of its own, never in the answer:
+
+- a name that is not in the catalog is dropped;
+- a name that appears again is dropped, and the first position is kept;
+- the `tags` filter is applied to what remains, preserving its order ([Filtering by tag](#filtering-by-tag): a filter removes rows and never moves one);
+- visibility, the T2 probe, the card or loaded shape, `limit`, `total`, the answer's `tags` vocabulary and the payload budget follow exactly as they do after BM25.
+
+`total` is independent of the ranker for the reason it is independent of `limit`.
+
+**When it fails.** The ranker runs under a deadline of its own, set by the host; zero means none. The default is 10000 ms, and a deadline at or above 60000 ms is unreachable through a stock MCP client for the reason given in [invoke-semantics.md](invoke-semantics.md). The ranker has failed when the deadline expires, when it throws, or when its answer is not a list of strings. What happens next is a host setting with two values:
+
+- `fallback` (the default): the SDK ranks the query with BM25 instead and answers normally, and reports the failure and its reason on its host channel. An agent's discovery does not stop because one retriever did.
+- `error`: `search_tools` answers `search_ranker_unavailable`, with `retryable: true` and the standard message
+
+  ```
+  Search is unavailable: the ranker did not answer this query. Call search_tools again later.
+  ```
+
+The caller's own cancellation is not a ranker failure: it is propagated as cancellation and never falls back or produces `search_ranker_unavailable`, because nobody is left to read either answer.
+
+**What conformance covers.** The order a host's ranker produces is the host's, and no fixture binds it. The normalization around it is the SDK's, and the `ranked-search` fixture kind pins it: given a catalog, a query, a `tags` filter and a ranker's answer verbatim, it fixes the resulting names, whether the answer was rejected, and which names were dropped as unknown or repeated.
 
 ## Known limits
 

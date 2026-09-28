@@ -1,7 +1,12 @@
 import type { IncomingHttpHeaders } from "node:http";
 import type { OAuthTokenVerifier } from "@modelcontextprotocol/express";
-import { invokeLimits } from "@liaiso/core";
-import type { Recognizer, SelectionDefault, SelectionRule } from "@liaiso/core";
+import { defaultRankerTimeoutMs, invokeLimits } from "@liaiso/core";
+import type {
+  RankerFailureMode,
+  Recognizer,
+  SelectionDefault,
+  SelectionRule,
+} from "@liaiso/core";
 import type { ArgumentRule, JsonValue } from "./decorators.js";
 import type { CatalogSeverity } from "./discovery/diagnostics.js";
 import type { TypeShapeBinderOptions } from "./discovery/type-shape.js";
@@ -275,6 +280,18 @@ export interface LiaisoDiagnosticsOptions {
   readonly downgrade: Set<string>;
 }
 
+/**
+ * How `search_tools` treats a ranker bound through `extensionTokens.toolRanker`.
+ *
+ * @param rankerTimeoutMs the ranker's deadline in whole milliseconds; zero means none
+ * @param onRankerFailure `fallback` ranks with BM25 and logs, `error` answers
+ * `search_ranker_unavailable`
+ */
+export interface LiaisoSearchOptions {
+  rankerTimeoutMs: number;
+  onRankerFailure: RankerFailureMode;
+}
+
 export type LiaisoVisibilityTier = "declarative" | "probe";
 
 export interface LiaisoVisibilityOptions {
@@ -313,6 +330,10 @@ export class LiaisoOptions {
     maxInlineFileBytes: invokeLimits.maxInlineFileBytes,
     maxFileBytes: invokeLimits.maxFileBytes,
   };
+  readonly search: LiaisoSearchOptions = {
+    rankerTimeoutMs: defaultRankerTimeoutMs,
+    onRankerFailure: "fallback",
+  };
   /** Binding `files.resolver` is what makes `ref` appear in a file argument's schema. */
   readonly files: LiaisoFileOptions = {};
   /**
@@ -321,6 +342,8 @@ export class LiaisoOptions {
    * default rather than adding to it.
    */
   tags?: (container: string) => readonly string[] | undefined;
+  /** Search vocabulary for a container the host cannot decorate, below a `@McpTool({ searchTerms })`. */
+  searchTerms?: (container: string) => readonly string[] | undefined;
   schema?: TypeShapeBinderOptions;
   resourceServer?: LiaisoResourceServerOptions;
 }
