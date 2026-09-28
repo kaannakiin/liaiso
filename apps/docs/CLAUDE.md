@@ -30,6 +30,23 @@ served as a static asset; the Worker only answers what no file matches — the `
 every link is slash-less; the default `auto-trailing-slash` would answer each page with a 307 to
 `<route>/`.
 
+### Deployment
+
+- Live site: <https://liaiso-docs.invokit-docs.workers.dev> — Worker `liaiso-docs` on the
+  `invokit-docs` workers.dev subdomain, Cloudflare account `9a3e2156b439a4ae8a2ac5b153252fee`, Free
+  plan. No custom domain is bound.
+- **Deploys are manual.** No CI job deploys this site, so a merged content change is not live until
+  someone runs `pnpm turbo run build --filter=@liaiso/docs` and then
+  `pnpm --filter @liaiso/docs deploy`.
+- A change under `apps/docs` is finished only once it is deployed: after the change is committed,
+  ask before deploying (it publishes), then deploy, then confirm with
+  `curl -sS -o /dev/null -w "%{http_code}\n" https://liaiso-docs.invokit-docs.workers.dev/docs/<product>/<slug>`
+  on a page the change touched.
+- The Cloudflare MCP server (`mcp__cloudflare-api__*`) is scoped to the same account: use it to
+  read the Worker's state (`/workers/scripts/liaiso-docs/deployments`, `/workers/domains`), not to
+  upload the Worker — `wrangler deploy` is the only deploy path, because it uploads the prerendered
+  assets alongside the script.
+
 ## Writing documentation
 
 **Read [WRITING.md](WRITING.md) before adding or editing any page.** It is the
@@ -53,6 +70,38 @@ add one `{ id, label, tagline }` entry to `src/content/products.json`. No route 
 `WRITING.md`: folder/registry agreement, mode directory names, numeric prefixes, unique
 slugs, a `# Title` on every page, the how-to/reference title patterns, and that every internal
 `/docs/...` link points at a page that exists. It runs inside `pnpm lint` and in CI's node job.
+
+### Server products: generated reference and runnable examples
+
+A server product (`excel-mcp`, later `xml-mcp`, `pdf-mcp`, `mssql-mcp`, `llm-mcp`) gets its
+`reference/` pages from `scripts/gen-reference.mjs` — **never hand-edit them**:
+
+- `01-tools.md` from the built server's own `tools/list` answer, so every argument and description
+  is the text the agent reads.
+- `02-error-codes.md` from the error-code union types named in `reference/<product>.json`, which
+  holds one sentence per code. A code with no sentence, or a sentence for a code that no longer
+  exists, fails the script. The example envelope at the top is a live call.
+- `03-limits.md` from the package's exported `limits`, with one description per key in the same
+  JSON; a key must be described or listed under `hidden` with a reason.
+
+`pnpm --filter @liaiso/docs gen` rewrites them; `validate` runs `gen --check`, which is why
+`validate` depends on `^build` and the servers are `devDependencies` of this app. A product is
+generated only once it is registered in `products.json`.
+
+`scripts/run-examples.mjs` is WRITING.md rule 4 made executable. For each non-reference page it runs
+every `sh` block in order in one bash session, with `HOME` pointing at a sandbox that holds the
+product's samples and a shim that starts the **workspace build** of the server, and compares each
+output with the fenced block directly below its command (`--write` fills them in). Volatile values
+(`modifiedAt`, `nextCursor`) are masked. A shell helper defined on a page (`excel() { ... }`) must be
+byte-identical to the script's preamble. It needs the network for `npx`, so it is not in CI: run it
+after any change to a server or a page, and before deploying. It runs servers, not test suites.
+
+`scripts/make-samples.mjs` writes the downloadable samples under `public/samples/<product>/`.
+Regenerating them changes byte sizes that appear in page outputs, so rerun `run-examples --write`
+afterwards and review the diff.
+
+`.prettierrc.json` turns off embedded-code formatting for `src/content/**/*.md`: Prettier would
+otherwise re-wrap measured output blocks, which rule 4 forbids editing.
 
 **Oxlint cannot enforce anything here** — it reads source code, not the content registry. Neither can `vite build`: `content.ts` runs at request time, not build
 time, so a `throw` in it fails `dev` but not `build`. The `validate` script is the only gate.
