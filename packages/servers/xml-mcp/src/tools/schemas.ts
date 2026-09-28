@@ -95,8 +95,15 @@ export const columns = z
           z.object({ from: z.literal("text") }),
           z.object({
             from: z.literal("attribute"),
-            namespaceUri: z.string(),
-            localName: z.string().min(1),
+            namespaceUri: z
+              .string()
+              .describe(
+                "Namespace URI of the attribute. Empty string means no namespace, which is where an unprefixed attribute lives.",
+              ),
+            localName: z
+              .string()
+              .min(1)
+              .describe("Local name of the attribute."),
           }),
           z.object({ from: z.literal("name") }),
         ])
@@ -113,26 +120,43 @@ export const columns = z
     }),
   )
   .min(1)
-  .max(limits.maxColumns);
+  .max(limits.maxColumns)
+  .describe(
+    "Columns to read from each record. where, groupBy and metrics name a column by its label.",
+  );
 
 export const where = z
   .array(
     z.object({
       column: z.string().min(1).describe("Label of a declared column."),
-      op: z.enum([
-        "eq",
-        "ne",
-        "contains",
-        "startsWith",
-        "endsWith",
-        "in",
-        "isEmpty",
-        "isNotEmpty",
-        "isMissing",
-        "isPresent",
-      ]),
-      value: z.string().optional(),
-      values: z.array(z.string()).min(1).max(limits.maxInValues).optional(),
+      op: z
+        .enum([
+          "eq",
+          "ne",
+          "contains",
+          "startsWith",
+          "endsWith",
+          "in",
+          "isEmpty",
+          "isNotEmpty",
+          "isMissing",
+          "isPresent",
+        ])
+        .describe(
+          "eq, ne, contains, startsWith and endsWith compare value as text; in matches any of values; isMissing and isPresent test whether the column's address matched; isEmpty and isNotEmpty test for the empty string. The last four take no operand.",
+        ),
+      value: z
+        .string()
+        .optional()
+        .describe(
+          "Operand of eq, ne, contains, startsWith and endsWith, compared as text.",
+        ),
+      values: z
+        .array(z.string())
+        .min(1)
+        .max(limits.maxInValues)
+        .optional()
+        .describe("Operands of in: the cell matches if it equals any of them."),
     }),
   )
   .max(limits.maxConditions)

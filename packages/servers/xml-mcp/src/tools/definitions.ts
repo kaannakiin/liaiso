@@ -200,15 +200,19 @@ export const toolDefinitions = {
       metrics: z
         .array(
           z.object({
-            fn: z.enum([
-              "count",
-              "countValues",
-              "countDistinct",
-              "sum",
-              "avg",
-              "min",
-              "max",
-            ]),
+            fn: z
+              .enum([
+                "count",
+                "countValues",
+                "countDistinct",
+                "sum",
+                "avg",
+                "min",
+                "max",
+              ])
+              .describe(
+                "count counts records and needs no column. countValues counts records whose column matched, an empty value included; countDistinct counts its distinct values. sum, avg, min and max require numericMode: binary64.",
+              ),
             column: z
               .string()
               .min(1)
@@ -219,7 +223,10 @@ export const toolDefinitions = {
           }),
         )
         .min(1)
-        .max(limits.maxMetrics),
+        .max(limits.maxMetrics)
+        .describe(
+          "Values to compute. Each metric becomes one output column after the groupBy columns.",
+        ),
       where: where.optional(),
       match,
       caseSensitive,
