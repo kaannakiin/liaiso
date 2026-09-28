@@ -3,5 +3,10 @@
     "id": "http-catalog",
     "label": "HTTP Catalog",
     "tagline": "The ASP.NET Core and NestJS SDKs that turn an existing backend's endpoints into a searchable agent tool catalog."
+  },
+  {
+    "id": "excel-mcp",
+    "label": "Excel MCP",
+    "tagline": "A read-only MCP server that lets an agent read the .xlsx, .xlsm and .csv files in one folder."
   }
 ]
