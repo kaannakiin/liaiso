@@ -1,0 +1,7 @@
+Meeting notes, 12 January 2026. Present: Ada, Emre, Lena.
+
+The West region missed its delivery target for the third month in a row; 14% of orders arrived late.
+Emre will talk to a second carrier and report back by 30 January.
+The Rotterdam warehouse move is on schedule and finishes in March.
+Budget for the new carrier trial: EUR 18,000, approved by Ada.
+Lena raised that the returns form still asks for a fax number; it will be removed in the next release.

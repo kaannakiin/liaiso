@@ -9,7 +9,7 @@ MCP server that lets a planning agent (Codex, Claude Code, Cursor) hand off boun
   "mcpServers": {
     "local": {
       "command": "npx",
-      "args": ["liaiso-llm"],
+      "args": ["-y", "@liaiso/llm-mcp"],
       "env": {
         "LIAISO_LLM_BASE_URL": "http://127.0.0.1:11434",
         "LIAISO_LLM_MODEL": "qwen3:8b"
@@ -42,7 +42,7 @@ LIAISO_LLM_NUM_CTX=16384                     # default; at least 4096
 LIAISO_LLM_KEEP_ALIVE=30m                    # default
 LIAISO_LLM_TIMEOUT_MS=300000                 # default; one request
 
-npx liaiso-llm
+npx -y @liaiso/llm-mcp
 ```
 
 | Variable                | Default                  | Meaning                                                                                                             |

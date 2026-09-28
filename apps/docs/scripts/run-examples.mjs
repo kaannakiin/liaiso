@@ -59,6 +59,20 @@ const products = {
     ],
     ollama: ["how-to/04-read-scanned-pages-with-ocr.md"],
   },
+  "llm-mcp": {
+    bins: { "liaiso-llm": "packages/servers/llm-mcp/dist/cli.js" },
+    folder: "liaiso-llm",
+    samples: {
+      default: ["meeting-notes.txt", "tickets.csv", "operations-2026.txt"],
+    },
+    preamble: `llm() {
+  npx -y @modelcontextprotocol/inspector --cli liaiso-llm -- \\
+    -e LIAISO_LLM_MODEL="$LIAISO_LLM_MODEL" -e LIAISO_LLM_ROOT="$HOME/liaiso-llm" \\
+    --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
+}`,
+    ollama: true,
+    requires: ["LIAISO_LLM_MODEL"],
+  },
   "mssql-mcp": {
     bins: { "liaiso-mssql": "packages/servers/mssql-mcp/dist/cli.js" },
     secrets: { "liaiso-mssql.json": "LIAISO_DOCS_MSSQL_CONFIG" },
@@ -93,7 +107,11 @@ const skipped = [
   /^ollama /,
 ];
 const helper = /^[a-z]+\(\) \{/;
-const volatile = [/"modifiedAt": "[^"]+"/g, /"nextCursor": "[^"]+"/g];
+const volatile = [
+  /"modifiedAt": ?"[^"]+"/g,
+  /"nextCursor": ?"[^"]+"/g,
+  /"durationMs": ?\d+/g,
+];
 const mask = (text) =>
   volatile.reduce(
     (out, pattern) => out.replace(pattern, (m) => m.split(":")[0]),
@@ -192,18 +210,20 @@ function run(product, config, file) {
   }
   if (pairs.length === 0) return { file, failures: [], markdown };
   const page = path.relative(path.join(contentDir, product), file);
-  const unset = Object.values(config.secrets ?? {}).filter(
-    (variable) => process.env[variable] === undefined,
-  );
+  const unset = [
+    ...Object.values(config.secrets ?? {}),
+    ...(config.requires ?? []),
+  ].filter((variable) => process.env[variable] === undefined);
   if (unset.length > 0) {
     return {
       file,
       failures: [],
       markdown,
-      skipped: `set ${unset.join(", ")} to a client configuration file`,
+      skipped: `set ${unset.join(", ")}`,
     };
   }
-  const needsOllama = (config.ollama ?? []).includes(page);
+  const needsOllama =
+    config.ollama === true || (config.ollama ?? []).includes(page);
   if (needsOllama && ollama === undefined) {
     return {
       file,

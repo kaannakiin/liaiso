@@ -97,12 +97,15 @@ byte-identical to the script's preamble. It needs the network for `npx`, so it i
 after any change to a server or a page, and before deploying. It runs servers, not test suites.
 
 A product may define several helpers (`pdf` and `pdfocr`); each helper on a page must equal one of
-them. A page listed under the product's `ollama` key runs only when `LIAISO_DOCS_OLLAMA` is set —
+them. A page listed under the product's `ollama` key (`true` for every page, as for `llm-mcp`) runs only
+when `LIAISO_DOCS_OLLAMA` is set —
 `local` for an Ollama on `127.0.0.1:11434`, or `host:port`, which the script forwards to
 `127.0.0.1:11434` for that page, because the Inspector starts the server with a fixed environment
 allow-list and the page's binding uses the default address. Without it the page is reported as
 `skip`, not `ok`.
 
+Variables a product's pages need are listed under `requires` and skip the page when unset:
+`llm-mcp` needs `LIAISO_LLM_MODEL`, the model the outputs were produced with (the pages name it).
 A product whose server needs credentials names them under `secrets`: `mssql-mcp` pages run only when
 `LIAISO_DOCS_MSSQL_CONFIG` points at an Inspector configuration file (an `mcpServers.shop` entry
 with the `LIAISO_MSSQL_*` variables in `env`), which the script copies into the sandbox as

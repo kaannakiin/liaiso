@@ -1,0 +1,13 @@
+id,subject,message
+1,Charged twice,"I was billed two times for order 1004, please refund one of them."
+2,Where is my desk?,"Ordered an oak desk ten days ago and the tracking page has not moved since Monday."
+3,Login loop,"After the update the app sends me back to the login screen every time I sign in."
+4,Invoice address,"Can you change the company name on my last invoice? It should be Harbor Retail Ltd."
+5,Parcel damaged,"The lamp arrived with a broken shade, the box was crushed."
+6,Export button,"Clicking Export CSV in the reports page does nothing, no file is downloaded."
+7,Discount not applied,"The 10% code WELCOME10 was accepted but the total did not change."
+8,Late again,"Third time this month the delivery came a day after the promised date."
+9,App crashes,"The Android app closes as soon as I open the order history."
+10,Thank you,"Just wanted to say the chair is great, thanks for the quick help last week."
+11,VAT number,"Please add our VAT number NL123456789B01 to future invoices."
+12,Wrong item,"I ordered a wall shelf and received an LED lamp instead."

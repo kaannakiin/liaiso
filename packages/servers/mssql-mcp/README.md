@@ -11,7 +11,7 @@ LIAISO_MSSQL_SERVER=10.0.0.5 \
 LIAISO_MSSQL_DATABASE=Sales \
 LIAISO_MSSQL_USER=mcp_reader \
 LIAISO_MSSQL_PASSWORD=... \
-npx liaiso-mssql
+npx -y @liaiso/mssql-mcp
 ```
 
 See [Configuration](#configuration) for the full variable list and defaults.
@@ -40,7 +40,7 @@ LIAISO_MSSQL_TRUST_SERVER_CERTIFICATE=false  # default
 LIAISO_MSSQL_CONNECT_TIMEOUT_MS=15000        # default
 LIAISO_MSSQL_QUERY_TIMEOUT_MS=30000          # default
 
-npx liaiso-mssql
+npx -y @liaiso/mssql-mcp
 ```
 
 | Variable                                | Default         | Meaning                                              |

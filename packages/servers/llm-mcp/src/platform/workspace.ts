@@ -80,14 +80,25 @@ export async function openWorkspace(
   fail: ErrorFactory<LiaisoLlmErrorCode>,
   outputDir = ".llm-mcp/out",
 ): Promise<Workspace> {
-  const root = await realpath(resolve(raw));
+  const requested = resolve(raw);
+  const root = await realpath(requested);
   if (!(await stat(root)).isDirectory()) {
     throw fail(
       "invalid_argument",
       `The workspace '${raw}' is not a directory.`,
     );
   }
-  const output = resolve(root, outputDir);
+  /**
+   * Guard: the output directory is placed relative to the workspace as the
+   * operator wrote it, then moved onto the resolved root. Resolving it against
+   * the realpath directly refused an absolute directory inside a workspace
+   * reached through a symlink, such as `/tmp/x` beside a root that resolves to
+   * `/private/tmp/x`.
+   */
+  const output = resolve(
+    root,
+    relative(requested, resolve(requested, outputDir)),
+  );
   if (!isContained(root, output)) {
     throw fail(
       "outside_workspace",

@@ -1,0 +1,90 @@
+{
+  "errors": {
+    "example": {
+      "tool": "local_task",
+      "arguments": {
+        "kind": "free",
+        "instruction": "Say hello."
+      },
+      "situation": "from a server whose model host is not running"
+    },
+    "sources": [
+      ["packages/cores/mcp-core/src/errors.ts", "SourceErrorCode"],
+      ["packages/servers/llm-mcp/src/platform/errors.ts", "LiaisoLlmErrorCode"]
+    ],
+    "sections": [
+      {
+        "title": "Arguments",
+        "codes": {
+          "invalid_argument": "An argument the tool does not declare, a value of the wrong type or a missing required argument, or a combination the tool refuses: a label listed twice, a CSV file with no data rows, or a `labelColumn` the file already has. For an undeclared or mistyped argument the recovery lists the arguments the tool accepts.",
+          "invalid_cursor": "Not raised by this server. No tool returns a cursor.",
+          "stale_cursor": "Not raised by this server. No tool returns a cursor.",
+          "resource_limit": "The answer would be larger than 512 KiB. The model's answer is capped far below that, so this is rare; calls that arrive while the model is busy wait in its queue instead of being refused."
+        }
+      },
+      {
+        "title": "Files",
+        "codes": {
+          "outside_workspace": "A path resolves outside the working directory, directly or through a symbolic link. Paths are relative to the workspace, and `..` cannot leave it.",
+          "file_not_found": "No file exists at the given path. Paths are relative to the workspace, which is the server's working directory unless `LIAISO_LLM_ROOT` says otherwise.",
+          "not_text": "The file is not UTF-8 text. `local_task` reads plain text and `local_map` reads CSV; convert other formats first.",
+          "input_too_large": "The input would not fit the model's context window, so it was not sent: the text or files are over the input budget for a kind other than `summarize` or `extract`, a long input needs more than 32 chunks or 1 MiB, a CSV has more than 2,000 rows or is over 8 MiB, or one row alone is over the budget. Nothing is ever cut to fit."
+        }
+      },
+      {
+        "title": "The model",
+        "codes": {
+          "backend_unavailable": "The model host did not answer, or did not answer within `LIAISO_LLM_TIMEOUT_MS`. `local_status` reports `reachable`; start Ollama or fix `LIAISO_LLM_BASE_URL`.",
+          "backend_refused": "The model host answered with an error, most often because `LIAISO_LLM_MODEL` names a model it has not pulled. The message carries the host's own text.",
+          "unparsable_output": "`jsonSchema` was given and the model's answer was not valid JSON for it. Retry once with a simpler schema, or do the work without the local model."
+        }
+      },
+      {
+        "title": "Server",
+        "codes": {
+          "internal_error": "A defect in the server, not in your input or your call. This is the one code with no `recovery`, because there is no next call that fixes it. The detail is written to the server's stderr."
+        }
+      }
+    ]
+  },
+  "limits": {
+    "module": "packages/servers/llm-mcp/dist/index.js",
+    "sections": [
+      {
+        "title": "The context window",
+        "keys": {
+          "inputBudgetRatio": "Share of `LIAISO_LLM_NUM_CTX` one call's input may use; a larger input is refused or split",
+          "outputBudgetRatio": "Share of `LIAISO_LLM_NUM_CTX` the answer may use",
+          "charsPerToken": "Characters counted as one token when the server estimates an input's size",
+          "maxBytesPerChar": "UTF-8 bytes counted per character, so a file that cannot fit is refused before it is read"
+        }
+      },
+      {
+        "title": "Long inputs",
+        "keys": {
+          "maxChunks": "Chunks a long `summarize` or `extract` input may be split into",
+          "maxLongInputBytes": "Largest total input a `summarize` or `extract` call reads",
+          "maxReduceRounds": "Rounds of merging chunk notes before the call fails with `input_too_large`"
+        }
+      },
+      {
+        "title": "Labelling rows",
+        "keys": {
+          "maxMapRows": "Most data rows `local_map` labels in one call",
+          "maxMapBytes": "Largest CSV file `local_map` reads",
+          "outputTokensPerRow": "Answer tokens reserved per row when rows are batched into one model call",
+          "maxStringChars": "Longest sample row returned per label, in characters"
+        }
+      },
+      {
+        "title": "Responses",
+        "keys": {
+          "maxPayloadBytes": "Largest serialized answer"
+        }
+      }
+    ],
+    "hidden": {
+      "catalogTtlMs": "a cache hint on the `tools/list` answer, not a limit on a call"
+    }
+  }
+}

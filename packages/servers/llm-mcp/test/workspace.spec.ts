@@ -137,6 +137,18 @@ describe("createOutput", () => {
     ).toBe("outside_workspace");
   });
 
+  it("accepts an absolute output directory under a root reached through a symlink", async () => {
+    const real = join(base, "real");
+    await mkdir(real);
+    const alias = join(base, "alias");
+    await symlink(real, alias);
+    const aliased = await openWorkspace(alias, fail, join(alias, "out"));
+    expect(await aliased.createOutput("x", "y")).toMatch(/^out\/x.*\.csv$/);
+    expect(
+      await codeOf(openWorkspace(alias, fail, join(base, "elsewhere"))),
+    ).toBe("outside_workspace");
+  });
+
   it("refuses an output directory that is a symlink to outside", async () => {
     const root = join(base, "linked");
     await mkdir(root);
