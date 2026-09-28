@@ -50,7 +50,7 @@ export const toolDefinitions = {
         .boolean()
         .optional()
         .describe(
-          "Include the partial ExcelJS name list, default true. Sheet-local scopes may be missing; inspect limitations.",
+          "Include the defined-name list, default true. The list is partial: sheet-local scopes may be missing; inspect limitations.",
         ),
       delimiter,
       encoding,
@@ -157,7 +157,12 @@ export const toolDefinitions = {
     inputSchema: z.object({
       filePath,
       sheetName,
-      range: z.string().optional(),
+      range: z
+        .string()
+        .optional()
+        .describe(
+          "A1 range such as A1:H500, B:D or 2:40, including the header row. Defaults to the used range.",
+        ),
       groupBy: z
         .array(columnRef)
         .max(limits.maxMetrics)
@@ -166,49 +171,68 @@ export const toolDefinitions = {
       metrics: z
         .array(
           z.object({
-            fn: z.enum([
-              "count",
-              "countValues",
-              "countDistinct",
-              "sum",
-              "avg",
-              "min",
-              "max",
-              "stddev",
-            ]),
+            fn: z
+              .enum([
+                "count",
+                "countValues",
+                "countDistinct",
+                "sum",
+                "avg",
+                "min",
+                "max",
+                "stddev",
+              ])
+              .describe(
+                "count counts matched rows and needs no column. countValues counts the column's non-empty cells, countDistinct its distinct values. sum, avg and stddev read numeric cells; min and max read numbers, dates or text, one kind per column. Other cells are counted as skipped.",
+              ),
             column: columnRef.optional(),
           }),
         )
         .min(1)
-        .max(limits.maxMetrics),
+        .max(limits.maxMetrics)
+        .describe(
+          "Values to compute. Each metric becomes one output column after the groupBy columns, labelled fn(column).",
+        ),
       where: z
         .array(
           z.object({
             column: columnRef,
-            op: z.enum([
-              "eq",
-              "ne",
-              "lt",
-              "lte",
-              "gt",
-              "gte",
-              "contains",
-              "startsWith",
-              "endsWith",
-              "in",
-              "between",
-              "isEmpty",
-              "isNotEmpty",
-              "isError",
-              "isNumber",
-              "isText",
-            ]),
-            value: z.union([z.string(), z.number(), z.boolean()]).optional(),
+            op: z
+              .enum([
+                "eq",
+                "ne",
+                "lt",
+                "lte",
+                "gt",
+                "gte",
+                "contains",
+                "startsWith",
+                "endsWith",
+                "in",
+                "between",
+                "isEmpty",
+                "isNotEmpty",
+                "isError",
+                "isNumber",
+                "isText",
+              ])
+              .describe(
+                "Comparison and text operators take value; in takes values; between takes values as [low, high], both inclusive and of one kind; isEmpty, isNotEmpty, isError, isNumber and isText take neither.",
+              ),
+            value: z
+              .union([z.string(), z.number(), z.boolean()])
+              .optional()
+              .describe(
+                "Operand of eq, ne, lt, lte, gt, gte, contains, startsWith and endsWith.",
+              ),
             values: z
               .array(z.union([z.string(), z.number(), z.boolean()]))
               .min(1)
               .max(limits.maxInValues)
-              .optional(),
+              .optional()
+              .describe(
+                "Operands of in (any of them) and between (exactly two: low and high).",
+              ),
           }),
         )
         .max(limits.maxConditions)
@@ -289,7 +313,12 @@ export const toolDefinitions = {
       "Find cells whose value or formula matches a query. Use this instead of paging a large sheet.",
     inputSchema: z.object({
       filePath,
-      query: z.string().min(1),
+      query: z
+        .string()
+        .min(1)
+        .describe(
+          "Text to find, or a JavaScript regular expression of at most 256 characters when matchMode is regex.",
+        ),
       sheetName,
       matchMode: z
         .enum(["contains", "exact", "regex"])
@@ -309,7 +338,12 @@ export const toolDefinitions = {
         .describe(
           "Search values (default), formulas or both. CSV supports values only.",
         ),
-      range: z.string().optional(),
+      range: z
+        .string()
+        .optional()
+        .describe(
+          "A1 range to search, such as B2:D40, B:D or 2:40. Defaults to the used range.",
+        ),
       maxResults: z
         .int()
         .min(1)

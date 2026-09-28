@@ -1,5 +1,6 @@
 import { Worker } from "node:worker_threads";
 import { LiaisoExcelError } from "./errors.js";
+import { limits } from "./limits.js";
 
 let running = 0;
 const waiting: {
@@ -90,10 +91,14 @@ export async function withRegex<T>(
   ) => Promise<T>,
   signal?: AbortSignal,
 ): Promise<T> {
-  if (query.length > 256 || query.includes("\\p{") || query.includes("\\P{"))
+  if (
+    query.length > limits.maxRegexSource ||
+    query.includes("\\p{") ||
+    query.includes("\\P{")
+  )
     throw new LiaisoExcelError(
       "invalid_pattern",
-      "Regex patterns must be at most 256 characters and cannot use Unicode property escapes.",
+      `Regex patterns must be at most ${limits.maxRegexSource} characters and cannot use Unicode property escapes.`,
     );
   await acquire(signal);
   let worker: Worker | undefined;

@@ -1,6 +1,6 @@
 {
   "name": "@liaiso/excel-mcp",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Read-only MCP server that lets AI agents read local Excel workbooks (.xlsx, .xlsm, .csv): cells, formulas, tables and defined names, sandboxed to one folder.",
   "keywords": [
     "mcp",
