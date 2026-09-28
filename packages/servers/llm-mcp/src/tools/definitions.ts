@@ -23,7 +23,11 @@ export const toolDefinitions = {
     description:
       "Run one bounded language task on the free local model: classify, extract, summarize, transform, or free. Pass file paths in `files` instead of pasting their contents; the server reads them itself, so their text never enters your context. With `jsonSchema` the answer is JSON matching that schema, returned as `result`; otherwise it is text, returned as `answer`. The local window is small: summarize and extract split a long input themselves and read all of it; the other kinds refuse an input over the budget as input_too_large. Nothing is ever truncated.",
     inputSchema: z.object({
-      kind: z.enum(taskKinds),
+      kind: z
+        .enum(taskKinds)
+        .describe(
+          "classify answers with labels, extract with the requested fields (null when absent), summarize with a headline and key facts, transform with the rewritten input, free with a direct answer. summarize and extract split an input that exceeds the budget; the others refuse it.",
+        ),
       instruction: z
         .string()
         .min(1)
@@ -55,7 +59,13 @@ export const toolDefinitions = {
         .describe(
           "How to decide one row's label, naming the cues you saw in a sample.",
         ),
-      labels: z.array(z.string().min(1).max(64)).min(2).max(50),
+      labels: z
+        .array(z.string().min(1).max(64))
+        .min(2)
+        .max(50)
+        .describe(
+          "The labels a row may receive: 2 to 50, none repeated. A row the model does not label is left unlabelled and counted, never guessed.",
+        ),
       labelColumn: z
         .string()
         .min(1)
