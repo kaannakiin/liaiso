@@ -1,6 +1,6 @@
 {
   "name": "@liaiso/db-core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Shared machinery for read-only, dialect-agnostic, database-backed MCP servers.",
   "keywords": [
     "mcp",
