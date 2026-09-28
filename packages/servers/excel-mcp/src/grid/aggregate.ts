@@ -715,7 +715,10 @@ export function aggregateSheet(
     ...(truncated ? { truncationReason: "maxGroups" as const } : {}),
     ...(truncated
       ? {
-          hint: `${ordered.length} distinct groups; the first ${page.length} in ${options.orderBy} order were returned. Set orderBy to "metric" with orderByMetric to get the top groups, or add a where clause.`,
+          hint:
+            options.orderBy === "metric"
+              ? `${ordered.length} distinct groups; the top ${page.length} in metric order were returned. Raise maxGroups (at most ${limits.maxGroupsHard}) for more, or add a where clause.`
+              : `${ordered.length} distinct groups; the first ${page.length} in group order were returned. Set orderBy to "metric" with orderByMetric to get the top groups, or add a where clause.`,
         }
       : {}),
     ...(warnings.length > 0 ? { warnings } : {}),

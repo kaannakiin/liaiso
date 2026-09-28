@@ -19,7 +19,6 @@ export const limits = {
   maxCsvBytes: 16 * 1024 * 1024, // 16 MB
   maxCsvCells: 2_000_000,
   maxCsvColumns: 16_384,
-  maxValidationCountEntries: 5_000,
   csvNulScanBytes: 8 * 1024, // 8 KB
   csvSniffBytes: 64 * 1024, // 64 KB
   csvSniffLines: 20,

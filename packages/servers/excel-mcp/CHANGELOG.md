@@ -1,6 +1,21 @@
-# Unreleased — Excel/file-core hardening
+# Changelog
 
-## Compatibility changes
+## 0.7.0
+
+### Compatibility changes
+
+- `limits.maxValidationCountEntries` is removed. No code path read it since validation ranges are taken from `sqref` as written.
+- `find_in_sheet` enforces the regex length through `limits.maxRegexSource` instead of a literal; the value is still 256 and the message is unchanged.
+
+### Tool surface
+
+- Every argument now carries a description, so an agent no longer sees `aggregate_sheet`'s `range`, `metrics`, `metrics[].fn`, `where[].op`, `where[].value`, `where[].values`, or `find_in_sheet`'s `query` and `range` as a bare name and type.
+- `describe_workbook`'s `includeDefinedNames` no longer mentions ExcelJS, which is not present at runtime.
+- `aggregate_sheet`'s truncation `hint` no longer tells a caller that already passed `orderBy: "metric"` to set it; it suggests raising `maxGroups` or adding a `where` clause instead.
+
+## Unreleased — Excel/file-core hardening
+
+### Compatibility changes
 
 - The grid is read by SheetJS (`@e965/xlsx`, exact-pinned), not exceljs. This fixes two classes of real-world workbook that exceljs rejects as corrupt although Excel opens them and the bytes are valid OPC: SpreadsheetML written with a namespace prefix (`<x:workbook>`, emitted by every .NET `DocumentFormat.OpenXml`/`System.IO.Packaging` writer) and a worksheet part with no ordinal in its name (`xl/worksheets/sheet.xml`). `parseXlsx`, `describeWorkbook`, `selectWorksheet` and `xlsxSnapshot` are replaced by `parseSheetJs`, `describeSheetJs`, `selectSheetName` and `sheetjsSnapshot`.
 - exceljs remains a dependency and backs only `get_data_validations`, `get_tables`, `get_conditional_formats`, `get_images` and the frozen-pane counts. When it cannot open a workbook those tools return `unsupported_for_format`, `describe_workbook` reports the corresponding counts as `null` rather than `0`, `capabilities` turns `dataValidations`/`tables`/`conditionalFormats`/`images`/`frozenPanes` to `false`, and `limitations` carries `rich_metadata_unavailable`. Reading cells, ranges, merges, formulas and defined names is unaffected.
@@ -23,6 +38,6 @@
 - Validation counts may be null after 5,000 inspected entries; check `dataValidationRuleCountExact`. Image counts are not exhaustive; check `imageCountExact`. Metadata tools expose structured `limitations` and `complete`/`definedNamesComplete` markers.
 - Raw internal exception text is logged only to stderr. MCP error messages/recovery redact absolute paths, including sibling roots and Windows paths.
 
-## Deliberate metadata limitations
+### Deliberate metadata limitations
 
 Absolute-anchor images (EXCEL-META-009), formula conditional-format thresholds (EXCEL-META-010), sheet-local defined names (EXCEL-META-025), and rich metadata unreadable for a given workbook layout (EXCEL-META-030) remain explicit, tested limitations. Missing parser metadata is never presented as an exhaustive absence claim.

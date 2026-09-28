@@ -1,0 +1,57 @@
+# Limits
+
+> Generated from the exported `limits` object of `@liaiso/excel-mcp` 0.7.0.
+
+Every limit is fixed at build time; none is configurable. A call that would cross one either answers with `truncated: true` and a way to continue, or fails with `resource_limit`.
+
+## Files
+
+| Limit                                                                       | Value     |
+| --------------------------------------------------------------------------- | --------- |
+| Largest `.xlsx` or `.xlsm` file the server opens                            | 50 MB     |
+| Largest `.csv` file the server opens                                        | 16 MB     |
+| Most cells a CSV may hold                                                   | 2,000,000 |
+| Most fields one CSV record may hold                                         | 16,384    |
+| Bytes at the start of a CSV checked for NUL bytes, which mark a binary file | 8 KB      |
+| Bytes of a CSV read to detect the delimiter                                 | 64 KB     |
+| Lines of a CSV compared to detect the delimiter                             | 20        |
+| Parsed files kept in memory between calls                                   | 4         |
+| Directory entries `list_workbooks` walks before it reports `scanTruncated`  | 5,000     |
+| Files `list_workbooks` returns when `maxResults` is omitted                 | 50        |
+| Largest `maxResults` for `list_workbooks`                                   | 200       |
+
+## Responses
+
+| Limit                                                                                                                | Value  |
+| -------------------------------------------------------------------------------------------------------------------- | ------ |
+| Largest serialized answer; a longer one is cut short and continues through `nextCursor`                              | 512 KB |
+| Longest text, in characters, returned for one cell or one formula                                                    | 512    |
+| Cells `read_sheet` returns when `maxCells` is omitted                                                                | 2,000  |
+| Largest `maxCells` for `read_sheet`                                                                                  | 10,000 |
+| Rows above which `describe_workbook` and `read_sheet` suggest `aggregate_sheet` or `find_in_sheet` instead of paging | 5,000  |
+
+## Search and aggregation
+
+| Limit                                                                                          | Value      |
+| ---------------------------------------------------------------------------------------------- | ---------- |
+| Matches `find_in_sheet` returns when `maxResults` is omitted                                   | 50         |
+| Largest `maxResults` for `find_in_sheet`                                                       | 200        |
+| Longest `regex` query for `find_in_sheet`, in characters                                       | 256        |
+| Groups `aggregate_sheet` returns when `maxGroups` is omitted                                   | 50         |
+| Largest `maxGroups` for `aggregate_sheet`                                                      | 500        |
+| Distinct groups one `aggregate_sheet` scan may form before it is refused with `resource_limit` | 100,000    |
+| Cells one `aggregate_sheet` call may read before it is refused with `resource_limit`           | 20,000,000 |
+| Metrics in one `aggregate_sheet` call                                                          | 8          |
+| Conditions in one `where` filter                                                               | 16         |
+| Values in one `in` condition                                                                   | 64         |
+| Rows at the top of the range that `headerScan` examines                                        | 20         |
+
+## Sheet metadata
+
+| Limit                                                                                  | Value |
+| -------------------------------------------------------------------------------------- | ----- |
+| Excel Tables `get_tables` reports for one sheet                                        | 64    |
+| Columns `get_tables` reports for one table                                             | 256   |
+| Rules `get_conditional_formats` reports for one sheet                                  | 200   |
+| Pictures `get_images` reports for one sheet                                            | 200   |
+| Ranges reported for one validation or conditional-format rule before `rangesTruncated` | 64    |
