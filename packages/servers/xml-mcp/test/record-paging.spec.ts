@@ -153,19 +153,28 @@ describe.each([
     );
   });
 
+  /**
+   * Guard: each case pages through about 50,000 records, measured at 5.00–5.02 s on GitHub's
+   * darwin-x64 Node 24 runner against vitest's 5 s default, while every other target finishes well
+   * under it.
+   */
   it.each([
     limits.maxItemVisits - 1,
     limits.maxItemVisits,
     limits.maxItemVisits + 1,
-  ])("reaches the last of %i records past the scan budget", async (count) => {
-    const rows = await everyPage(harnessOf(), {
-      filePath: `last-${String(count)}.xml`,
-      itemAddress: catalogue,
-      columns: [codeColumn, nameColumn],
-      where: [{ column: "name", op: "eq", value: "last" }],
-    });
-    expect(codesOf(rows)).toStrictEqual([String(count)]);
-  });
+  ])(
+    "reaches the last of %i records past the scan budget",
+    async (count) => {
+      const rows = await everyPage(harnessOf(), {
+        filePath: `last-${String(count)}.xml`,
+        itemAddress: catalogue,
+        columns: [codeColumn, nameColumn],
+        where: [{ column: "name", op: "eq", value: "last" }],
+      });
+      expect(codesOf(rows)).toStrictEqual([String(count)]);
+    },
+    30_000,
+  );
 
   it("filters on the whole value and returns the shortened one", async () => {
     for (const column of ["code", "name"]) {
