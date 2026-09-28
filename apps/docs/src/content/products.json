@@ -18,5 +18,10 @@
     "id": "pdf-mcp",
     "label": "PDF MCP",
     "tagline": "A read-only MCP server that lets an agent read and search the PDF documents in one folder, with optional OCR for scanned pages."
+  },
+  {
+    "id": "mssql-mcp",
+    "label": "SQL Server MCP",
+    "tagline": "A read-only MCP server that lets an agent find, describe and query the tables of one SQL Server database."
   }
 ]

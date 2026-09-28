@@ -279,7 +279,7 @@ function errorsPage(server, answer, notes) {
     "",
     "A tool that fails answers with `isError: true` and one text item holding a JSON object with three fields: `error`, a stable machine code from this page; `message`, what went wrong; and `recovery`, what the next call should do differently. Branch on `error`, never on `message`.",
     "",
-    `This is the answer to \`${answer.exampleCall}\` in a folder that has no such file:`,
+    `This is the answer to \`${answer.exampleCall}\` ${notes.example.situation ?? "in a folder that has no such file"}:`,
     "",
     "```json",
     JSON.stringify(answer.example, null, 2),

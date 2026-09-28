@@ -59,6 +59,14 @@ const products = {
     ],
     ollama: ["how-to/04-read-scanned-pages-with-ocr.md"],
   },
+  "mssql-mcp": {
+    bins: { "liaiso-mssql": "packages/servers/mssql-mcp/dist/cli.js" },
+    secrets: { "liaiso-mssql.json": "LIAISO_DOCS_MSSQL_CONFIG" },
+    preamble: `sql() {
+  npx -y @modelcontextprotocol/inspector --cli --config ~/liaiso-mssql.json --server shop \\
+    --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
+}`,
+  },
 };
 
 const ollama = process.env.LIAISO_DOCS_OLLAMA;
@@ -140,11 +148,18 @@ function sandbox(product, config, file) {
     );
     chmodSync(shim, 0o755);
   }
-  const folder = path.join(home, config.folder);
-  mkdirSync(folder);
-  const page = path.relative(path.join(contentDir, product), file);
-  for (const sample of config.samples[page] ?? config.samples.default) {
-    cpSync(path.join(samplesDir, product, sample), path.join(folder, sample));
+  if (config.folder !== undefined) {
+    const folder = path.join(home, config.folder);
+    mkdirSync(folder);
+    const page = path.relative(path.join(contentDir, product), file);
+    for (const sample of config.samples[page] ?? config.samples.default) {
+      cpSync(path.join(samplesDir, product, sample), path.join(folder, sample));
+    }
+  }
+  for (const [name, variable] of Object.entries(config.secrets ?? {})) {
+    const target = path.join(home, name);
+    cpSync(process.env[variable], target);
+    chmodSync(target, 0o600);
   }
   return { home, bin };
 }
@@ -177,6 +192,17 @@ function run(product, config, file) {
   }
   if (pairs.length === 0) return { file, failures: [], markdown };
   const page = path.relative(path.join(contentDir, product), file);
+  const unset = Object.values(config.secrets ?? {}).filter(
+    (variable) => process.env[variable] === undefined,
+  );
+  if (unset.length > 0) {
+    return {
+      file,
+      failures: [],
+      markdown,
+      skipped: `set ${unset.join(", ")} to a client configuration file`,
+    };
+  }
   const needsOllama = (config.ollama ?? []).includes(page);
   if (needsOllama && ollama === undefined) {
     return {

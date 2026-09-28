@@ -103,6 +103,13 @@ them. A page listed under the product's `ollama` key runs only when `LIAISO_DOCS
 allow-list and the page's binding uses the default address. Without it the page is reported as
 `skip`, not `ok`.
 
+A product whose server needs credentials names them under `secrets`: `mssql-mcp` pages run only when
+`LIAISO_DOCS_MSSQL_CONFIG` points at an Inspector configuration file (an `mcpServers.shop` entry
+with the `LIAISO_MSSQL_*` variables in `env`), which the script copies into the sandbox as
+`~/liaiso-mssql.json` with mode 600 and deletes with it. Pages never contain a connection value, and
+their outputs show only the `liaiso_shop` sample schema (`public/samples/mssql-mcp/liaiso-shop.sql`),
+filtered with `schema=liaiso_shop` and `jq` so the database and login names stay out.
+
 `scripts/make-samples.mjs` (Excel) and `scripts/make-pdf-samples.mjs` (PDF, whose scanned page is
 drawn with `@napi-rs/canvas` from `@liaiso/pdf-raster-pdfjs`'s dependencies) write the downloadable
 samples under `public/samples/<product>/`.
