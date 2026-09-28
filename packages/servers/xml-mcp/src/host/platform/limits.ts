@@ -23,7 +23,6 @@ export const limits = {
   maxChunkBytes: residentMaxBytes,
   maxLiveChunkDoms: 1,
   maxParseMs: parseMs,
-  maxChunkParseMs: parseMs,
   maxQueueDepth: 5,
   maxDomDepth: 128,
   workerCacheEntries: workerCapacityFor(coreLimits.documentCacheSize),
