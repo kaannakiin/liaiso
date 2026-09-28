@@ -70,6 +70,11 @@ documentation too.
 A schema field copied by hand into a reference page is a lie within three months. Even where no
 generation pipeline exists yet, the page **links to the schema** and does not copy its field list.
 
+For an MCP server product the pipeline exists: `scripts/gen-reference.mjs` writes its tools, error
+codes and limits pages from the built server, and `validate` fails when they drift. The only
+hand-written reference input is `reference/<product>.json`, one sentence per error code and limit,
+checked against the source in both directions.
+
 ### 3. RFC 2119 keywords only in the spec
 
 `MUST` / `SHOULD` / `MAY` appear only in `packages/http/spec/*.md`. Normative language in a
@@ -82,6 +87,10 @@ Site pages link to the spec; they do not restate it.
 
 An example comes from a real test file, from a conformance fixture, or from a command someone ran.
 An invented example is a lie within three months, and it spends the reader's trust in one go.
+
+On a server product's pages, "someone ran it" is `scripts/run-examples.mjs`: it runs each `sh` block
+against the workspace build and compares the output with the block below it. Write the command,
+leave the output block empty, and let `--write` fill it.
 
 If an example that has not been run is published anyway, the page says so at the top. It is never
 published silently.

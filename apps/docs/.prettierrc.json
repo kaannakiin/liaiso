@@ -1,0 +1,8 @@
+{
+  "overrides": [
+    {
+      "files": "src/content/**/*.md",
+      "options": { "embeddedLanguageFormatting": "off" }
+    }
+  ]
+}
