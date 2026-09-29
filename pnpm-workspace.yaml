@@ -31,3 +31,5 @@ minimumReleaseAgeExclude:
   - '@firecrawl/pdf-inspector-linux-x64-musl@1.23.0'
   - '@firecrawl/pdf-inspector-win32-x64-msvc@1.23.0'
   - '@firecrawl/pdf-inspector@1.23.0'
+  - '@openai/codex-sdk@0.159.0'
+  - '@openai/codex@0.159.0-darwin-arm64 || 0.159.0-darwin-x64 || 0.159.0-linux-arm64 || 0.159.0-linux-x64 || 0.159.0-win32-arm64 || 0.159.0-win32-x64 || 0.159.0'
