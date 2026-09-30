@@ -25,16 +25,10 @@ pnpm check-types
 | `packages/lab`       | Evidence harnesses; no shipping surface                                  |
 | `sdks/`              | The ASP.NET Core and NestJS SDKs                                         |
 | `apps/docs`          | The documentation site                                                   |
-| `products/chat`      | The chat product, a separate product line                                |
 
 Package names are flat (`@liaiso/excel-mcp`), so `--filter` never mentions a folder. The boundaries
 between packages — which may depend on which, and what each must never name — are listed in
 [CLAUDE.md](CLAUDE.md) and enforced by lint.
-
-`products/chat` shares only the toolchain with the rest: no `packages/*` or `sdks/*` package may
-depend on `@chat/*`. `--filter='@chat/*'` and `--filter='!@chat/*'` partition the repo, and
-`pnpm boundaries` checks that the lines stay apart. `pnpm dev:chat` / `pnpm build:chat` and
-`pnpm dev:sk` / `pnpm build:sk` run one line each.
 
 ## Tests
 

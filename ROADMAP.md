@@ -56,9 +56,8 @@ spec, a guard comment or the package README.
 
 ## llm-mcp
 
-- **Several model hosts.** The chat product's agent gateway already queues worker calls per host
-  (`products/chat/api/src/gateway/worker-lane.ts`); what is missing is more than one host to queue
-  on, with round-robin and failover between them. Done when a second GPU halves the queue and one
+- **Several model hosts.** Only one model host is configured today; what is missing is more
+  than one host to queue on, with round-robin and failover between them. Done when a second GPU halves the queue and one
   host going down moves its work to the other.
 - **A savings record.** Measure worker time, verification and codex's repair together, so a
   delegation's cost is known rather than assumed.
@@ -70,32 +69,7 @@ spec, a guard comment or the package README.
 - **An OpenAI-compatible backend** for vLLM, llama.cpp and LM Studio. Only `src/backend/ollama.ts`
   exists; the port is `src/backend/port.ts`.
 - **Delegation instruction templates.** AGENTS.md and CLAUDE.md templates in the README, and a
-  deployment setting that swaps the chat product's `DELEGATION_INSTRUCTIONS` (hard-coded today),
-  for example for a sensitive-data policy.
-
-## Chat product: integrations
-
-Today a user can add their own MCP server, connect with OAuth or without authentication, and call
-its tools under invoke-time authorization ([connections/README.md](products/chat/api/src/connections/README.md)).
-
-- **Partner integrations.** Registering a partner integration and publishing its scope-to-tool map.
-  `IntegrationToolScope` is only read; nothing writes it.
-- **Manifest auth capability.** A manifest that declares its auth mode and account linking.
-  `Integration.manifestVersion` exists and is unused.
-- **Consent versioning for the scope map.** A partner that moves a tool to a narrower scope widens
-  every existing consent for it. Either store the manifest version with each granted scope and
-  authorize against the version the user consented to, or force re-consent when a scope's tool list
-  grows. Needed before partner scope publishing ships.
-- **SDK-assisted delegated auth.** An adapter over a partner's own session or JWT system, so a
-  backend that embeds the SDK can link accounts without running an OAuth server.
-- **`liaiso auth` CLI.** `inspect`, `setup`, `test` and `publish` for partner onboarding.
-- **PAT and API-key connections.** `IntegrationAuthMode` has only `oauth` and `none`.
-- **An invocation audit trail.** `ConnectionEvent` records the connection lifecycle only; invocation
-  denials are logged, not stored.
-- **Credential key rotation.** `integration_authorization.key_version` is always `1` and
-  `CHAT_AUTH_SECRET` is a single key.
-- **A per-user tool-refresh lease.** The lease is keyed by integration alone, so one user's refresh
-  suppresses another's on a shared partner integration.
+  deployment setting that swaps the delegation instructions, for example for a sensitive-data policy.
 
 ## Chat product: tool approval
 

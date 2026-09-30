@@ -4,7 +4,7 @@ Every client starts the server as a local command with no arguments and passes i
 environment. The server's working directory is its workspace: the only folder it reads files from.
 
 > **Not run by us.** The Claude Code command below was checked against `claude mcp add --help`; the
-> Codex block follows the configuration the liaiso chat product generates; the JSON configurations
+> Codex block follows the configuration a codex-driving host generates; the JSON configurations
 > follow each client's documented format. None was loaded into those clients for this page.
 
 ## The variables

@@ -31,7 +31,6 @@ out/
 build
 dist
 .tanstack
-products/chat/db/src/generated/
 
 
 # Debug
@@ -49,7 +48,5 @@ local/
 .playwright-mcp
 /mail.ts
 
-# Local Codex credentials for the chat product's coding agent
-.codex-home/
 .wrangler
 .dev.vars*

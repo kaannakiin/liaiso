@@ -96,8 +96,6 @@ Each package README has its own quick start, configuration and limits.
 
 - [apps/docs](apps/docs) — the documentation site (TanStack Start). Run it with
   `pnpm --filter @liaiso/docs dev` and open `http://localhost:5180`.
-- [products/chat](products/chat) — a chat product built on these servers. It is a separate
-  product line and shares only the toolchain.
 
 ## How the HTTP catalog works
 

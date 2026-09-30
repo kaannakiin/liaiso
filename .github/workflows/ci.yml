@@ -76,9 +76,9 @@ jobs:
             8.0.x
             10.0.x
       - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo run build check-types lint validate --filter='!@chat/*'
+      - run: pnpm turbo run build check-types lint validate
       - run: pnpm turbo run format:check
-      - run: pnpm turbo run test --filter='!@liaiso/sdk-dotnet' --filter='!@chat/*'
+      - run: pnpm turbo run test --filter='!@liaiso/sdk-dotnet'
 
   dotnet:
     name: dotnet test (net8.0 + net10.0)

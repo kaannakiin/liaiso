@@ -3,27 +3,13 @@ packages:
   - "packages/*/*"
   - "sdks/*"
   - "sdks/*/samples/*"
-  - "products/*/*"
 allowBuilds:
-  "@prisma/engines": true
   "@swc/core": true
-  argon2: true
-  cpu-features: true
   esbuild: true
-  prisma: true
-  protobufjs: true
-  ssh2: true
   workerd: true
 minimumReleaseAgeExclude:
   - json-schema-to-typescript@16.0.0
   - "@types/react-dom@19.2.7"
-  - "@ai-sdk/gateway@4.0.78"
-  - "@ai-sdk/mcp@2.0.48"
-  - "@ai-sdk/provider-utils@5.0.39"
-  - "@ai-sdk/provider@4.0.13"
-  - "@ai-sdk/react@4.0.100"
-  - ai-sdk-ollama@4.3.0
-  - ai@7.0.97
   - '@firecrawl/pdf-inspector-darwin-arm64@1.23.0'
   - '@firecrawl/pdf-inspector-linux-arm64-gnu@1.23.0'
   - '@firecrawl/pdf-inspector-linux-arm64-musl@1.23.0'
@@ -31,5 +17,3 @@ minimumReleaseAgeExclude:
   - '@firecrawl/pdf-inspector-linux-x64-musl@1.23.0'
   - '@firecrawl/pdf-inspector-win32-x64-msvc@1.23.0'
   - '@firecrawl/pdf-inspector@1.23.0'
-  - '@openai/codex-sdk@0.159.0'
-  - '@openai/codex@0.159.0-darwin-arm64 || 0.159.0-darwin-x64 || 0.159.0-linux-arm64 || 0.159.0-linux-x64 || 0.159.0-win32-arm64 || 0.159.0-win32-x64 || 0.159.0'

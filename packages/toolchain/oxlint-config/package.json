@@ -6,7 +6,6 @@
   "exports": {
     "./base": "./base.ts",
     "./casing": "./casing.ts",
-    "./chat": "./chat.ts",
     "./react": "./react.ts"
   },
   "dependencies": {
