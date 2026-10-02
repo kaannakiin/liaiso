@@ -8,9 +8,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
   "assets": {
-    "html_handling": "drop-trailing-slash"
+    "html_handling": "drop-trailing-slash",
   },
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }
