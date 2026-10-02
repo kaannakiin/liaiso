@@ -24,8 +24,8 @@ import {
   searchLimitDescription,
   searchQueryDescription,
   searchTagsDescription,
-  LiaisoArgumentError,
-  LiaisoDispatchAborted,
+  SezzleeArgumentError,
+  SezzleeDispatchAborted,
   textResult,
   unknownTool,
   vocabularyOf,
@@ -37,35 +37,35 @@ import {
   type SearchRankerOptions,
   type VisibilityDecision,
   type WireResult,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import { Logger } from "@nestjs/common";
 import { z } from "zod";
-import type { CatalogEntry, LiaisoCatalog } from "./catalog.js";
+import type { CatalogEntry, SezzleeCatalog } from "./catalog.js";
 import type { CallerScopeResolver } from "./cache.js";
 import type {
   DispatchDeadline,
   DispatchFiles,
-  LiaisoDispatcher,
+  SezzleeDispatcher,
 } from "./dispatcher.js";
-import { LiaisoFileRefused } from "./files.js";
+import { SezzleeFileRefused } from "./files.js";
 import type { InvokeResultMapper } from "./invoke-result-mapper.js";
 import { callerOf } from "./options.js";
 import type {
   InvokeTarget,
   OuterRequest,
-  LiaisoOptions,
+  SezzleeOptions,
   VerifiedToken,
 } from "./options.js";
 import { currentOuterConnection } from "./outer-connection.js";
 import type { CallerVisibilityProvider } from "./visibility/provider.js";
 
 export interface MetaToolDependencies {
-  readonly catalog: LiaisoCatalog;
-  readonly dispatcher: LiaisoDispatcher;
+  readonly catalog: SezzleeCatalog;
+  readonly dispatcher: SezzleeDispatcher;
   readonly mapper: InvokeResultMapper;
   readonly visibility: CallerVisibilityProvider;
   readonly scopes: CallerScopeResolver;
-  readonly options: LiaisoOptions;
+  readonly options: SezzleeOptions;
 }
 
 interface ToolContext {
@@ -78,7 +78,7 @@ interface ToolContext {
 
 export { catalogGenerationMetaKey };
 
-const logger = new Logger("Liaiso");
+const logger = new Logger("Sezzlee");
 
 /**
  * Guard: `name` binds as `unknown` and the object publishes its own `required`, so a call that
@@ -180,7 +180,7 @@ function emitGuarded(
   return emitWithin((target) => budgetFor(deps, target), produce);
 }
 
-export function registerLiaisoTools(
+export function registerSezzleeTools(
   server: McpServer,
   deps: MetaToolDependencies,
 ): void {
@@ -309,7 +309,7 @@ export function registerLiaisoTools(
       _meta: generationMeta(),
       /**
        * Guard: `arguments` publishes a description and no `type`, so a value that is not an object
-       * reaches the handler and leaves as an liaiso envelope. A schema that constrained it was
+       * reaches the handler and leaves as an sezzlee envelope. A schema that constrained it was
        * rejected during the framework's own argument binding, and the caller got an answer carrying
        * neither the envelope nor the leak filter. Pinned by test/meta-tools.spec.ts and by T18.
        */
@@ -370,7 +370,7 @@ export function registerLiaisoTools(
             maxInlineFileBytes: files.maxInlineFileBytes,
           });
         } catch (error) {
-          if (error instanceof LiaisoArgumentError) {
+          if (error instanceof SezzleeArgumentError) {
             return errorResult(error.code, error.message);
           }
           throw error;
@@ -388,15 +388,15 @@ export function registerLiaisoTools(
           );
         } catch (error) {
           if (
-            error instanceof LiaisoDispatchAborted &&
+            error instanceof SezzleeDispatchAborted &&
             error.reason === "timeout"
           ) {
             return { payload: refuseTimedOutInvoke(timeoutMs), isError: true };
           }
-          if (error instanceof LiaisoArgumentError) {
+          if (error instanceof SezzleeArgumentError) {
             return errorResult(error.code, error.message);
           }
-          if (error instanceof LiaisoFileRefused) {
+          if (error instanceof SezzleeFileRefused) {
             return {
               payload: refuseUnresolvedFile(
                 error.field,

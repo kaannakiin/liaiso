@@ -1,8 +1,8 @@
-import type { OpcPackage, PartSource } from "@liaiso/ooxml-core";
+import type { OpcPackage, PartSource } from "@sezzlee/ooxml-core";
 import { openOpcPackage } from "./reader.js";
 import { namespaces, readXmlPart } from "./xml.js";
 
-export type { OpcPackage, PartSource, Relationship } from "@liaiso/ooxml-core";
+export type { OpcPackage, PartSource, Relationship } from "@sezzlee/ooxml-core";
 
 export interface WorkbookPackage extends OpcPackage {
   readonly sheetParts: ReadonlyMap<string, string>;

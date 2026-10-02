@@ -1,6 +1,6 @@
 import {
   armDeadline,
-  LiaisoDispatchAborted,
+  SezzleeDispatchAborted,
   untilAbandoned,
 } from "./invoke/deadline.js";
 import { tokenize, type SearchDocument, type ToolIndex } from "./search.js";
@@ -201,7 +201,7 @@ export async function consultRanker(
      * BM25 pass on an answer nobody is left to read, and an `error` host would publish a
      * retryable refusal for a call that was never going to be retried.
      */
-    if (error instanceof LiaisoDispatchAborted) {
+    if (error instanceof SezzleeDispatchAborted) {
       if (error.reason === "caller") {
         throw error;
       }

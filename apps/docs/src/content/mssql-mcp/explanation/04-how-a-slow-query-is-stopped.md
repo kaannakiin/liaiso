@@ -31,7 +31,7 @@ bound.
 
 ## Deadlines that do not depend on the query
 
-Two other waits are bounded too. Opening a connection is given `LIAISO_MSSQL_CONNECT_TIMEOUT_MS`, 15
+Two other waits are bounded too. Opening a connection is given `SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS`, 15
 seconds by default, so an unreachable server is reported as `connection_failed` rather than hanging
 the call. Every connection is also opened with `SET LOCK_TIMEOUT` equal to the query deadline, so
 a read that waits on a row a writer has locked gives up at the deadline instead of waiting for the

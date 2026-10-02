@@ -1,11 +1,11 @@
 # Introduction
 
-`@liaiso/excel-mcp` is an MCP server that lets an agent read spreadsheets. You start it with one
+`@sezzlee/excel-mcp` is an MCP server that lets an agent read spreadsheets. You start it with one
 folder, and the agent can read the `.xlsx`, `.xlsm` and `.csv` files inside that folder and nothing
 outside it. It has no tool that writes, so a workbook is never modified.
 
 ```sh
-npx -y @liaiso/excel-mcp /absolute/path/to/your/sheets
+npx -y @sezzlee/excel-mcp /absolute/path/to/your/sheets
 ```
 
 It speaks MCP over stdio, so any MCP client that can start a local command can use it.

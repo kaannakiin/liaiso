@@ -3,9 +3,9 @@ import {
   measureJson,
   type Fingerprint,
   type SourceMode,
-} from "@liaiso/file-core";
+} from "@sezzlee/file-core";
 import { cursorTtlMs, encodePosition } from "./cursor.js";
-import { LiaisoXmlError } from "../platform/errors.js";
+import { SezzleeXmlError } from "../platform/errors.js";
 import { limits } from "../platform/limits.js";
 import type {
   NodeSetMember,
@@ -159,7 +159,7 @@ export function assembleXPath(input: AssembleXPathInput): XPathEnvelope {
   }
 
   if (admitted.length === 0 && outcome.members.length > 0) {
-    throw new LiaisoXmlError(
+    throw new SezzleeXmlError(
       "resource_limit",
       `The first member of the node-set does not fit in the ${String(limits.maxPayloadBytes)} byte response budget.`,
       "Select fewer nodes, or address a narrower part of the document.",

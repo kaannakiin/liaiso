@@ -23,67 +23,67 @@ const only = process.argv.filter((arg) => arg.endsWith(".md"));
 
 const products = {
   "excel-mcp": {
-    bins: { "liaiso-excel": "packages/servers/excel-mcp/dist/cli.js" },
-    folder: "liaiso-sheets",
+    bins: { "sezzlee-excel": "packages/servers/excel-mcp/dist/cli.js" },
+    folder: "sezzlee-sheets",
     samples: {
       default: ["sales.xlsx", "report.xlsx"],
       "tutorial/01-reading-your-first-workbook.md": ["sales.xlsx"],
     },
     preamble: `excel() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-excel ~/liaiso-sheets \\
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-excel ~/sezzlee-sheets \\
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
   },
   "xml-mcp": {
-    bins: { "liaiso-xml": "packages/servers/xml-mcp/dist/cli.js" },
-    folder: "liaiso-xml",
+    bins: { "sezzlee-xml": "packages/servers/xml-mcp/dist/cli.js" },
+    folder: "sezzlee-xml",
     samples: { default: ["orders.xml"] },
     preamble: `xml() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-xml ~/liaiso-xml \\
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-xml ~/sezzlee-xml \\
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
   },
   "pdf-mcp": {
-    bins: { "liaiso-pdf": "packages/servers/pdf-mcp/dist/cli.js" },
-    folder: "liaiso-pdf",
+    bins: { "sezzlee-pdf": "packages/servers/pdf-mcp/dist/cli.js" },
+    folder: "sezzlee-pdf",
     samples: { default: ["annual-report.pdf", "supply-agreement.pdf"] },
     preamble: [
       `pdf() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-pdf ~/liaiso-pdf \\
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-pdf ~/sezzlee-pdf \\
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
       `pdfocr() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-pdf ~/liaiso-pdf --ocr ~/liaiso-ocr/binding.mjs \\
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-pdf ~/sezzlee-pdf --ocr ~/sezzlee-ocr/binding.mjs \\
     -- --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
     ],
     ollama: ["how-to/04-read-scanned-pages-with-ocr.md"],
   },
   "llm-mcp": {
-    bins: { "liaiso-llm": "packages/servers/llm-mcp/dist/cli.js" },
-    folder: "liaiso-llm",
+    bins: { "sezzlee-llm": "packages/servers/llm-mcp/dist/cli.js" },
+    folder: "sezzlee-llm",
     samples: {
       default: ["meeting-notes.txt", "tickets.csv", "operations-2026.txt"],
     },
     preamble: `llm() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-llm -- \\
-    -e LIAISO_LLM_MODEL="$LIAISO_LLM_MODEL" -e LIAISO_LLM_ROOT="$HOME/liaiso-llm" \\
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-llm -- \\
+    -e SEZZLEE_LLM_MODEL="$SEZZLEE_LLM_MODEL" -e SEZZLEE_LLM_ROOT="$HOME/sezzlee-llm" \\
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
     ollama: true,
-    requires: ["LIAISO_LLM_MODEL"],
+    requires: ["SEZZLEE_LLM_MODEL"],
   },
   "mssql-mcp": {
-    bins: { "liaiso-mssql": "packages/servers/mssql-mcp/dist/cli.js" },
-    secrets: { "liaiso-mssql.json": "LIAISO_DOCS_MSSQL_CONFIG" },
+    bins: { "sezzlee-mssql": "packages/servers/mssql-mcp/dist/cli.js" },
+    secrets: { "sezzlee-mssql.json": "SEZZLEE_DOCS_MSSQL_CONFIG" },
     preamble: `sql() {
-  npx -y @modelcontextprotocol/inspector --cli --config ~/liaiso-mssql.json --server shop \\
+  npx -y @modelcontextprotocol/inspector --cli --config ~/sezzlee-mssql.json --server shop \\
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }`,
   },
 };
 
-const ollama = process.env.LIAISO_DOCS_OLLAMA;
+const ollama = process.env.SEZZLEE_DOCS_OLLAMA;
 
 /**
  * Guard: the MCP Inspector starts the server with a fixed environment allow-list, so an Ollama
@@ -103,7 +103,7 @@ const forward = (upstream) => {
 const skipped = [
   /^npm install -g /,
   /^claude mcp add /,
-  /^npx -y @liaiso\//,
+  /^npx -y @sezzlee\//,
   /^ollama /,
 ];
 const helper = /^[a-z]+\(\) \{/;
@@ -155,7 +155,7 @@ function pagesOf(product) {
  * reader's or the author's home, while npm keeps the real cache so `npx` does not re-download.
  */
 function sandbox(product, config, file) {
-  const home = mkdtempSync(path.join(tmpdir(), `liaiso-examples-${product}-`));
+  const home = mkdtempSync(path.join(tmpdir(), `sezzlee-examples-${product}-`));
   const bin = path.join(home, ".bin");
   mkdirSync(bin);
   for (const [name, entry] of Object.entries(config.bins)) {
@@ -229,12 +229,12 @@ function run(product, config, file) {
       file,
       failures: [],
       markdown,
-      skipped: "set LIAISO_DOCS_OLLAMA to host:port, or local",
+      skipped: "set SEZZLEE_DOCS_OLLAMA to host:port, or local",
     };
   }
   const needsForward = needsOllama && ollama !== "local";
   const { home, bin } = sandbox(product, config, file);
-  const marker = "__LIAISO_EXAMPLE_END__";
+  const marker = "__SEZZLEE_EXAMPLE_END__";
   const script = [
     "set -o pipefail",
     `cd "$HOME"`,

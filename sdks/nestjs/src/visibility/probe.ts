@@ -5,22 +5,22 @@ import {
   type NestInterceptor,
 } from "@nestjs/common";
 import { of, type Observable } from "rxjs";
-import type { VisibilityDecision } from "@liaiso/core";
+import type { VisibilityDecision } from "@sezzlee/core";
 import type { CatalogEntry } from "../catalog.js";
-import { LiaisoDispatcher, type ProbeResult } from "../dispatcher.js";
-import { LiaisoDispatchAborted } from "../synthetic-context.js";
+import { SezzleeDispatcher, type ProbeResult } from "../dispatcher.js";
+import { SezzleeDispatchAborted } from "../synthetic-context.js";
 import {
-  isLiaisoProbe,
+  isSezzleeProbe,
   markShortCircuited,
   wasShortCircuited,
 } from "../markers.js";
-import type { OuterRequest, LiaisoOptions } from "../options.js";
+import type { OuterRequest, SezzleeOptions } from "../options.js";
 
 @Injectable()
-export class LiaisoProbeInterceptor implements NestInterceptor {
+export class SezzleeProbeInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request: unknown = context.switchToHttp().getRequest();
-    if (!isLiaisoProbe(request)) {
+    if (!isSezzleeProbe(request)) {
       return next.handle();
     }
     markShortCircuited(request as object);
@@ -36,12 +36,12 @@ export interface ProbeEvaluator {
   ): Promise<VisibilityDecision>;
 }
 
-export class LiaisoProbeEvaluator implements ProbeEvaluator {
+export class SezzleeProbeEvaluator implements ProbeEvaluator {
   private readonly disabled = new Map<string, string>();
 
   constructor(
-    private readonly dispatcher: LiaisoDispatcher,
-    private readonly options: LiaisoOptions,
+    private readonly dispatcher: SezzleeDispatcher,
+    private readonly options: SezzleeOptions,
   ) {}
 
   clearDisabled(): void {
@@ -65,7 +65,7 @@ export class LiaisoProbeEvaluator implements ProbeEvaluator {
         outer,
       );
     } catch (error) {
-      if (!(error instanceof LiaisoDispatchAborted)) {
+      if (!(error instanceof SezzleeDispatchAborted)) {
         throw error;
       }
       this.disabled.set(

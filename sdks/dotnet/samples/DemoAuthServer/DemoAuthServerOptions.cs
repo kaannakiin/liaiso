@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Liaiso.Samples.DemoAuthServer;
+namespace Sezzlee.Samples.DemoAuthServer;
 
 public sealed class DemoAuthServerOptions
 {

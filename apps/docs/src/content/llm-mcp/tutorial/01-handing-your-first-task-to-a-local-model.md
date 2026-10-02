@@ -22,29 +22,29 @@ yours will read differently. The shape of each answer is the same whichever mode
 ## 2. Install the server
 
 ```sh
-npm install -g @liaiso/llm-mcp
+npm install -g @sezzlee/llm-mcp
 ```
 
-This puts the `liaiso-llm` command on your path.
+This puts the `sezzlee-llm` command on your path.
 
 ## 3. Give it a folder
 
 The server reads files only inside its workspace, and writes only into an output folder inside it:
 
 ```sh
-mkdir -p ~/liaiso-llm
+mkdir -p ~/sezzlee-llm
 ```
 
 Download [meeting-notes.txt](/samples/llm-mcp/meeting-notes.txt),
 [tickets.csv](/samples/llm-mcp/tickets.csv) and
-[operations-2026.txt](/samples/llm-mcp/operations-2026.txt) and save them into `~/liaiso-llm`.
+[operations-2026.txt](/samples/llm-mcp/operations-2026.txt) and save them into `~/sezzlee-llm`.
 
 ## 4. Make calling a tool short
 
 The server takes its settings from environment variables. Name the model you pulled:
 
 ```text
-export LIAISO_LLM_MODEL=qwen3:8b
+export SEZZLEE_LLM_MODEL=qwen3:8b
 ```
 
 The MCP Inspector can start the server and call one tool from the command line. It passes the server
@@ -53,8 +53,8 @@ none of your shell's environment, so the function below hands over the model and
 
 ```sh
 llm() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-llm -- \
-    -e LIAISO_LLM_MODEL="$LIAISO_LLM_MODEL" -e LIAISO_LLM_ROOT="$HOME/liaiso-llm" \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-llm -- \
+    -e SEZZLEE_LLM_MODEL="$SEZZLEE_LLM_MODEL" -e SEZZLEE_LLM_ROOT="$HOME/sezzlee-llm" \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```
@@ -169,7 +169,7 @@ for each, here the one `other`, so the agent can check the labels match its inte
 the file. The labelled copy is a new file in the server's output folder:
 
 ```sh
-head -4 ~/liaiso-llm/.llm-mcp/out/tickets-label-*.csv
+head -4 ~/sezzlee-llm/.llm-mcp/out/tickets-label-*.csv
 ```
 
 ```text

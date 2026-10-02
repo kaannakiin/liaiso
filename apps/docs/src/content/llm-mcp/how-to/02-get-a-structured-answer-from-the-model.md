@@ -4,12 +4,12 @@
 kind, pass the input, and get back JSON your agent can use without parsing sentences.
 
 The examples use the samples and the `llm` helper from [Handing your first task to a local
-model](/docs/llm-mcp/handing-your-first-task-to-a-local-model), with `LIAISO_LLM_MODEL` exported:
+model](/docs/llm-mcp/handing-your-first-task-to-a-local-model), with `SEZZLEE_LLM_MODEL` exported:
 
 ```sh
 llm() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-llm -- \
-    -e LIAISO_LLM_MODEL="$LIAISO_LLM_MODEL" -e LIAISO_LLM_ROOT="$HOME/liaiso-llm" \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-llm -- \
+    -e SEZZLEE_LLM_MODEL="$SEZZLEE_LLM_MODEL" -e SEZZLEE_LLM_ROOT="$HOME/sezzlee-llm" \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```

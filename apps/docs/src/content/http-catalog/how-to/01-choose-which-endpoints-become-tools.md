@@ -47,14 +47,14 @@ NestJS has no equivalent, which is why `@McpTool({ description })` exists.
 Decorating hundreds of endpoints is not practical. Flip the default and exclude the exceptions:
 
 ```csharp
-builder.Services.AddLiaiso(options =>
+builder.Services.AddSezzlee(options =>
 {
     options.Selection.Default = SelectionDefault.Include;
 });
 ```
 
 ```ts
-LiaisoModule.forRoot((options) => {
+SezzleeModule.forRoot((options) => {
   options.selection.default = "include";
 });
 ```
@@ -84,7 +84,7 @@ somebody adds. For a subtree that is categorically off limits, put the decision 
 instead:
 
 ```csharp
-builder.Services.AddLiaiso(options =>
+builder.Services.AddSezzlee(options =>
 {
     options.Selection.Default = SelectionDefault.Include;
     options.Selection.Rules.Add(new SelectionRule(SelectionDefault.Exclude, Route: "/admin/**"));
@@ -93,7 +93,7 @@ builder.Services.AddLiaiso(options =>
 ```
 
 ```ts
-LiaisoModule.forRoot((options) => {
+SezzleeModule.forRoot((options) => {
   options.selection.default = "include";
   options.selection.rules = [
     { route: "/admin/**", decision: "exclude" },
@@ -143,7 +143,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
 ```
 
 `McpToolAttribute` implements the public `IMcpSelectionMetadata` interface, so a host that already
-has its own convention can implement that interface on its own type and liaiso will honour it.
+has its own convention can implement that interface on its own type and sezzlee will honour it.
 
 ## Precedence
 
@@ -165,8 +165,8 @@ Two conflicting markers at the _same_ level are an error, not a resolution: the 
 Selection is reported at startup, before any agent connects:
 
 ```text
-info: Liaiso.AspNetCore.LiaisoCatalogProvider[0]
-      liaiso catalog: 16 discovered, 9 selected, 9 tools, 0 diagnostic(s)
+info: Sezzlee.AspNetCore.SezzleeCatalogProvider[0]
+      sezzlee catalog: 16 discovered, 9 selected, 9 tools, 0 diagnostic(s)
 ```
 
 `discovered` is what the framework knows about, `selected` is what survived selection, `tools` is

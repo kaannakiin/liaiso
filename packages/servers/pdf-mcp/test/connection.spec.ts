@@ -41,7 +41,7 @@ describe("protocol surface", () => {
         [...toolNames].sort(),
       );
       expect(client.getServerVersion()).toMatchObject({
-        name: "liaiso-pdf",
+        name: "sezzlee-pdf",
         version: manifest.version,
       });
     } finally {

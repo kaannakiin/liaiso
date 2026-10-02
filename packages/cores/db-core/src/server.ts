@@ -3,7 +3,7 @@ import {
   createMcpSourceServer,
   type ErrorNormalizer,
   type ServerIdentity,
-} from "@liaiso/mcp-core";
+} from "@sezzlee/mcp-core";
 import type { DbSource } from "./source.js";
 import { toolDefinitions } from "./tools/definitions.js";
 import { createHandlers } from "./tools/handlers.js";

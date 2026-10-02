@@ -1,17 +1,17 @@
-# @liaiso/mssql-mcp
+# @sezzlee/mssql-mcp
 
-Read-only MCP server for Microsoft SQL Server. It builds on `@liaiso/db-core` and names no other `@liaiso/*` package.
+Read-only MCP server for Microsoft SQL Server. It builds on `@sezzlee/db-core` and names no other `@sezzlee/*` package.
 
 ## Quick start
 
 The connection comes from the environment, not from a tool argument, so a client only needs the four required variables:
 
 ```text
-LIAISO_MSSQL_SERVER=10.0.0.5 \
-LIAISO_MSSQL_DATABASE=Sales \
-LIAISO_MSSQL_USER=mcp_reader \
-LIAISO_MSSQL_PASSWORD=... \
-npx -y @liaiso/mssql-mcp
+SEZZLEE_MSSQL_SERVER=10.0.0.5 \
+SEZZLEE_MSSQL_DATABASE=Sales \
+SEZZLEE_MSSQL_USER=mcp_reader \
+SEZZLEE_MSSQL_PASSWORD=... \
+npx -y @sezzlee/mssql-mcp
 ```
 
 See [Configuration](#configuration) for the full variable list and defaults.
@@ -30,30 +30,30 @@ See [Configuration](#configuration) for the full variable list and defaults.
 The connection is read from the environment when the process starts. **The agent cannot supply connection details** — no tool argument carries them.
 
 ```text
-LIAISO_MSSQL_SERVER=10.0.0.5
-LIAISO_MSSQL_DATABASE=Sales
-LIAISO_MSSQL_USER=mcp_reader
-LIAISO_MSSQL_PASSWORD=...
-LIAISO_MSSQL_PORT=1433                       # default
-LIAISO_MSSQL_ENCRYPT=true                    # default
-LIAISO_MSSQL_TRUST_SERVER_CERTIFICATE=false  # default
-LIAISO_MSSQL_CONNECT_TIMEOUT_MS=15000        # default
-LIAISO_MSSQL_QUERY_TIMEOUT_MS=30000          # default
+SEZZLEE_MSSQL_SERVER=10.0.0.5
+SEZZLEE_MSSQL_DATABASE=Sales
+SEZZLEE_MSSQL_USER=mcp_reader
+SEZZLEE_MSSQL_PASSWORD=...
+SEZZLEE_MSSQL_PORT=1433                       # default
+SEZZLEE_MSSQL_ENCRYPT=true                    # default
+SEZZLEE_MSSQL_TRUST_SERVER_CERTIFICATE=false  # default
+SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS=15000        # default
+SEZZLEE_MSSQL_QUERY_TIMEOUT_MS=30000          # default
 
-npx -y @liaiso/mssql-mcp
+npx -y @sezzlee/mssql-mcp
 ```
 
-| Variable                                | Default         | Meaning                                              |
-| --------------------------------------- | --------------- | ---------------------------------------------------- |
-| `LIAISO_MSSQL_SERVER`                   | none — required | Server host.                                         |
-| `LIAISO_MSSQL_DATABASE`                 | none — required | Database name.                                       |
-| `LIAISO_MSSQL_USER`                     | none — required | Login used to connect.                               |
-| `LIAISO_MSSQL_PASSWORD`                 | none — required | Password for that login.                             |
-| `LIAISO_MSSQL_PORT`                     | `1433`          | TCP port.                                            |
-| `LIAISO_MSSQL_ENCRYPT`                  | `true`          | Whether the connection is encrypted.                 |
-| `LIAISO_MSSQL_TRUST_SERVER_CERTIFICATE` | `false`         | Whether an untrusted server certificate is accepted. |
-| `LIAISO_MSSQL_CONNECT_TIMEOUT_MS`       | `15000`         | Connection timeout.                                  |
-| `LIAISO_MSSQL_QUERY_TIMEOUT_MS`         | `30000`         | Query deadline (see [Rules](#rules)).                |
+| Variable                                 | Default         | Meaning                                              |
+| ---------------------------------------- | --------------- | ---------------------------------------------------- |
+| `SEZZLEE_MSSQL_SERVER`                   | none — required | Server host.                                         |
+| `SEZZLEE_MSSQL_DATABASE`                 | none — required | Database name.                                       |
+| `SEZZLEE_MSSQL_USER`                     | none — required | Login used to connect.                               |
+| `SEZZLEE_MSSQL_PASSWORD`                 | none — required | Password for that login.                             |
+| `SEZZLEE_MSSQL_PORT`                     | `1433`          | TCP port.                                            |
+| `SEZZLEE_MSSQL_ENCRYPT`                  | `true`          | Whether the connection is encrypted.                 |
+| `SEZZLEE_MSSQL_TRUST_SERVER_CERTIFICATE` | `false`         | Whether an untrusted server certificate is accepted. |
+| `SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS`       | `15000`         | Connection timeout.                                  |
+| `SEZZLEE_MSSQL_QUERY_TIMEOUT_MS`         | `30000`         | Query deadline (see [Rules](#rules)).                |
 
 The first four variables are required. Parsing is eager and fatal; **connecting is lazy** — a dead database server does not stop the process from starting and answering `tools/list`.
 
@@ -77,7 +77,7 @@ Three layers, and **the weakest one lives inside this package**:
 ## Development
 
 ```text
-pnpm turbo run test --filter=@liaiso/mssql-mcp
+pnpm turbo run test --filter=@sezzlee/mssql-mcp
 ```
 
 These are pure function tests; no database is needed.
@@ -85,9 +85,9 @@ These are pure function tests; no database is needed.
 Catalogue SQL cannot be verified with a fake: a snapshot proves the text has not changed, not that the joins are correct. `test/live.spec.ts` exists for that and runs against a real server:
 
 ```text
-LIAISO_MSSQL_LIVE=1 LIAISO_MSSQL_SERVER=... pnpm turbo run test --filter=@liaiso/mssql-mcp
+SEZZLEE_MSSQL_LIVE=1 SEZZLEE_MSSQL_SERVER=... pnpm turbo run test --filter=@sezzlee/mssql-mcp
 ```
 
-Without `LIAISO_MSSQL_LIVE` the live suite is skipped, so CI needs no database. **Do not run this suite against production** — it exercises query cancellation and dropped connections.
+Without `SEZZLEE_MSSQL_LIVE` the live suite is skipped, so CI needs no database. **Do not run this suite against production** — it exercises query cancellation and dropped connections.
 
 Every driver fact this server relies on was measured on SQL Server 15.0.2000.5 (2019 Developer Edition) with `mssql@11.0.2` → `tedious@18.6.2`, which is why `mssql` is pinned exactly. `tedious` is still resolved by `mssql`'s own range, so re-run the live suite after a lockfile change that moves it.

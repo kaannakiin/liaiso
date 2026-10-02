@@ -3,9 +3,9 @@ import { Controller, Get, Query, UseGuards } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { IsOptional, IsString } from "class-validator";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { curate, hidden, McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import type { VisibilityDeclaration } from "../src/index.js";
 
 class AnonymousGuard {
@@ -48,12 +48,12 @@ class SearchIndexOrdersController {
 }
 
 describe("search index over the curated surface", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        LiaisoModule.forRoot((options) => {
+        SezzleeModule.forRoot((options) => {
           options.arguments.provide("tenant", (caller) =>
             caller.claim("tenant"),
           );
@@ -63,7 +63,7 @@ describe("search index over the curated surface", () => {
     }).compile();
     const app = moduleRef.createNestApplication({ logger: false });
     await app.init();
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
   });
 
   it("indexes a visible argument name", () => {

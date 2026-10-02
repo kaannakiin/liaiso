@@ -1,17 +1,17 @@
 import type { IncomingHttpHeaders } from "node:http";
 import type { OAuthTokenVerifier } from "@modelcontextprotocol/express";
-import { defaultRankerTimeoutMs, invokeLimits } from "@liaiso/core";
+import { defaultRankerTimeoutMs, invokeLimits } from "@sezzlee/core";
 import type {
   RankerFailureMode,
   Recognizer,
   SelectionDefault,
   SelectionRule,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import type { ArgumentRule, JsonValue } from "./decorators.js";
 import type { CatalogSeverity } from "./discovery/diagnostics.js";
 import type { TypeShapeBinderOptions } from "./discovery/type-shape.js";
 import { ToolFamilyOptions } from "./families.js";
-import type { LiaisoFileOptions } from "./files.js";
+import type { SezzleeFileOptions } from "./files.js";
 import type { OuterConnection } from "./outer-connection.js";
 
 export interface OuterRequest {
@@ -194,7 +194,7 @@ export interface SyntheticRequestOptions {
   userAgent?: string;
 }
 
-export interface LiaisoCacheOptions {
+export interface SezzleeCacheOptions {
   lifetimeMs: number;
   maxCallers: number;
 }
@@ -206,7 +206,7 @@ export interface InvokeTarget {
   readonly route: string;
 }
 
-export interface LiaisoInvokeOptions {
+export interface SezzleeInvokeOptions {
   /** The largest tool response, in UTF-8 bytes, that may reach the agent. */
   maxResponseBytes: number;
   /**
@@ -237,7 +237,7 @@ export class ErrorMappingOptions {
   }
 }
 
-export interface LiaisoResourceServerOptions {
+export interface SezzleeResourceServerOptions {
   resource: URL;
   authorizationServers: URL[];
   scopesSupported?: string[];
@@ -252,7 +252,7 @@ export interface LiaisoResourceServerOptions {
  * `rules` sits below both attribute levels and above `default`; order carries no meaning, and
  * equally specific rules that disagree are a build error rather than a silent first-match win.
  */
-export interface LiaisoSelectionOptions {
+export interface SezzleeSelectionOptions {
   default: SelectionDefault;
   rules?: readonly SelectionRule[];
 }
@@ -265,16 +265,16 @@ export interface LiaisoSelectionOptions {
  * default is `flatten` because switching rewrites the `inputSchema` of every
  * affected tool and renames the namespace curation is keyed by.
  */
-export interface LiaisoQueryOptions {
+export interface SezzleeQueryOptions {
   grouping: "flatten" | "group";
 }
 
-export interface LiaisoNamingOptions {
+export interface SezzleeNamingOptions {
   prefixMode: "always" | "onCollision";
   prefix?: (container: string) => string | undefined;
 }
 
-export interface LiaisoDiagnosticsOptions {
+export interface SezzleeDiagnosticsOptions {
   failOn?: CatalogSeverity;
   readonly escalate: Set<string>;
   readonly downgrade: Set<string>;
@@ -287,55 +287,55 @@ export interface LiaisoDiagnosticsOptions {
  * @param onRankerFailure `fallback` ranks with BM25 and logs, `error` answers
  * `search_ranker_unavailable`
  */
-export interface LiaisoSearchOptions {
+export interface SezzleeSearchOptions {
   rankerTimeoutMs: number;
   onRankerFailure: RankerFailureMode;
 }
 
-export type LiaisoVisibilityTier = "declarative" | "probe";
+export type SezzleeVisibilityTier = "declarative" | "probe";
 
-export interface LiaisoVisibilityOptions {
-  tier: LiaisoVisibilityTier;
+export interface SezzleeVisibilityOptions {
+  tier: SezzleeVisibilityTier;
   onUnknown: "show" | "hide";
   probeTopK: number;
   probeConcurrency: number;
   readonly probeValues: Map<string, string>;
 }
 
-export class LiaisoOptions {
+export class SezzleeOptions {
   readonly identity = new IdentityForwardingOptions();
   readonly synthetic: SyntheticRequestOptions = { accept: "application/json" };
-  readonly cache: LiaisoCacheOptions = { lifetimeMs: 30_000, maxCallers: 128 };
+  readonly cache: SezzleeCacheOptions = { lifetimeMs: 30_000, maxCallers: 128 };
   readonly errors = new ErrorMappingOptions();
-  readonly selection: LiaisoSelectionOptions = { default: "exclude" };
-  readonly query: LiaisoQueryOptions = { grouping: "flatten" };
-  readonly naming: LiaisoNamingOptions = { prefixMode: "always" };
-  readonly diagnostics: LiaisoDiagnosticsOptions = {
+  readonly selection: SezzleeSelectionOptions = { default: "exclude" };
+  readonly query: SezzleeQueryOptions = { grouping: "flatten" };
+  readonly naming: SezzleeNamingOptions = { prefixMode: "always" };
+  readonly diagnostics: SezzleeDiagnosticsOptions = {
     failOn: "fatal",
     escalate: new Set<string>(),
     downgrade: new Set<string>(),
   };
   readonly arguments = new ArgumentCurationOptions();
   readonly families = new ToolFamilyOptions();
-  readonly visibility: LiaisoVisibilityOptions = {
+  readonly visibility: SezzleeVisibilityOptions = {
     tier: "declarative",
     onUnknown: "show",
     probeTopK: 25,
     probeConcurrency: 4,
     probeValues: new Map<string, string>(),
   };
-  readonly invoke: LiaisoInvokeOptions = {
+  readonly invoke: SezzleeInvokeOptions = {
     maxResponseBytes: invokeLimits.maxResponseBytes,
     timeoutMs: invokeLimits.invokeTimeoutMs,
     maxInlineFileBytes: invokeLimits.maxInlineFileBytes,
     maxFileBytes: invokeLimits.maxFileBytes,
   };
-  readonly search: LiaisoSearchOptions = {
+  readonly search: SezzleeSearchOptions = {
     rankerTimeoutMs: defaultRankerTimeoutMs,
     onRankerFailure: "fallback",
   };
   /** Binding `files.resolver` is what makes `ref` appear in a file argument's schema. */
-  readonly files: LiaisoFileOptions = {};
+  readonly files: SezzleeFileOptions = {};
   /**
    * Grouping labels for a container the host cannot decorate. It sits below a `@McpTool({ tags })`
    * declaration and above the container-derived default, and like a declaration it replaces that
@@ -345,7 +345,7 @@ export class LiaisoOptions {
   /** Search vocabulary for a container the host cannot decorate, below a `@McpTool({ searchTerms })`. */
   searchTerms?: (container: string) => readonly string[] | undefined;
   schema?: TypeShapeBinderOptions;
-  resourceServer?: LiaisoResourceServerOptions;
+  resourceServer?: SezzleeResourceServerOptions;
 }
 
-export const LIAISO_OPTIONS = "LIAISO_OPTIONS";
+export const SEZZLEE_OPTIONS = "SEZZLEE_OPTIONS";

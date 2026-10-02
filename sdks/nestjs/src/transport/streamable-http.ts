@@ -5,15 +5,15 @@ import { toNodeHandler } from "@modelcontextprotocol/node";
 import type { Request, Response } from "express";
 import { connectionOf, runWithOuterConnection } from "../outer-connection.js";
 
-export type LiaisoServerFactory = () => McpServer;
+export type SezzleeServerFactory = () => McpServer;
 
-export type LiaisoRequestHandler = (
+export type SezzleeRequestHandler = (
   req: Request,
   res: Response,
 ) => Promise<void>;
 
 interface ServedEndpoint {
-  readonly dispatch: LiaisoRequestHandler;
+  readonly dispatch: SezzleeRequestHandler;
   readonly notifyToolsChanged: () => void;
 }
 
@@ -27,7 +27,7 @@ interface ServedEndpoint {
  * which is the only delivery the 2026 revision has.
  */
 @Injectable()
-export class LiaisoStreamableHttp {
+export class SezzleeStreamableHttp {
   private readonly served: ServedEndpoint[] = [];
 
   /**
@@ -37,10 +37,10 @@ export class LiaisoStreamableHttp {
    * every open `subscriptions/listen` stream is attached to, so building a fresh one per request
    * would leave every subscriber listening to a bus nobody publishes on.
    */
-  serve(createServer: LiaisoServerFactory): LiaisoRequestHandler {
+  serve(createServer: SezzleeServerFactory): SezzleeRequestHandler {
     const handler = createMcpHandler(createServer);
     const dispatchNode = toNodeHandler(handler);
-    const dispatch: LiaisoRequestHandler = async (req, res) =>
+    const dispatch: SezzleeRequestHandler = async (req, res) =>
       runWithOuterConnection(connectionOf(req), async () => {
         await dispatchNode(req, res, req.body);
       });

@@ -1,11 +1,11 @@
 # Introduction
 
-`@liaiso/pdf-mcp` is an MCP server that lets an agent read PDF documents. You start it with one
+`@sezzlee/pdf-mcp` is an MCP server that lets an agent read PDF documents. You start it with one
 folder, and the agent can read the PDF files inside that folder and nothing outside it. It has no
 tool that writes, so a document is never modified, and it never opens a network connection.
 
 ```sh
-npx -y @liaiso/pdf-mcp /absolute/path/to/your/documents
+npx -y @sezzlee/pdf-mcp /absolute/path/to/your/documents
 ```
 
 It reads files ending in `.pdf` and speaks MCP over stdio, so any MCP client that can start a local

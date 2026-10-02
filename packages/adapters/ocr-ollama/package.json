@@ -1,7 +1,7 @@
 {
-  "name": "@liaiso/ocr-ollama",
+  "name": "@sezzlee/ocr-ollama",
   "version": "0.1.0",
-  "description": "OcrProvider for @liaiso/pdf-mcp, backed by an Ollama vision model.",
+  "description": "OcrProvider for @sezzlee/pdf-mcp, backed by an Ollama vision model.",
   "keywords": [
     "ocr",
     "ollama",
@@ -9,7 +9,7 @@
     "pdf",
     "pdf-mcp",
     "mcp",
-    "liaiso"
+    "sezzlee"
   ],
   "license": "MIT",
   "repository": {
@@ -47,8 +47,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@liaiso/oxlint-config": "workspace:*",
-    "@liaiso/typescript-config": "workspace:*",
+    "@sezzlee/oxlint-config": "workspace:*",
+    "@sezzlee/typescript-config": "workspace:*",
     "@types/node": "^24.3.0",
     "oxlint": "1.85.0",
     "typescript": "7.0.2",

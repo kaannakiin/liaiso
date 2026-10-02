@@ -1,4 +1,4 @@
-import { mcpCoreLimits } from "@liaiso/mcp-core";
+import { mcpCoreLimits } from "@sezzlee/mcp-core";
 
 export const dbCoreLimits = {
   ...mcpCoreLimits,

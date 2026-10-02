@@ -14,14 +14,14 @@ import {
   StreamableHTTPClientTransport,
 } from "@modelcontextprotocol/client";
 import type { Request, Response } from "express";
-import { defaultProtocolRevision, protocolRevisions } from "@liaiso/core";
+import { defaultProtocolRevision, protocolRevisions } from "@sezzlee/core";
 import jwt from "jsonwebtoken";
 import { afterEach, describe, expect, it } from "vitest";
 import {
-  LiaisoModule,
-  LiaisoStreamableHttp,
-  type LiaisoOptions,
-  type LiaisoRequestHandler,
+  SezzleeModule,
+  SezzleeStreamableHttp,
+  type SezzleeOptions,
+  type SezzleeRequestHandler,
 } from "../src/index.js";
 
 const secret = "transport-test-secret-0123456789abcdef";
@@ -61,9 +61,9 @@ function frameOf(body: string): unknown {
 
 @Controller()
 class TransportProbeController {
-  private readonly serve: LiaisoRequestHandler;
+  private readonly serve: SezzleeRequestHandler;
 
-  constructor(private readonly streamableHttp: LiaisoStreamableHttp) {
+  constructor(private readonly streamableHttp: SezzleeStreamableHttp) {
     this.serve = this.streamableHttp.serve(() => {
       const server = new McpServer({
         name: "transport-test",
@@ -89,10 +89,10 @@ interface TransportTestApp {
 }
 
 async function createTransportApp(
-  configure: (options: LiaisoOptions) => void,
+  configure: (options: SezzleeOptions) => void,
 ): Promise<TransportTestApp> {
   const moduleRef = await Test.createTestingModule({
-    imports: [LiaisoModule.forRoot(configure)],
+    imports: [SezzleeModule.forRoot(configure)],
     controllers: [TransportProbeController],
   }).compile();
   const app = moduleRef.createNestApplication({ logger: false });
@@ -249,7 +249,7 @@ describe("Nest streamable HTTP transport", () => {
     const tools = await client.listTools();
     expect(tools.tools.some((tool) => tool.name === "ping")).toBe(true);
 
-    current.app.get(LiaisoStreamableHttp).notifyToolListChanged();
+    current.app.get(SezzleeStreamableHttp).notifyToolListChanged();
     await waitFor(() => notified > 0);
 
     await client.close();

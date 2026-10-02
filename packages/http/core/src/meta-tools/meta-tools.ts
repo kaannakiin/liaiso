@@ -27,7 +27,7 @@ import {
 import { foldToken } from "../search.js";
 import type { VisibilityDecision } from "../visibility.js";
 
-export const catalogGenerationMetaKey = "liaiso/catalogGeneration";
+export const catalogGenerationMetaKey = "sezzlee/catalogGeneration";
 
 export const searchDescription =
   'Find operations when you do not know their exact names. Keywords rank matches; an empty query lists everything by name. Keep queries short: a term matches operation text by prefix. Results are compact cards — name, short description and a parameter summary. Set detail="schema" to get the full definition of every result in the same answer, which pays off only when you expect to invoke one of them immediately; pair it with a small limit because a schema page is much larger. When you already hold an exact operation name, call load_tool instead of searching for it.';
@@ -108,7 +108,7 @@ export function unknownTool(name: string): MetaResponse<never> {
 export function notInvocable(name: string): MetaResponse<never> {
   return errorResult(
     "not_invocable",
-    `Operation '${name}' cannot be invoked through liaiso; see the catalog diagnostics.`,
+    `Operation '${name}' cannot be invoked through sezzlee; see the catalog diagnostics.`,
   );
 }
 
@@ -152,8 +152,8 @@ export async function emitGuarded<Target>(
     response = errorResult(
       "internal_error",
       safe === undefined
-        ? "The operation failed inside the liaiso layer. Details were withheld."
-        : `The operation failed inside the liaiso layer: ${safe}`,
+        ? "The operation failed inside the sezzlee layer. Details were withheld."
+        : `The operation failed inside the sezzlee layer: ${safe}`,
     );
   }
   const text = JSON.stringify(response.payload) ?? "null";

@@ -2,7 +2,7 @@ import {
   openRoot,
   type NativeRoot,
   type NativeSnapshot,
-} from "@liaiso/file-core-native";
+} from "@sezzlee/file-core-native";
 import { relative, isAbsolute, sep } from "node:path";
 import {
   FileSourceError,

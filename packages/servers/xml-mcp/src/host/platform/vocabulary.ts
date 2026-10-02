@@ -1,4 +1,4 @@
-import type { Vocabulary } from "@liaiso/file-core";
+import type { Vocabulary } from "@sezzlee/file-core";
 
 export const vocabulary = {
   serverName: "xml-mcp",

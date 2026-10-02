@@ -7,7 +7,7 @@ import {
   urlEncodedMediaType,
   type EndpointDescriptor,
   type JsonSchemaObject,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import { OperationDropped } from "../diagnostics.js";
 import { childPointer, type JsonPointer } from "../ir/brand.js";
 import {

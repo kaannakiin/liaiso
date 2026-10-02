@@ -2,10 +2,10 @@
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
   "globalEnv": [
-    "LIAISO_BASE_URL",
-    "LIAISO_USER",
-    "LIAISO_AUTH",
-    "LIAISO_TOKEN",
+    "SEZZLEE_BASE_URL",
+    "SEZZLEE_USER",
+    "SEZZLEE_AUTH",
+    "SEZZLEE_TOKEN",
     "DEMOAPI_QUERY_GROUPING"
   ],
   "tasks": {

@@ -1,6 +1,6 @@
 import { relative } from "node:path";
 import { accessError, assertSnapshot, knownRoot, pinRoot } from "./access.js";
-import { contentFingerprint, type Fingerprint } from "@liaiso/mcp-core";
+import { contentFingerprint, type Fingerprint } from "@sezzlee/mcp-core";
 import { type CoreErrorCode, type ErrorFactory } from "./errors.js";
 import { modeFor, type ModePolicy, type SourceMode } from "./mode.js";
 import type { SandboxedPath } from "./paths.js";

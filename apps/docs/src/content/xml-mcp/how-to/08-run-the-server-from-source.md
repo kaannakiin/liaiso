@@ -9,11 +9,11 @@ From the repository root:
 
 ```text
 pnpm install
-pnpm turbo run build --filter=@liaiso/xml-mcp
+pnpm turbo run build --filter=@sezzlee/xml-mcp
 ```
 
-Build through Turbo, not `pnpm --filter @liaiso/xml-mcp build`. The server depends on
-`@liaiso/file-core` through its built `dist/`, and only Turbo builds it first. The build also has to
+Build through Turbo, not `pnpm --filter @sezzlee/xml-mcp build`. The server depends on
+`@sezzlee/file-core` through its built `dist/`, and only Turbo builds it first. The build also has to
 emit the parse worker as `dist/xml-worker.js`; a server started without it cannot parse anything.
 
 ## Run it
@@ -23,7 +23,7 @@ node packages/servers/xml-mcp/dist/cli.js /absolute/path/to/documents
 ```
 
 To use the build from a client, set `"command": "node"` and `"args":
-["/absolute/path/to/liaiso/packages/servers/xml-mcp/dist/cli.js", "/absolute/path/to/documents"]`.
+["/absolute/path/to/sezzlee/packages/servers/xml-mcp/dist/cli.js", "/absolute/path/to/documents"]`.
 
 ## Try it in the Inspector
 
@@ -37,8 +37,8 @@ hand.
 ## Test it
 
 ```text
-pnpm turbo run test --filter=@liaiso/xml-mcp
-pnpm turbo run check-types lint --filter=@liaiso/xml-mcp
+pnpm turbo run test --filter=@sezzlee/xml-mcp
+pnpm turbo run check-types lint --filter=@sezzlee/xml-mcp
 ```
 
-Tests on large documents are skipped by default; set `LIAISO_XML_LARGE=1` to run them.
+Tests on large documents are skipped by default; set `SEZZLEE_XML_LARGE=1` to run them.

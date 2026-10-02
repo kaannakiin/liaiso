@@ -8,7 +8,7 @@ PDF](/docs/pdf-mcp/reading-your-first-pdf):
 
 ```sh
 pdf() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-pdf ~/liaiso-pdf \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-pdf ~/sezzlee-pdf \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```

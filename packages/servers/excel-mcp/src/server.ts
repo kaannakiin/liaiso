@@ -1,6 +1,6 @@
 import { createRequire } from "node:module";
 import type { McpServer } from "@modelcontextprotocol/server";
-import { createFileSourceServer } from "@liaiso/file-core";
+import { createFileSourceServer } from "@sezzlee/file-core";
 import type { WorkbookRoot } from "./platform/paths.js";
 import { toolDefinitions } from "./tools/definitions.js";
 import { createHandlers } from "./tools/handlers.js";
@@ -18,7 +18,7 @@ const manifest = createRequire(import.meta.url)("../package.json") as {
 
 export function createExcelMcpServer(root: WorkbookRoot): McpServer {
   const server = createFileSourceServer(
-    { name: "liaiso-excel", version: manifest.version },
+    { name: "sezzlee-excel", version: manifest.version },
     toolDefinitions,
     createHandlers(root),
   );

@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { McpTool, McpToolFamily } from "@liaiso/sdk-nestjs";
+import { McpTool, McpToolFamily } from "@sezzlee/sdk-nestjs";
 import { JwtGuard } from "./auth.js";
 import { dynamicMethods, dynamicMethodsSource } from "./dynamic-methods.js";
 

@@ -1,11 +1,11 @@
 import { asciiLower, asciiUpper } from "../platform/ascii.js";
-import { mergeCookieHeader } from "@liaiso/core";
+import { mergeCookieHeader } from "@sezzlee/core";
 import type {
   CredentialRef,
   SecurityModel,
   SecurityRequirement,
   SecurityScheme,
-} from "@liaiso/openapi";
+} from "@sezzlee/openapi";
 import type { ResolvedCredential } from "../platform/config.js";
 
 export interface Placement {
@@ -90,7 +90,7 @@ const encode = (value: string): string =>
 export class ExchangedTokenMissing extends Error {
   constructor() {
     super(
-      "liaiso-openapi: the operation needs an exchanged token, and the call carried none.",
+      "sezzlee-openapi: the operation needs an exchanged token, and the call carried none.",
     );
     this.name = "ExchangedTokenMissing";
   }

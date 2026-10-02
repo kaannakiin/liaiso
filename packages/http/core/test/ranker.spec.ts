@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCatalog,
-  LiaisoDispatchAborted,
+  SezzleeDispatchAborted,
   searchCatalog,
   type Auth,
   type CatalogBuild,
@@ -224,7 +224,7 @@ describe("searchCatalog with a host ranker", () => {
     );
     caller.abort();
 
-    await expect(pending).rejects.toBeInstanceOf(LiaisoDispatchAborted);
+    await expect(pending).rejects.toBeInstanceOf(SezzleeDispatchAborted);
   });
 
   it("applies the tag filter to the ranker's answer without reordering it", async () => {

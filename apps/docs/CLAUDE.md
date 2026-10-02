@@ -9,12 +9,12 @@ file adds what is specific to this app and overrides it where stated.
 
 Run from the repo root:
 
-- `pnpm --filter @liaiso/docs dev` — dev server on `http://localhost:5180`
-- `pnpm turbo run build --filter=@liaiso/docs` — production build into `dist/` (Worker in
+- `pnpm --filter @sezzlee/docs dev` — dev server on `http://localhost:5180`
+- `pnpm turbo run build --filter=@sezzlee/docs` — production build into `dist/` (Worker in
   `dist/server`, prerendered pages and assets in `dist/client`)
-- `pnpm --filter @liaiso/docs preview` — serve the build locally in `workerd` (requires a build first)
-- `pnpm --filter @liaiso/docs run deploy` — `wrangler deploy` to the `sezzlee-docs` Worker (requires a build first)
-- `pnpm --filter @liaiso/docs lint` / `check-types`
+- `pnpm --filter @sezzlee/docs preview` — serve the build locally in `workerd` (requires a build first)
+- `pnpm --filter @sezzlee/docs run deploy` — `wrangler deploy` to the `sezzlee-docs` Worker (requires a build first)
+- `pnpm --filter @sezzlee/docs lint` / `check-types`
 
 Use turbo for `build` so `^build` dependencies resolve; `dev`, `preview` and `deploy` do not need it.
 There are no tests in this app.
@@ -36,8 +36,8 @@ every link is slash-less; the default `auto-trailing-slash` would answer each pa
   `9a3e2156b439a4ae8a2ac5b153252fee`. The custom domain is configured in `wrangler.jsonc`;
   the workers.dev endpoint is disabled.
 - **Deploys are manual.** No CI job deploys this site, so a merged content change is not live until
-  someone runs `pnpm turbo run build --filter=@liaiso/docs` and then
-  `pnpm --filter @liaiso/docs run deploy`.
+  someone runs `pnpm turbo run build --filter=@sezzlee/docs` and then
+  `pnpm --filter @sezzlee/docs run deploy`.
 - A change under `apps/docs` is finished only once it is deployed: after the change is committed,
   ask before deploying (it publishes), then deploy, then confirm with
   an HTTPS request to `https://docs.sezzlee.app/docs/<product>/<slug>`
@@ -66,7 +66,7 @@ sidebar. Adding a **product** is two steps — create `src/content/<id>/` with a
 add one `{ id, label, tagline }` entry to `src/content/products.json`. No route file changes;
 `$product` is a route param, so `routeTree.gen.ts` is untouched.
 
-`pnpm --filter @liaiso/docs validate` (`scripts/check-content.mjs`) enforces the structural half of
+`pnpm --filter @sezzlee/docs validate` (`scripts/check-content.mjs`) enforces the structural half of
 `WRITING.md`: folder/registry agreement, mode directory names, numeric prefixes, unique
 slugs, a `# Title` on every page, the how-to/reference title patterns, and that every internal
 `/docs/...` link points at a page that exists. It runs inside `pnpm lint` and in CI's node job.
@@ -84,7 +84,7 @@ A server product (`excel-mcp`, `xml-mcp`, later `pdf-mcp`, `mssql-mcp`, `llm-mcp
 - `03-limits.md` from the package's exported `limits`, with one description per key in the same
   JSON; a key must be described or listed under `hidden` with a reason.
 
-`pnpm --filter @liaiso/docs gen` rewrites them; `validate` runs `gen --check`, which is why
+`pnpm --filter @sezzlee/docs gen` rewrites them; `validate` runs `gen --check`, which is why
 `validate` depends on `^build` and the servers are `devDependencies` of this app. A product is
 generated only once it is registered in `products.json`.
 
@@ -98,23 +98,23 @@ after any change to a server or a page, and before deploying. It runs servers, n
 
 A product may define several helpers (`pdf` and `pdfocr`); each helper on a page must equal one of
 them. A page listed under the product's `ollama` key (`true` for every page, as for `llm-mcp`) runs only
-when `LIAISO_DOCS_OLLAMA` is set —
+when `SEZZLEE_DOCS_OLLAMA` is set —
 `local` for an Ollama on `127.0.0.1:11434`, or `host:port`, which the script forwards to
 `127.0.0.1:11434` for that page, because the Inspector starts the server with a fixed environment
 allow-list and the page's binding uses the default address. Without it the page is reported as
 `skip`, not `ok`.
 
 Variables a product's pages need are listed under `requires` and skip the page when unset:
-`llm-mcp` needs `LIAISO_LLM_MODEL`, the model the outputs were produced with (the pages name it).
+`llm-mcp` needs `SEZZLEE_LLM_MODEL`, the model the outputs were produced with (the pages name it).
 A product whose server needs credentials names them under `secrets`: `mssql-mcp` pages run only when
-`LIAISO_DOCS_MSSQL_CONFIG` points at an Inspector configuration file (an `mcpServers.shop` entry
-with the `LIAISO_MSSQL_*` variables in `env`), which the script copies into the sandbox as
-`~/liaiso-mssql.json` with mode 600 and deletes with it. Pages never contain a connection value, and
-their outputs show only the `liaiso_shop` sample schema (`public/samples/mssql-mcp/liaiso-shop.sql`),
-filtered with `schema=liaiso_shop` and `jq` so the database and login names stay out.
+`SEZZLEE_DOCS_MSSQL_CONFIG` points at an Inspector configuration file (an `mcpServers.shop` entry
+with the `SEZZLEE_MSSQL_*` variables in `env`), which the script copies into the sandbox as
+`~/sezzlee-mssql.json` with mode 600 and deletes with it. Pages never contain a connection value, and
+their outputs show only the `sezzlee_shop` sample schema (`public/samples/mssql-mcp/sezzlee-shop.sql`),
+filtered with `schema=sezzlee_shop` and `jq` so the database and login names stay out.
 
 `scripts/make-samples.mjs` (Excel) and `scripts/make-pdf-samples.mjs` (PDF, whose scanned page is
-drawn with `@napi-rs/canvas` from `@liaiso/pdf-raster-pdfjs`'s dependencies) write the downloadable
+drawn with `@napi-rs/canvas` from `@sezzlee/pdf-raster-pdfjs`'s dependencies) write the downloadable
 samples under `public/samples/<product>/`.
 Regenerating them changes byte sizes that appear in page outputs, so rerun `run-examples --write`
 afterwards and review the diff.
@@ -127,7 +127,7 @@ time, so a `throw` in it fails `dev` but not `build`. The `validate` script is t
 
 ## Language
 
-Site content and UI strings are **English** — this site is liaiso's public face, and so is
+Site content and UI strings are **English** — this site is sezzlee's public face, and so is
 `packages/http/spec`, which these pages link to as normative. There is no i18n layer, by design.
 
 ## Style layers — the one thing that breaks silently
@@ -161,5 +161,5 @@ forbid the pair. If a Mantine component ever looks unstyled, check this file fir
 - **`postcss.config.js` is not for Tailwind.** Tailwind goes through `@tailwindcss/vite`. The
   PostCSS config exists only so `.module.css` files can use Mantine mixins (`@mixin dark`, `rem()`).
 - **`tsconfig.json` overrides the shared base to `moduleResolution: Bundler`** because
-  `@liaiso/typescript-config/base.json` is `NodeNext` and TanStack Start requires Bundler. Leave
+  `@sezzlee/typescript-config/base.json` is `NodeNext` and TanStack Start requires Bundler. Leave
   `verbatimModuleSyntax` off — Start's docs warn it can leak server bundles into the client.

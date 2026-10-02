@@ -1,17 +1,17 @@
 # Limits
 
-> Generated from the exported `limits` object of `@liaiso/llm-mcp` 0.1.2.
+> Generated from the exported `limits` object of `@sezzlee/llm-mcp` 0.1.2.
 
 Every limit is fixed at build time; none is configurable. A call that would cross one either answers with `truncated: true` and a way to continue, or fails with `resource_limit`.
 
 ## The context window
 
-| Limit                                                                                      | Value |
-| ------------------------------------------------------------------------------------------ | ----- |
-| Share of `LIAISO_LLM_NUM_CTX` one call's input may use; a larger input is refused or split | 0.45  |
-| Share of `LIAISO_LLM_NUM_CTX` the answer may use                                           | 0.4   |
-| Characters counted as one token when the server estimates an input's size                  | 1.8   |
-| UTF-8 bytes counted per character, so a file that cannot fit is refused before it is read  | 4     |
+| Limit                                                                                       | Value |
+| ------------------------------------------------------------------------------------------- | ----- |
+| Share of `SEZZLEE_LLM_NUM_CTX` one call's input may use; a larger input is refused or split | 0.45  |
+| Share of `SEZZLEE_LLM_NUM_CTX` the answer may use                                           | 0.4   |
+| Characters counted as one token when the server estimates an input's size                   | 1.8   |
+| UTF-8 bytes counted per character, so a file that cannot fit is refused before it is read   | 4     |
 
 ## Long inputs
 

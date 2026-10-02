@@ -1,10 +1,10 @@
 import { defineConfig } from "oxlint";
-import { config } from "@liaiso/oxlint-config/base";
+import { config } from "@sezzlee/oxlint-config/base";
 import {
   casingProperties,
   processEnvProperty,
   restrictProperties,
-} from "@liaiso/oxlint-config/casing";
+} from "@sezzlee/oxlint-config/casing";
 
 const networkMessage =
   "Only src/net/fetch.ts reaches the network: it is the one place the host allowlist, the manual redirect and the byte cap are applied. src/transport/http.ts may import node:http to listen, never to call out.";

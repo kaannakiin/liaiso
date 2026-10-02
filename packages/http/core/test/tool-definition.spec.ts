@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createTool,
   createToolDefinition,
-  LiaisoTemplateError,
+  SezzleeTemplateError,
 } from "../src/index.js";
 import type { EndpointDescriptor } from "../src/index.js";
 
@@ -21,7 +21,7 @@ function codeOf(run: () => unknown): string | undefined {
   try {
     run();
   } catch (error) {
-    return error instanceof LiaisoTemplateError ? error.code : undefined;
+    return error instanceof SezzleeTemplateError ? error.code : undefined;
   }
   return undefined;
 }

@@ -7,7 +7,7 @@ import {
   type QueryResult,
   type QuerySpec,
   type RunningQuery,
-} from "@liaiso/db-core";
+} from "@sezzlee/db-core";
 import type { MssqlConfig } from "../platform/env.js";
 import { describeType } from "../dialect/types.js";
 

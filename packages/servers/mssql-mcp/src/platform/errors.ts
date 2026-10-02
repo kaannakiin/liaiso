@@ -8,13 +8,13 @@ import {
   type DbErrorCode,
   type ErrorContext,
   type ErrorFactory,
-} from "@liaiso/db-core";
+} from "@sezzlee/db-core";
 import { vocabulary } from "./vocabulary.js";
 
-export type LiaisoMssqlErrorCode = DbErrorCode;
+export type SezzleeMssqlErrorCode = DbErrorCode;
 
-export class LiaisoMssqlError extends DbSourceError {
-  declare readonly code: LiaisoMssqlErrorCode;
+export class SezzleeMssqlError extends DbSourceError {
+  declare readonly code: SezzleeMssqlErrorCode;
 }
 
 /**
@@ -32,11 +32,11 @@ export const secretPatterns = [
 export const redact = (detail: string): string =>
   redactSecrets(detail, secretPatterns);
 
-export const fail: ErrorFactory<LiaisoMssqlErrorCode> = (
+export const fail: ErrorFactory<SezzleeMssqlErrorCode> = (
   code,
   message,
   recovery,
-) => new LiaisoMssqlError(code, redact(message), recovery && redact(recovery));
+) => new SezzleeMssqlError(code, redact(message), recovery && redact(recovery));
 
 export function asMssqlError(
   error: unknown,

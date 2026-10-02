@@ -5,8 +5,8 @@ import {
   isFresh,
   type Cursor,
   type Fingerprint,
-} from "@liaiso/file-core";
-import { LiaisoPdfError } from "../platform/errors.js";
+} from "@sezzlee/file-core";
+import { SezzleePdfError } from "../platform/errors.js";
 import { limits } from "../platform/limits.js";
 
 export type CursorTool = "read" | "find";
@@ -142,7 +142,7 @@ export function decodeCursor<K extends CursorTool>(
   const parsed = decodeCursorPayload(raw);
   if (isPdfCursor(parsed, tool)) {
     if (parsed.x <= Date.now()) {
-      throw new LiaisoPdfError(
+      throw new SezzleePdfError(
         "invalid_cursor",
         "The cursor expired.",
         "Call the tool again without a cursor.",
@@ -155,13 +155,13 @@ export function decodeCursor<K extends CursorTool>(
       ? (parsed as Record<string, unknown>)["t"]
       : undefined;
   if (isKnownTool(claimed) && claimed !== tool) {
-    throw new LiaisoPdfError(
+    throw new SezzleePdfError(
       "invalid_cursor",
       "That cursor belongs to a different tool.",
       "Use the nextCursor this tool returned, or call it again without a cursor.",
     );
   }
-  throw new LiaisoPdfError(
+  throw new SezzleePdfError(
     "invalid_cursor",
     "The cursor is not a token produced by a previous response.",
     "Call the tool again without a cursor.",
@@ -173,7 +173,7 @@ export function assertFresh(
   current: Fingerprint,
 ): void {
   if (!isFresh({ v: 1, f: cursor.f }, current)) {
-    throw new LiaisoPdfError(
+    throw new SezzleePdfError(
       "stale_cursor",
       "The document changed while the previous page was being read.",
       "Call the tool again without a cursor.",
@@ -186,7 +186,7 @@ export function assertSameOptions(
   hash: string,
 ): void {
   if (cursor.o !== hash) {
-    throw new LiaisoPdfError(
+    throw new SezzleePdfError(
       "invalid_argument",
       "The options differ from the ones the cursor was produced with.",
       "Drop cursor to start over with the new options.",
@@ -206,7 +206,7 @@ export function assertSameText(
   markdown: string,
 ): void {
   if (expected !== undefined && expected !== pageDigest(markdown)) {
-    throw new LiaisoPdfError(
+    throw new SezzleePdfError(
       "stale_cursor",
       `The text of page ${String(page)} changed since the cursor was produced; it was transcribed again.`,
       "Call the tool again without a cursor.",

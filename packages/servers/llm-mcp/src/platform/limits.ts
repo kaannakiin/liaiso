@@ -1,4 +1,4 @@
-import { mcpCoreLimits } from "@liaiso/mcp-core";
+import { mcpCoreLimits } from "@sezzlee/mcp-core";
 
 /**
  * Guard: Ollama never refuses an oversized prompt — 84,608 characters sent to a

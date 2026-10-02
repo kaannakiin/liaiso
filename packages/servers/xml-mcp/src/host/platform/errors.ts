@@ -5,10 +5,10 @@ import {
   type CoreErrorCode,
   type ErrorContext,
   type ErrorFactory,
-} from "@liaiso/file-core";
+} from "@sezzlee/file-core";
 import { vocabulary } from "./vocabulary.js";
 
-export type LiaisoXmlErrorCode =
+export type SezzleeXmlErrorCode =
   | CoreErrorCode
   | "malformed_xml"
   | "doctype_not_allowed"
@@ -16,28 +16,28 @@ export type LiaisoXmlErrorCode =
   | "query_not_supported"
   | "numeric_precision";
 
-export class LiaisoXmlError extends FileSourceError {
-  declare readonly code: LiaisoXmlErrorCode;
+export class SezzleeXmlError extends FileSourceError {
+  declare readonly code: SezzleeXmlErrorCode;
 
-  constructor(code: LiaisoXmlErrorCode, message: string, recovery?: string) {
+  constructor(code: SezzleeXmlErrorCode, message: string, recovery?: string) {
     super(code, message, recovery);
   }
 }
 
-export const fail: ErrorFactory<LiaisoXmlErrorCode> = (
+export const fail: ErrorFactory<SezzleeXmlErrorCode> = (
   code,
   message,
   recovery,
-) => new LiaisoXmlError(code, message, recovery);
+) => new SezzleeXmlError(code, message, recovery);
 
 export function asXmlError(
   error: unknown,
   context: ErrorContext = {},
-): LiaisoXmlError {
-  if (error instanceof LiaisoXmlError) {
+): SezzleeXmlError {
+  if (error instanceof SezzleeXmlError) {
     return error;
   }
-  return new LiaisoXmlError(
+  return new SezzleeXmlError(
     "internal_error",
     internalErrorMessage(error, context),
     internalErrorRecovery(vocabulary),

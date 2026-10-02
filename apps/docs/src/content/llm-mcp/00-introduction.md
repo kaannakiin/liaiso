@@ -1,12 +1,12 @@
 # Introduction
 
-`@liaiso/llm-mcp` is an MCP server that lets a planning agent, such as Codex or Claude Code, hand
+`@sezzlee/llm-mcp` is an MCP server that lets a planning agent, such as Codex or Claude Code, hand
 bounded language work to a model running on your own [Ollama](https://ollama.com). The agent keeps
 the plan; the local model reads the long files, summarises them, pulls fields out of them, or labels
 the rows of a spreadsheet, and hands back a short answer.
 
 ```sh
-LIAISO_LLM_MODEL=qwen3:8b npx -y @liaiso/llm-mcp
+SEZZLEE_LLM_MODEL=qwen3:8b npx -y @sezzlee/llm-mcp
 ```
 
 The point is what the agent does not have to read. It passes a file path, the server reads the file

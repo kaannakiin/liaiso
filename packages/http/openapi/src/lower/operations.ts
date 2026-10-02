@@ -1,4 +1,4 @@
-import { snakeCase, type EndpointDescriptor } from "@liaiso/core";
+import { snakeCase, type EndpointDescriptor } from "@sezzlee/core";
 import { OperationDropped, type DiagnosticSink } from "../diagnostics.js";
 import {
   childPointer,
@@ -171,7 +171,7 @@ function searchTermsOf(
   operation: Record<string, unknown>,
   at: JsonPointer,
 ): string[] | undefined {
-  const declared = operation["x-liaiso-search-terms"];
+  const declared = operation["x-sezzlee-search-terms"];
   if (declared === undefined) {
     return undefined;
   }
@@ -181,8 +181,8 @@ function searchTermsOf(
   ) {
     context.diagnostics.report(
       "search_terms_invalid",
-      childPointer(at, "x-liaiso-search-terms"),
-      "x-liaiso-search-terms must be an array of strings; the operation carries no search terms.",
+      childPointer(at, "x-sezzlee-search-terms"),
+      "x-sezzlee-search-terms must be an array of strings; the operation carries no search terms.",
     );
     return undefined;
   }
@@ -197,7 +197,7 @@ function lowerOperation(
   options: OperationOptions,
 ): SourcedEndpoint | undefined {
   const { operation, at, method } = site;
-  if (operation["x-liaiso-dropped"] === true) {
+  if (operation["x-sezzlee-dropped"] === true) {
     return undefined;
   }
   if (!describable.has(method)) {

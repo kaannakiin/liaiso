@@ -3,34 +3,34 @@ import { McpServer } from "@modelcontextprotocol/server";
 import {
   CallerVisibilityProvider,
   extensionTokens,
-  registerLiaisoTools,
-  LiaisoCatalog,
-  LiaisoDispatcher,
-  LiaisoStreamableHttp,
-  LIAISO_OPTIONS,
+  registerSezzleeTools,
+  SezzleeCatalog,
+  SezzleeDispatcher,
+  SezzleeStreamableHttp,
+  SEZZLEE_OPTIONS,
   type CallerScopeResolver,
   type InvokeResultMapper,
-  type LiaisoOptions,
-  type LiaisoRequestHandler,
-} from "@liaiso/sdk-nestjs";
+  type SezzleeOptions,
+  type SezzleeRequestHandler,
+} from "@sezzlee/sdk-nestjs";
 import type { Request, Response } from "express";
 
 @Controller()
 export class McpController {
   constructor(
-    private readonly streamableHttp: LiaisoStreamableHttp,
-    private readonly catalog: LiaisoCatalog,
-    private readonly dispatcher: LiaisoDispatcher,
+    private readonly streamableHttp: SezzleeStreamableHttp,
+    private readonly catalog: SezzleeCatalog,
+    private readonly dispatcher: SezzleeDispatcher,
     private readonly visibility: CallerVisibilityProvider,
     @Inject(extensionTokens.invokeResultMapper)
     private readonly mapper: InvokeResultMapper,
     @Inject(extensionTokens.callerScopeResolver)
     private readonly scopes: CallerScopeResolver,
-    @Inject(LIAISO_OPTIONS) private readonly options: LiaisoOptions,
+    @Inject(SEZZLEE_OPTIONS) private readonly options: SezzleeOptions,
   ) {
     this.serve = this.streamableHttp.serve(() => {
       const server = new McpServer({ name: "demo-api", version: "0.0.0" });
-      registerLiaisoTools(server, {
+      registerSezzleeTools(server, {
         catalog: this.catalog,
         dispatcher: this.dispatcher,
         mapper: this.mapper,
@@ -42,7 +42,7 @@ export class McpController {
     });
   }
 
-  private readonly serve: LiaisoRequestHandler;
+  private readonly serve: SezzleeRequestHandler;
 
   @All("mcp")
   async handle(@Req() req: Request, @Res() res: Response): Promise<void> {

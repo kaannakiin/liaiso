@@ -38,7 +38,7 @@ const header = [
 
 function workbook() {
   const book = new ExcelJS.Workbook();
-  book.creator = "liaiso docs";
+  book.creator = "sezzlee docs";
   book.created = stamp;
   book.modified = stamp;
   return book;

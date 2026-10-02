@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { LiaisoModule } from "@liaiso/sdk-nestjs";
+import { SezzleeModule } from "@sezzlee/sdk-nestjs";
 import { AttachmentsController } from "./attachments.controller.js";
 import { DemoAttachmentResolver } from "./attachments.js";
 import { AuthController } from "./auth.controller.js";
@@ -22,7 +22,7 @@ import { OrdersController } from "./orders.controller.js";
 
 @Module({
   imports: [
-    LiaisoModule.forRoot((options) => {
+    SezzleeModule.forRoot((options) => {
       options.resourceServer = {
         resource: demoResourceUrl,
         authorizationServers: [demoIssuerUrl],

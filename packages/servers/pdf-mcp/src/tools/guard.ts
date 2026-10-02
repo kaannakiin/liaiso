@@ -3,7 +3,7 @@ import {
   guard as coreGuard,
   type ErrorContext,
   type GuardedHandler,
-} from "@liaiso/file-core";
+} from "@sezzlee/file-core";
 
 import { asPdfError, fail } from "../platform/errors.js";
 import type { Definitions, ToolInput, ToolName } from "./definitions.js";

@@ -1,6 +1,6 @@
 {
   "kind": "openapi-ingestion",
-  "description": "x-liaiso-search-terms descriptor'in searchTerms alanina tasinir; bos terim duser",
+  "description": "x-sezzlee-search-terms descriptor'in searchTerms alanina tasinir; bos terim duser",
   "input": {
     "document": {
       "openapi": "3.0.3",
@@ -17,7 +17,7 @@
         "/orders": {
           "post": {
             "operationId": "createOrder",
-            "x-liaiso-search-terms": [
+            "x-sezzlee-search-terms": [
               "sipariş",
               "  ",
               "satın alma"

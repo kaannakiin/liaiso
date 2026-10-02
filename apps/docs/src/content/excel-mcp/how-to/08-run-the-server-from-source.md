@@ -9,11 +9,11 @@ From the repository root:
 
 ```text
 pnpm install
-pnpm turbo run build --filter=@liaiso/excel-mcp
+pnpm turbo run build --filter=@sezzlee/excel-mcp
 ```
 
-Build through Turbo, not `pnpm --filter @liaiso/excel-mcp build`. The server depends on
-`@liaiso/file-core` and `@liaiso/ooxml-core` through their built `dist/`, and only Turbo builds them
+Build through Turbo, not `pnpm --filter @sezzlee/excel-mcp build`. The server depends on
+`@sezzlee/file-core` and `@sezzlee/ooxml-core` through their built `dist/`, and only Turbo builds them
 first; a bare filter can leave the server running against stale code.
 
 ## Run it
@@ -23,7 +23,7 @@ node packages/servers/excel-mcp/dist/cli.js /absolute/path/to/sheets
 ```
 
 To use the build from a client, put the same two words in its configuration: `"command": "node"`
-and `"args": ["/absolute/path/to/liaiso/packages/servers/excel-mcp/dist/cli.js", "/absolute/path/to/sheets"]`.
+and `"args": ["/absolute/path/to/sezzlee/packages/servers/excel-mcp/dist/cli.js", "/absolute/path/to/sheets"]`.
 
 ## Try it in the Inspector
 
@@ -37,8 +37,8 @@ hand.
 ## Test it
 
 ```text
-pnpm turbo run test --filter=@liaiso/excel-mcp
-pnpm turbo run check-types lint --filter=@liaiso/excel-mcp
+pnpm turbo run test --filter=@sezzlee/excel-mcp
+pnpm turbo run check-types lint --filter=@sezzlee/excel-mcp
 ```
 
 The test suite builds its own fixture workbooks and needs no files of yours.

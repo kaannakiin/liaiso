@@ -9,7 +9,7 @@
       ["packages/cores/file-core/src/errors.ts", "CoreErrorCode"],
       [
         "packages/servers/xml-mcp/src/host/platform/errors.ts",
-        "LiaisoXmlErrorCode"
+        "SezzleeXmlErrorCode"
       ]
     ],
     "sections": [

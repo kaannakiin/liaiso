@@ -3,9 +3,9 @@ import { Body, Controller, Param, Post } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { IsString } from "class-validator";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 
 class NoteDto {
   @IsString()
@@ -49,16 +49,16 @@ class DiagnosedController {
 }
 
 describe("body root diagnostics", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [LiaisoModule.forRoot()],
+      imports: [SezzleeModule.forRoot()],
       controllers: [DiagnosedController],
     }).compile();
     const app = moduleRef.createNestApplication({ logger: false });
     await app.init();
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
   });
 
   const codesFor = (handler: string): string[] =>

@@ -4,11 +4,11 @@ import {
   type CacheKey,
   type CallerFacts,
   type CallerScope,
-  type LiaisoCache,
+  type SezzleeCache,
   type VisibilityDecision,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import type { CatalogEntry } from "../catalog.js";
-import type { OuterRequest, LiaisoOptions } from "../options.js";
+import type { OuterRequest, SezzleeOptions } from "../options.js";
 import type { ProbeEvaluator } from "./probe.js";
 import type { VisibilityEvaluator } from "./evaluator.js";
 
@@ -20,8 +20,8 @@ export class CallerVisibilityProvider {
   constructor(
     private readonly evaluator: VisibilityEvaluator,
     private readonly prober: ProbeEvaluator,
-    private readonly cache: LiaisoCache,
-    private readonly options: LiaisoOptions,
+    private readonly cache: SezzleeCache,
+    private readonly options: SezzleeOptions,
   ) {}
 
   bump(): void {

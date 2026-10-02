@@ -4,8 +4,8 @@
     "build": {
       "cache": false,
       "passThroughEnv": [
-        "LIAISO_NODE_HEADERS",
-        "LIAISO_NODE_LIB",
+        "SEZZLEE_NODE_HEADERS",
+        "SEZZLEE_NODE_LIB",
         "CXX",
         "INCLUDE",
         "LIB",

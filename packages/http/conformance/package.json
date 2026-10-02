@@ -1,5 +1,5 @@
 {
-  "name": "@liaiso/conformance",
+  "name": "@sezzlee/conformance",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -7,7 +7,7 @@
     "validate": "node validate.mjs"
   },
   "devDependencies": {
-    "@liaiso/spec": "workspace:*",
+    "@sezzlee/spec": "workspace:*",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1"
   }

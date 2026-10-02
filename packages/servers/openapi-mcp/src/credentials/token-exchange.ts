@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { SingleFlight } from "@liaiso/core";
+import { SingleFlight } from "@sezzlee/core";
 import type { BoundedFetch } from "../net/fetch.js";
 import type { TokenExchangeConfig } from "../platform/config.js";
 

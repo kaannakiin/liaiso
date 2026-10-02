@@ -209,25 +209,25 @@ importers:
       '@cloudflare/vite-plugin':
         specifier: ^1.60.1
         version: 1.60.1(@types/node@24.13.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(sugarss@5.0.1(postcss@8.5.26))(yaml@2.9.1))(wrangler@4.140.0(@types/node@24.13.3))
-      '@liaiso/excel-mcp':
+      '@sezzlee/excel-mcp':
         specifier: workspace:*
         version: link:../../packages/servers/excel-mcp
-      '@liaiso/llm-mcp':
+      '@sezzlee/llm-mcp':
         specifier: workspace:*
         version: link:../../packages/servers/llm-mcp
-      '@liaiso/mssql-mcp':
+      '@sezzlee/mssql-mcp':
         specifier: workspace:*
         version: link:../../packages/servers/mssql-mcp
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/toolchain/oxlint-config
-      '@liaiso/pdf-mcp':
+      '@sezzlee/pdf-mcp':
         specifier: workspace:*
         version: link:../../packages/servers/pdf-mcp
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../packages/toolchain/typescript-config
-      '@liaiso/xml-mcp':
+      '@sezzlee/xml-mcp':
         specifier: workspace:*
         version: link:../../packages/servers/xml-mcp
       '@tailwindcss/vite':
@@ -275,10 +275,10 @@ importers:
 
   packages/adapters/ocr-ollama:
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@types/node':
@@ -303,10 +303,10 @@ importers:
         specifier: 4.10.38
         version: 4.10.38
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@types/node':
@@ -324,17 +324,17 @@ importers:
 
   packages/cores/db-core:
     dependencies:
-      '@liaiso/mcp-core':
+      '@sezzlee/mcp-core':
         specifier: workspace:^
         version: link:../mcp-core
       zod:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -361,20 +361,20 @@ importers:
 
   packages/cores/file-core:
     dependencies:
-      '@liaiso/file-core-native':
+      '@sezzlee/file-core-native':
         specifier: workspace:^
         version: link:../file-core-native
-      '@liaiso/mcp-core':
+      '@sezzlee/mcp-core':
         specifier: workspace:^
         version: link:../mcp-core
       zod:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -407,10 +407,10 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -444,10 +444,10 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@types/node':
@@ -471,7 +471,7 @@ importers:
 
   packages/http/conformance:
     devDependencies:
-      '@liaiso/spec':
+      '@sezzlee/spec':
         specifier: workspace:*
         version: link:../spec
       ajv:
@@ -486,13 +486,13 @@ importers:
       '@apidevtools/json-schema-ref-parser':
         specifier: ^16.0.1
         version: 16.0.1(@types/json-schema@7.0.15)
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/spec':
+      '@sezzlee/spec':
         specifier: workspace:*
         version: link:../spec
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@types/node':
@@ -516,17 +516,17 @@ importers:
 
   packages/http/openapi:
     dependencies:
-      '@liaiso/core':
+      '@sezzlee/core':
         specifier: workspace:*
         version: link:../core
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@types/node':
@@ -546,10 +546,10 @@ importers:
 
   packages/lab/xml-lab:
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@types/node':
@@ -576,10 +576,10 @@ importers:
       '@e965/xlsx':
         specifier: 0.20.3
         version: 0.20.3
-      '@liaiso/file-core':
+      '@sezzlee/file-core':
         specifier: workspace:^
         version: link:../../cores/file-core
-      '@liaiso/ooxml-core':
+      '@sezzlee/ooxml-core':
         specifier: workspace:^
         version: link:../../cores/ooxml-core
       '@modelcontextprotocol/server':
@@ -592,10 +592,10 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -625,7 +625,7 @@ importers:
 
   packages/servers/llm-mcp:
     dependencies:
-      '@liaiso/mcp-core':
+      '@sezzlee/mcp-core':
         specifier: workspace:^
         version: link:../../cores/mcp-core
       '@modelcontextprotocol/server':
@@ -635,10 +635,10 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -662,7 +662,7 @@ importers:
 
   packages/servers/mssql-mcp:
     dependencies:
-      '@liaiso/db-core':
+      '@sezzlee/db-core':
         specifier: workspace:^
         version: link:../../cores/db-core
       '@modelcontextprotocol/server':
@@ -675,10 +675,10 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -705,10 +705,10 @@ importers:
 
   packages/servers/openapi-mcp:
     dependencies:
-      '@liaiso/core':
+      '@sezzlee/core':
         specifier: workspace:*
         version: link:../../http/core
-      '@liaiso/openapi':
+      '@sezzlee/openapi':
         specifier: workspace:*
         version: link:../../http/openapi
       '@modelcontextprotocol/node':
@@ -721,10 +721,10 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -748,7 +748,7 @@ importers:
       '@firecrawl/pdf-inspector':
         specifier: 1.23.0
         version: 1.23.0
-      '@liaiso/file-core':
+      '@sezzlee/file-core':
         specifier: workspace:^
         version: link:../../cores/file-core
       '@modelcontextprotocol/server':
@@ -758,16 +758,16 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/ocr-ollama':
+      '@sezzlee/ocr-ollama':
         specifier: workspace:^
         version: link:../../adapters/ocr-ollama
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/pdf-raster-pdfjs':
+      '@sezzlee/pdf-raster-pdfjs':
         specifier: workspace:^
         version: link:../../adapters/pdf-raster-pdfjs
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -791,7 +791,7 @@ importers:
 
   packages/servers/xml-mcp:
     dependencies:
-      '@liaiso/file-core':
+      '@sezzlee/file-core':
         specifier: workspace:^
         version: link:../../cores/file-core
       '@modelcontextprotocol/server':
@@ -804,10 +804,10 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -845,17 +845,17 @@ importers:
 
   sdks/nestjs:
     dependencies:
-      '@liaiso/core':
+      '@sezzlee/core':
         specifier: workspace:*
         version: link:../../packages/http/core
       zod:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../packages/toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../packages/toolchain/typescript-config
       '@modelcontextprotocol/client':
@@ -934,13 +934,13 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
     devDependencies:
-      '@liaiso/core':
+      '@sezzlee/core':
         specifier: workspace:*
         version: link:../../../../packages/http/core
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../../../packages/toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../../../packages/toolchain/typescript-config
       '@types/node':
@@ -955,7 +955,7 @@ importers:
 
   sdks/nestjs/samples/demo-api:
     dependencies:
-      '@liaiso/sdk-nestjs':
+      '@sezzlee/sdk-nestjs':
         specifier: workspace:*
         version: link:../..
       '@modelcontextprotocol/express':
@@ -998,10 +998,10 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4
     devDependencies:
-      '@liaiso/oxlint-config':
+      '@sezzlee/oxlint-config':
         specifier: workspace:*
         version: link:../../../../packages/toolchain/oxlint-config
-      '@liaiso/typescript-config':
+      '@sezzlee/typescript-config':
         specifier: workspace:*
         version: link:../../../../packages/toolchain/typescript-config
       '@types/express':

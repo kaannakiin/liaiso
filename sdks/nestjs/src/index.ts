@@ -1,7 +1,7 @@
-export { LiaisoModule } from "./liaiso.module.js";
-export type { LiaisoModuleAsyncOptions } from "./liaiso.module.js";
-export { LiaisoDispatcher } from "./dispatcher.js";
-export { LiaisoCatalog } from "./catalog.js";
+export { SezzleeModule } from "./sezzlee.module.js";
+export type { SezzleeModuleAsyncOptions } from "./sezzlee.module.js";
+export { SezzleeDispatcher } from "./dispatcher.js";
+export { SezzleeCatalog } from "./catalog.js";
 export type { CatalogEntry, CatalogSnapshot } from "./catalog.js";
 export {
   curate,
@@ -24,18 +24,18 @@ export type {
 } from "./decorators.js";
 export { ToolFamilyOptions } from "./families.js";
 export type { McpFamilyMember, McpFamilySource } from "./families.js";
-export { LiaisoFileRefused } from "./files.js";
+export { SezzleeFileRefused } from "./files.js";
 export type {
   FileResolution,
   FileResolveRequest,
   FileResolver,
-  LiaisoFileOptions,
+  SezzleeFileOptions,
 } from "./files.js";
 export { ArgumentCurationOptions, callerOf } from "./options.js";
 export type {
   ArgumentValueProvider,
   CurationTarget,
-  LiaisoSearchOptions,
+  SezzleeSearchOptions,
   McpCaller,
   VerifiedToken,
 } from "./options.js";
@@ -45,13 +45,16 @@ export type {
   RankerFailureMode,
   RankRequest,
   ToolRanker,
-} from "@liaiso/core";
-export { isLiaisoProbe, isLiaisoRequest } from "./markers.js";
+} from "@sezzlee/core";
+export { isSezzleeProbe, isSezzleeRequest } from "./markers.js";
 export {
   currentOuterConnection,
   type OuterConnection,
 } from "./outer-connection.js";
-export { catalogGenerationMetaKey, registerLiaisoTools } from "./meta-tools.js";
+export {
+  catalogGenerationMetaKey,
+  registerSezzleeTools,
+} from "./meta-tools.js";
 export type { MetaToolDependencies } from "./meta-tools.js";
 export {
   createRoutePaths,
@@ -76,8 +79,8 @@ export type {
 export { DeclarativeVisibilityEvaluator } from "./visibility/evaluator.js";
 export type { VisibilityEvaluator } from "./visibility/evaluator.js";
 export {
-  LiaisoProbeEvaluator,
-  LiaisoProbeInterceptor,
+  SezzleeProbeEvaluator,
+  SezzleeProbeInterceptor,
 } from "./visibility/probe.js";
 export type { ProbeEvaluator } from "./visibility/probe.js";
 export { CallerVisibilityProvider } from "./visibility/provider.js";
@@ -86,32 +89,32 @@ export type {
   DispatchResult,
   ProbeResult,
 } from "./dispatcher.js";
-export { LiaisoDispatchAborted } from "./synthetic-context.js";
+export { SezzleeDispatchAborted } from "./synthetic-context.js";
 export type { DispatchAbortReason } from "./synthetic-context.js";
 export {
   ErrorMappingOptions,
   IdentityForwardingOptions,
-  LiaisoOptions,
-  LIAISO_OPTIONS,
+  SezzleeOptions,
+  SEZZLEE_OPTIONS,
 } from "./options.js";
 export {
-  LiaisoConfigurationError,
+  SezzleeConfigurationError,
   collectConfigurationFailures,
-  validateLiaisoOptions,
+  validateSezzleeOptions,
 } from "./options-validation.js";
 export type {
   InvokeTarget,
-  LiaisoInvokeOptions,
-  LiaisoDiagnosticsOptions,
-  LiaisoNamingOptions,
-  LiaisoSelectionOptions,
-  LiaisoVisibilityOptions,
-  LiaisoVisibilityTier,
+  SezzleeInvokeOptions,
+  SezzleeDiagnosticsOptions,
+  SezzleeNamingOptions,
+  SezzleeSelectionOptions,
+  SezzleeVisibilityOptions,
+  SezzleeVisibilityTier,
 } from "./options.js";
 export type {
   OuterRequest,
-  LiaisoCacheOptions,
-  LiaisoResourceServerOptions,
+  SezzleeCacheOptions,
+  SezzleeResourceServerOptions,
   SyntheticHeaders,
   SyntheticRequestOptions,
 } from "./options.js";
@@ -123,16 +126,16 @@ export type {
 } from "./extension-points.js";
 export {
   CarrierHashCallerScopeResolver,
-  LIAISO_CACHE_INVALIDATOR,
-  LiaisoCacheInvalidator,
+  SEZZLEE_CACHE_INVALIDATOR,
+  SezzleeCacheInvalidator,
 } from "./cache.js";
 export type { CallerScopeResolver } from "./cache.js";
 export { DefaultInvokeResultMapper } from "./invoke-result-mapper.js";
 export type { InvokeResultMapper } from "./invoke-result-mapper.js";
-export { LiaisoStreamableHttp } from "./transport/streamable-http.js";
+export { SezzleeStreamableHttp } from "./transport/streamable-http.js";
 export type {
-  LiaisoRequestHandler,
-  LiaisoServerFactory,
+  SezzleeRequestHandler,
+  SezzleeServerFactory,
 } from "./transport/streamable-http.js";
 export { withAudienceCheck } from "./transport/audience.js";
 export {
@@ -148,9 +151,9 @@ export {
   isMappedError,
   isSdkError,
   mapInvokeResult,
-  LiaisoArgumentError,
-  LiaisoTemplateError,
-} from "@liaiso/core";
+  SezzleeArgumentError,
+  SezzleeTemplateError,
+} from "@sezzlee/core";
 export type {
   BackendErrorCode,
   BackendResponse,
@@ -167,5 +170,5 @@ export type {
   Recognizer,
   RequestTemplate,
   RequestTemplateInput,
-  LiaisoArgumentErrorCode,
-} from "@liaiso/core";
+  SezzleeArgumentErrorCode,
+} from "@sezzlee/core";

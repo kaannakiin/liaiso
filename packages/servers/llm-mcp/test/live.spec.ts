@@ -11,19 +11,19 @@ import { runTask } from "../src/tools/task.js";
 
 const outcome = readLlmEnv(
   {
-    LIAISO_LLM_BASE_URL: process.env["LIAISO_LLM_BASE_URL"],
-    LIAISO_LLM_MODEL: process.env["LIAISO_LLM_MODEL"],
-    LIAISO_LLM_NUM_CTX: process.env["LIAISO_LLM_NUM_CTX"],
+    SEZZLEE_LLM_BASE_URL: process.env["SEZZLEE_LLM_BASE_URL"],
+    SEZZLEE_LLM_MODEL: process.env["SEZZLEE_LLM_MODEL"],
+    SEZZLEE_LLM_NUM_CTX: process.env["SEZZLEE_LLM_NUM_CTX"],
   },
   process.cwd(),
 );
 const live =
-  process.env["LIAISO_LLM_LIVE"] === "1" && outcome.kind === "config";
+  process.env["SEZZLEE_LLM_LIVE"] === "1" && outcome.kind === "config";
 
 describe.skipIf(!live)("a real Ollama host", () => {
   const backend = () => {
     if (outcome.kind !== "config") {
-      throw new Error("LIAISO_LLM_MODEL is required for the live suite");
+      throw new Error("SEZZLEE_LLM_MODEL is required for the live suite");
     }
     return createOllamaBackend(outcome.config);
   };

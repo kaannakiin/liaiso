@@ -1,6 +1,6 @@
 import { defineConfig } from "oxlint";
-import { config } from "@liaiso/oxlint-config/base";
-import { casing } from "@liaiso/oxlint-config/casing";
+import { config } from "@sezzlee/oxlint-config/base";
+import { casing } from "@sezzlee/oxlint-config/casing";
 
 const workerEntry = ["src/xml-worker.ts"];
 
@@ -8,7 +8,7 @@ const message =
   "The worker entry stays free of the host surface; it answers with a code string and the main side builds the error.";
 
 const hostPackages = [
-  "@liaiso/file-core",
+  "@sezzlee/file-core",
   "@modelcontextprotocol/server",
   "zod",
 ];

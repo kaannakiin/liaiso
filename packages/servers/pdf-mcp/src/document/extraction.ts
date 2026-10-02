@@ -1,4 +1,4 @@
-import type { SourceMode } from "@liaiso/file-core";
+import type { SourceMode } from "@sezzlee/file-core";
 import type {
   ClassifiedPdf,
   ExtractedPage,

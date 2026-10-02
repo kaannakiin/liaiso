@@ -9,8 +9,8 @@
         "GITHUB_REPOSITORY",
         "GITHUB_RUN_ID",
         "GITHUB_SERVER_URL",
-        "LIAISO_XML_BENCH",
-        "LIAISO_XML_F0_NO_NETWORK"
+        "SEZZLEE_XML_BENCH",
+        "SEZZLEE_XML_F0_NO_NETWORK"
       ]
     }
   }

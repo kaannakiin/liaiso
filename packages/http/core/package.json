@@ -1,5 +1,5 @@
 {
-  "name": "@liaiso/core",
+  "name": "@sezzlee/core",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -20,9 +20,9 @@
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^16.0.1",
-    "@liaiso/oxlint-config": "workspace:*",
-    "@liaiso/spec": "workspace:*",
-    "@liaiso/typescript-config": "workspace:*",
+    "@sezzlee/oxlint-config": "workspace:*",
+    "@sezzlee/spec": "workspace:*",
+    "@sezzlee/typescript-config": "workspace:*",
     "@types/node": "^24.3.0",
     "json-schema-to-typescript": "^16.0.0",
     "oxlint": "1.85.0",

@@ -11,20 +11,20 @@ You need Node.js 22 or later and `jq`.
 ## 1. Install the server
 
 ```sh
-npm install -g @liaiso/excel-mcp
+npm install -g @sezzlee/excel-mcp
 ```
 
-This puts the `liaiso-excel` command on your path.
+This puts the `sezzlee-excel` command on your path.
 
 ## 2. Give it a folder
 
 The server reads one folder and nothing outside it. Create one:
 
 ```sh
-mkdir ~/liaiso-sheets
+mkdir ~/sezzlee-sheets
 ```
 
-Download [sales.xlsx](/samples/excel-mcp/sales.xlsx) and save it into `~/liaiso-sheets`. It holds
+Download [sales.xlsx](/samples/excel-mcp/sales.xlsx) and save it into `~/sezzlee-sheets`. It holds
 twelve orders on a sheet called `Orders` and one target per region on a sheet called `Targets`.
 
 ## 3. Make calling a tool short
@@ -34,7 +34,7 @@ function so each call below is one line:
 
 ```sh
 excel() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-excel ~/liaiso-sheets \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-excel ~/sezzlee-sheets \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```

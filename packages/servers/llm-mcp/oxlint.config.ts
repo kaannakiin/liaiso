@@ -1,10 +1,10 @@
 import { defineConfig } from "oxlint";
-import { config } from "@liaiso/oxlint-config/base";
+import { config } from "@sezzlee/oxlint-config/base";
 import {
   casingProperties,
   processEnvProperty,
   restrictProperties,
-} from "@liaiso/oxlint-config/casing";
+} from "@sezzlee/oxlint-config/casing";
 
 const platformMessage =
   "The platform layer is the mcp-core and node boundary; it may not import a layer above it.";

@@ -1,4 +1,4 @@
-import { dbCoreLimits } from "@liaiso/db-core";
+import { dbCoreLimits } from "@sezzlee/db-core";
 
 export const limits = {
   ...dbCoreLimits,

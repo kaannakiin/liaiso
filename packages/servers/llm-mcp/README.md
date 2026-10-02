@@ -1,6 +1,6 @@
-# @liaiso/llm-mcp
+# @sezzlee/llm-mcp
 
-MCP server that lets a planning agent (Codex, Claude Code, Cursor) hand off bounded language work to a local model. It builds on `@liaiso/mcp-core` and names no other `@liaiso/*` package.
+MCP server that lets a planning agent (Codex, Claude Code, Cursor) hand off bounded language work to a local model. It builds on `@sezzlee/mcp-core` and names no other `@sezzlee/*` package.
 
 ## Quick start
 
@@ -9,10 +9,10 @@ MCP server that lets a planning agent (Codex, Claude Code, Cursor) hand off boun
   "mcpServers": {
     "local": {
       "command": "npx",
-      "args": ["-y", "@liaiso/llm-mcp"],
+      "args": ["-y", "@sezzlee/llm-mcp"],
       "env": {
-        "LIAISO_LLM_BASE_URL": "http://127.0.0.1:11434",
-        "LIAISO_LLM_MODEL": "qwen3:8b"
+        "SEZZLEE_LLM_BASE_URL": "http://127.0.0.1:11434",
+        "SEZZLEE_LLM_MODEL": "qwen3:8b"
       }
     }
   }
@@ -34,30 +34,30 @@ Three tools. Two are read-only; `local_map` only adds new files to the server's 
 ## Configuration
 
 ```text
-LIAISO_LLM_MODEL=qwen3:8b
-LIAISO_LLM_ROOT=.                            # default: the working directory
-LIAISO_LLM_OUTPUT_DIR=.llm-mcp/out           # default; relative to root, must stay inside it
-LIAISO_LLM_BASE_URL=http://127.0.0.1:11434   # default
-LIAISO_LLM_NUM_CTX=16384                     # default; at least 4096
-LIAISO_LLM_KEEP_ALIVE=30m                    # default
-LIAISO_LLM_TIMEOUT_MS=300000                 # default; one request
+SEZZLEE_LLM_MODEL=qwen3:8b
+SEZZLEE_LLM_ROOT=.                            # default: the working directory
+SEZZLEE_LLM_OUTPUT_DIR=.llm-mcp/out           # default; relative to root, must stay inside it
+SEZZLEE_LLM_BASE_URL=http://127.0.0.1:11434   # default
+SEZZLEE_LLM_NUM_CTX=16384                     # default; at least 4096
+SEZZLEE_LLM_KEEP_ALIVE=30m                    # default
+SEZZLEE_LLM_TIMEOUT_MS=300000                 # default; one request
 
-npx -y @liaiso/llm-mcp
+npx -y @sezzlee/llm-mcp
 ```
 
-| Variable                | Default                  | Meaning                                                                                                             |
-| ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `LIAISO_LLM_MODEL`      | none — required          | The Ollama model name. There is no built-in default; it must be set explicitly (see [Model choice](#model-choice)). |
-| `LIAISO_LLM_ROOT`       | working directory        | Workspace root. Every file argument a tool accepts is resolved against it.                                          |
-| `LIAISO_LLM_OUTPUT_DIR` | `.llm-mcp/out`           | Where `local_map` writes its output. Relative to the root, and must stay inside it.                                 |
-| `LIAISO_LLM_BASE_URL`   | `http://127.0.0.1:11434` | Base URL of the Ollama host.                                                                                        |
-| `LIAISO_LLM_NUM_CTX`    | `16384`                  | Context window in tokens. Must be an integer of at least 4096.                                                      |
-| `LIAISO_LLM_KEEP_ALIVE` | `30m`                    | Value forwarded to Ollama's `keep_alive`.                                                                           |
-| `LIAISO_LLM_TIMEOUT_MS` | `300000`                 | Timeout for a single request to the model.                                                                          |
+| Variable                 | Default                  | Meaning                                                                                                             |
+| ------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `SEZZLEE_LLM_MODEL`      | none — required          | The Ollama model name. There is no built-in default; it must be set explicitly (see [Model choice](#model-choice)). |
+| `SEZZLEE_LLM_ROOT`       | working directory        | Workspace root. Every file argument a tool accepts is resolved against it.                                          |
+| `SEZZLEE_LLM_OUTPUT_DIR` | `.llm-mcp/out`           | Where `local_map` writes its output. Relative to the root, and must stay inside it.                                 |
+| `SEZZLEE_LLM_BASE_URL`   | `http://127.0.0.1:11434` | Base URL of the Ollama host.                                                                                        |
+| `SEZZLEE_LLM_NUM_CTX`    | `16384`                  | Context window in tokens. Must be an integer of at least 4096.                                                      |
+| `SEZZLEE_LLM_KEEP_ALIVE` | `30m`                    | Value forwarded to Ollama's `keep_alive`.                                                                           |
+| `SEZZLEE_LLM_TIMEOUT_MS` | `300000`                 | Timeout for a single request to the model.                                                                          |
 
 Only the model name is required. Parsing is fatal, reaching the host is not: the server still starts and answers `tools/list` with the host down, and `local_status` reports `reachable: false`. The model is warmed up right after the server starts serving.
 
-Set `LIAISO_LLM_NUM_CTX` to what the GPU actually delivers. Ollama does not refuse an oversized input — it silently drops the head — and the input budget is derived from this value.
+Set `SEZZLEE_LLM_NUM_CTX` to what the GPU actually delivers. Ollama does not refuse an oversized input — it silently drops the head — and the input budget is derived from this value.
 
 ## Limits
 
@@ -104,7 +104,7 @@ The server's working directory is Codex's workspace: every file argument the too
 
 ### Model choice
 
-`gpt-oss:20b` was measured scoring 0/100 on the id-bearing JSON schema `local_map` and structured `local_task` calls depend on — the model could not hold the schema. A `qwen3` model (`qwen3:8b` in the examples above) is what the measurements in this repository were run with; `LIAISO_LLM_MODEL` has no built-in default, so it must be set explicitly.
+`gpt-oss:20b` was measured scoring 0/100 on the id-bearing JSON schema `local_map` and structured `local_task` calls depend on — the model could not hold the schema. A `qwen3` model (`qwen3:8b` in the examples above) is what the measurements in this repository were run with; `SEZZLEE_LLM_MODEL` has no built-in default, so it must be set explicitly.
 
 ### Codex alone on tabular data
 
@@ -113,7 +113,7 @@ On a 400-row labelling task with clear cues, Codex working alone was as accurate
 ### Rejected alternatives
 
 - **The name `ollama-mcp`.** Too narrow once the backend became pluggable; `llm-mcp` follows the repo's convention of naming a server after the resource behind it, not the current backend.
-- **A private worker inside a consumer product.** The server has nothing chat-specific in it — tools take a file path and an instruction, schemas are plain JSON Schema on the MCP surface. Keeping it inside one product would close it to outside contribution and force reinventing the payload budget that `@liaiso/mcp-core` already provides.
+- **A private worker inside a consumer product.** The server has nothing chat-specific in it — tools take a file path and an instruction, schemas are plain JSON Schema on the MCP surface. Keeping it inside one product would close it to outside contribution and force reinventing the payload budget that `@sezzlee/mcp-core` already provides.
 - **Using an existing open-source repo.** Most of the ones reviewed are Python, and one carries a license that forbids modification; none of them know Codex's approval mode, its workspace boundary, or the payload budget. Ideas were borrowed where they held up: per-kind ready-made prompts (from `ollama-handoff`), file-path-taking tools and failover (from `LocalTokens`), and "the worker produces bounded output, the strong side accepts it" (from Shahriar/ollama-mcp-server).
 - **One tool per job kind.** Every extra tool schema is token cost on every Codex turn; one `local_task` tool with a `kind` enum covers the same ground for less.
 - **Raising concurrency instead of queueing.** Four parallel requests to one GPU were only 1.1x faster than four sequential ones — the GPU does not run requests in parallel, so a queue is the only thing that keeps a call inside its own timeout.
@@ -122,7 +122,7 @@ On a 400-row labelling task with clear cues, Codex working alone was as accurate
 
 - **An agent loop on the local model.** A reviewed repo's small model, run through a full agent harness, took 5–7 minutes on a simple task and once reported having done work it had not done. Agent work already has Codex's own `spawn_agent`.
 - **Embedding.** `bge-m3` is available on the host but unused; add it if a search need appears.
-- **Reading `.xlsx` directly.** v1 reads CSV and plain text only. An `.xlsx` input goes through `@liaiso/excel-mcp` from the calling side; teaching this server the format directly is out of scope for now.
+- **Reading `.xlsx` directly.** v1 reads CSV and plain text only. An `.xlsx` input goes through `@sezzlee/excel-mcp` from the calling side; teaching this server the format directly is out of scope for now.
 
 ### Measured runs
 
@@ -142,7 +142,7 @@ All Codex runs below used `gpt-5.6-luna` at `low` reasoning effort, against Olla
 ## Development
 
 ```text
-pnpm turbo run test --filter=@liaiso/llm-mcp
+pnpm turbo run test --filter=@sezzlee/llm-mcp
 ```
 
 No local model is needed for this — `fetch` is faked.
@@ -150,6 +150,6 @@ No local model is needed for this — `fetch` is faked.
 `test/live.spec.ts` runs against a real Ollama instance:
 
 ```text
-LIAISO_LLM_LIVE=1 LIAISO_LLM_BASE_URL=http://127.0.0.1:11434 LIAISO_LLM_MODEL=qwen3:8b \
-  pnpm turbo run test --filter=@liaiso/llm-mcp -- test/live.spec.ts
+SEZZLEE_LLM_LIVE=1 SEZZLEE_LLM_BASE_URL=http://127.0.0.1:11434 SEZZLEE_LLM_MODEL=qwen3:8b \
+  pnpm turbo run test --filter=@sezzlee/llm-mcp -- test/live.spec.ts
 ```

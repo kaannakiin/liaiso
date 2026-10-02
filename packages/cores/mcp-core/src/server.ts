@@ -69,7 +69,7 @@ function strictInput(
   const published = {
     "~standard": {
       version: 1,
-      vendor: "liaiso",
+      vendor: "sezzlee",
       validate: (value: unknown) => ({ value }),
       jsonSchema: strict["~standard"].jsonSchema,
     },

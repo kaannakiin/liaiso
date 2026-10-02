@@ -9,14 +9,14 @@ import {
   type INestApplication,
 } from "@nestjs/common";
 import { Test, type TestingModule } from "@nestjs/testing";
-import { LiaisoArgumentError, LiaisoCatalogError } from "@liaiso/core";
+import { SezzleeArgumentError, SezzleeCatalogError } from "@sezzlee/core";
 import { afterEach, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool, McpToolFamily } from "../src/decorators.js";
-import { LiaisoDispatcher } from "../src/dispatcher.js";
+import { SezzleeDispatcher } from "../src/dispatcher.js";
 import type { McpFamilyMember, McpFamilySource } from "../src/families.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
-import type { LiaisoOptions } from "../src/options.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
+import type { SezzleeOptions } from "../src/options.js";
 import type { VisibilityDeclaration } from "../src/index.js";
 
 class AnonymousGuard {
@@ -111,11 +111,11 @@ afterEach(async () => {
 });
 
 async function compile(
-  configure: (options: LiaisoOptions) => void,
+  configure: (options: SezzleeOptions) => void,
   controllers: NewableFunction[] = [DynamicMethodController, OrdersController],
 ): Promise<{ moduleRef: TestingModule; app: INestApplication }> {
   const moduleRef = await Test.createTestingModule({
-    imports: [LiaisoModule.forRoot(configure)],
+    imports: [SezzleeModule.forRoot(configure)],
     controllers: controllers as never,
   }).compile();
   const app = moduleRef.createNestApplication({ logger: false });
@@ -125,23 +125,23 @@ async function compile(
 
 async function start(
   source: McpFamilySource,
-  configure: (options: LiaisoOptions) => void = () => {},
-): Promise<{ catalog: LiaisoCatalog; dispatcher: LiaisoDispatcher }> {
+  configure: (options: SezzleeOptions) => void = () => {},
+): Promise<{ catalog: SezzleeCatalog; dispatcher: SezzleeDispatcher }> {
   const { app } = await compile((options) => {
     options.families.provide("methods", source);
     configure(options);
   });
   await app.init();
   return {
-    catalog: app.get(LiaisoCatalog),
-    dispatcher: app.get(LiaisoDispatcher),
+    catalog: app.get(SezzleeCatalog),
+    dispatcher: app.get(SezzleeDispatcher),
   };
 }
 
-const codesOf = (catalog: LiaisoCatalog): string[] =>
+const codesOf = (catalog: SezzleeCatalog): string[] =>
   catalog.current.diagnostics.map((diagnostic) => diagnostic.code);
 
-const namesOf = (catalog: LiaisoCatalog): string[] =>
+const namesOf = (catalog: SezzleeCatalog): string[] =>
   [...catalog.current.byName.keys()].sort();
 
 describe("tool families", () => {
@@ -191,13 +191,13 @@ describe("tool families", () => {
         { minBalance: 1000, methodId: delayed.key },
         { headers: {} },
       ),
-    ).rejects.toBeInstanceOf(LiaisoArgumentError);
+    ).rejects.toBeInstanceOf(SezzleeArgumentError);
   });
 
   it("publishes nothing for a family whose source is not registered", async () => {
     const { app } = await compile(() => {}, [UnregisteredSourceController]);
     await app.init();
-    const catalog = app.get(LiaisoCatalog);
+    const catalog = app.get(SezzleeCatalog);
 
     expect(namesOf(catalog)).toEqual([]);
     expect(codesOf(catalog)).toContain("unknown_family_source");
@@ -267,7 +267,7 @@ describe("tool families", () => {
     );
     const generation = catalog.generation;
 
-    await expect(catalog.reload()).rejects.toBeInstanceOf(LiaisoCatalogError);
+    await expect(catalog.reload()).rejects.toBeInstanceOf(SezzleeCatalogError);
 
     expect(namesOf(catalog)).toEqual(["list_customer_balances", "list_orders"]);
     expect(catalog.generation).toBe(generation);
@@ -277,7 +277,7 @@ describe("tool families", () => {
     const { moduleRef, app } = await compile((options) => {
       options.families.provide("methods", () => [balances]);
     });
-    const catalog = moduleRef.get(LiaisoCatalog);
+    const catalog = moduleRef.get(SezzleeCatalog);
     expect(codesOf(catalog)).toContain("family_not_loaded");
     const generation = catalog.generation;
 

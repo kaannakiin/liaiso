@@ -9,7 +9,7 @@
     "sources": [
       ["packages/cores/mcp-core/src/errors.ts", "SourceErrorCode"],
       ["packages/cores/file-core/src/errors.ts", "CoreErrorCode"],
-      ["packages/servers/pdf-mcp/src/platform/errors.ts", "LiaisoPdfErrorCode"]
+      ["packages/servers/pdf-mcp/src/platform/errors.ts", "SezzleePdfErrorCode"]
     ],
     "sections": [
       {

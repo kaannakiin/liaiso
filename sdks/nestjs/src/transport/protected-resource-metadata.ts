@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { LiaisoResourceServerOptions } from "../options.js";
+import type { SezzleeResourceServerOptions } from "../options.js";
 
 export const protectedResourceMetadataWellKnownPrefix =
   "/.well-known/oauth-protected-resource";
@@ -16,7 +16,7 @@ export function protectedResourceMetadataUrl(
 }
 
 export function protectedResourceMetadataHandler(
-  options: LiaisoResourceServerOptions,
+  options: SezzleeResourceServerOptions,
 ): RequestHandler {
   return (_request, response) => {
     response.set("Cache-Control", "public, max-age=300");

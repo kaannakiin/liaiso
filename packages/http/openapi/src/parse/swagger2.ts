@@ -490,7 +490,7 @@ export function upgradeSwagger2(
         childPointer(operationAt, "responses"),
       );
       if (upgraded.dropped) {
-        out["x-liaiso-dropped"] = true;
+        out["x-sezzlee-dropped"] = true;
       }
       converted[method] = located(context, out, operationAt);
     }

@@ -9,7 +9,7 @@ database](/docs/mssql-mcp/querying-your-first-database):
 
 ```sh
 sql() {
-  npx -y @modelcontextprotocol/inspector --cli --config ~/liaiso-mssql.json --server shop \
+  npx -y @modelcontextprotocol/inspector --cli --config ~/sezzlee-mssql.json --server shop \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```
@@ -37,13 +37,13 @@ was cancelled on the server after one second and stopped using the database.
 
 ## For every call
 
-`LIAISO_MSSQL_QUERY_TIMEOUT_MS` sets the deadline for any call that does not pass `timeoutMs`. Add
+`SEZZLEE_MSSQL_QUERY_TIMEOUT_MS` sets the deadline for any call that does not pass `timeoutMs`. Add
 it to the server's environment, for example to allow two minutes:
 
 ```json
 {
   "env": {
-    "LIAISO_MSSQL_QUERY_TIMEOUT_MS": "120000"
+    "SEZZLEE_MSSQL_QUERY_TIMEOUT_MS": "120000"
   }
 }
 ```

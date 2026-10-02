@@ -2,9 +2,9 @@ import "reflect-metadata";
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import type { CatalogDiagnostic, VisibilityDeclaration } from "../src/index.js";
 
 class AnonymousGuard {
@@ -65,7 +65,7 @@ class UndeclaredController {
 }
 
 describe("tag declaration", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
   let diagnostics: readonly CatalogDiagnostic[];
 
   const tagsOf = (name: string): readonly string[] | undefined =>
@@ -80,7 +80,7 @@ describe("tag declaration", () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        LiaisoModule.forRoot((options) => {
+        SezzleeModule.forRoot((options) => {
           options.tags = (container) =>
             container === "UndeclaredController" ? ["central"] : undefined;
         }),
@@ -93,7 +93,7 @@ describe("tag declaration", () => {
     }).compile();
     const app = moduleRef.createNestApplication({ logger: false });
     await app.init();
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
     diagnostics = catalog.diagnostics;
   });
 
@@ -102,7 +102,7 @@ describe("tag declaration", () => {
   });
 
   /**
-   * Guard: the twin of G3 in sdks/dotnet/tests/Liaiso.Tests/CatalogHostTests.cs. The ASP.NET reader
+   * Guard: the twin of G3 in sdks/dotnet/tests/Sezzlee.Tests/CatalogHostTests.cs. The ASP.NET reader
    * has to consult the class explicitly, because its selection-attribute lookup returns the method
    * attribute alone whenever one exists; Nest merges marker options key by key and gets this free.
    */

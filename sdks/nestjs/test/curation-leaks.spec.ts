@@ -3,9 +3,9 @@ import { Controller, Get, Query, UseGuards } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { IsOptional, IsString } from "class-validator";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { curate, hidden, McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import type { CatalogDiagnostic, VisibilityDeclaration } from "../src/index.js";
 
 class AnonymousGuard {
@@ -70,7 +70,7 @@ class NamesNothingCurated {
 }
 
 describe("curation leak diagnostics", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
   let diagnostics: readonly CatalogDiagnostic[];
 
   const forTool = (name: string): string[] =>
@@ -81,7 +81,7 @@ describe("curation leak diagnostics", () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [LiaisoModule.forRoot()],
+      imports: [SezzleeModule.forRoot()],
       controllers: [
         LeaksInToolDescription,
         LeaksInArgumentDescription,
@@ -90,7 +90,7 @@ describe("curation leak diagnostics", () => {
     }).compile();
     const app = moduleRef.createNestApplication({ logger: false });
     await app.init();
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
     diagnostics = catalog.diagnostics;
   });
 

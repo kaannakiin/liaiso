@@ -1,6 +1,6 @@
 # Introduction
 
-`@liaiso/mssql-mcp` is an MCP server that lets an agent read one Microsoft SQL Server database. The
+`@sezzlee/mssql-mcp` is an MCP server that lets an agent read one Microsoft SQL Server database. The
 agent can find tables by what they hold, read their columns and keys, and run `SELECT` statements.
 There is no tool that writes.
 
@@ -8,8 +8,8 @@ The connection comes from environment variables that you set, never from a tool 
 agent can neither see the password nor point the server at another database:
 
 ```sh
-LIAISO_MSSQL_SERVER=db.example.com LIAISO_MSSQL_DATABASE=Sales \
-LIAISO_MSSQL_USER=mcp_reader LIAISO_MSSQL_PASSWORD=... npx -y @liaiso/mssql-mcp
+SEZZLEE_MSSQL_SERVER=db.example.com SEZZLEE_MSSQL_DATABASE=Sales \
+SEZZLEE_MSSQL_USER=mcp_reader SEZZLEE_MSSQL_PASSWORD=... npx -y @sezzlee/mssql-mcp
 ```
 
 It speaks MCP over stdio and needs Node.js 22 or later. It was measured against SQL Server 2019

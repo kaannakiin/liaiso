@@ -19,14 +19,14 @@ import {
 import { Test } from "@nestjs/testing";
 import jwt from "jsonwebtoken";
 import {
-  LiaisoDispatcher,
-  LiaisoModule,
+  SezzleeDispatcher,
+  SezzleeModule,
   type ExtensionOverrides,
   type OuterRequest,
-  type LiaisoOptions,
+  type SezzleeOptions,
 } from "../src/index.js";
 
-const secret = "liaiso-test-secret-0123456789abcdef";
+const secret = "sezzlee-test-secret-0123456789abcdef";
 
 export function mintToken(
   user: string,
@@ -165,23 +165,23 @@ export class ProbeController {
 
 export interface TestApp {
   app: INestApplication;
-  dispatcher: LiaisoDispatcher;
+  dispatcher: SezzleeDispatcher;
   close(): Promise<void>;
 }
 
 export async function createApp(
-  configure?: (options: LiaisoOptions) => void,
+  configure?: (options: SezzleeOptions) => void,
   overrides?: ExtensionOverrides,
 ): Promise<TestApp> {
   const moduleRef = await Test.createTestingModule({
-    imports: [LiaisoModule.forRoot(configure, overrides)],
+    imports: [SezzleeModule.forRoot(configure, overrides)],
     controllers: [ProbeController],
   }).compile();
   const app = moduleRef.createNestApplication({ logger: false });
   await app.init();
   return {
     app,
-    dispatcher: app.get(LiaisoDispatcher),
+    dispatcher: app.get(SezzleeDispatcher),
     close: () => app.close(),
   };
 }

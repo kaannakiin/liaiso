@@ -11,7 +11,7 @@ import type {
   ScanResume,
   ShapeSurvey,
 } from "../../model/scan.js";
-import { LiaisoXmlError } from "../platform/errors.js";
+import { SezzleeXmlError } from "../platform/errors.js";
 import { wrapRecord } from "./fragment.js";
 import { limits } from "../platform/limits.js";
 import { clark, formatAddress, type NodeAddress } from "../../model/node.js";
@@ -33,34 +33,34 @@ const xmlReservedUri = "http://www.w3.org/XML/1998/namespace";
 const rebuild =
   "Re-encode the document as UTF-8, or split it so each part fits the resident byte budget and is read whole.";
 
-export function refusalError(refusal: ScanRefusal): LiaisoXmlError {
+export function refusalError(refusal: ScanRefusal): SezzleeXmlError {
   switch (refusal.reason) {
     case "not_record_shaped":
-      return new LiaisoXmlError(
+      return new SezzleeXmlError(
         "unsupported_for_format",
         "This document is above the resident byte budget, so it is read in chunked mode, and chunked mode carries only record-shaped documents: repeating sibling elements under one parent. No repeating record sits at that address.",
         "Call describe_document for the repetition candidates this document does have, or split the file so each part is read whole.",
       );
     case "record_too_large":
-      return new LiaisoXmlError(
+      return new SezzleeXmlError(
         "resource_limit",
         `Record ${String(refusal.occurrence)} is ${String(refusal.bytes)} bytes on its own, above the ${String(limits.maxChunkBytes)} byte chunk budget.`,
         "Split the file so no single record exceeds the chunk budget.",
       );
     case "utf16":
-      return new LiaisoXmlError(
+      return new SezzleeXmlError(
         "unsupported_encoding",
         "Chunked mode finds record boundaries by scanning bytes, and this document is UTF-16, where a markup character is not one byte.",
         rebuild,
       );
     case "unsupported_encoding":
-      return new LiaisoXmlError(
+      return new SezzleeXmlError(
         "unsupported_encoding",
         `This document declares ${refusal.declared}. Chunked mode reads one record at a time and cannot carry that declaration into a single record, so the bytes would be decoded as UTF-8 and produce silently wrong text.`,
         rebuild,
       );
     case "malformed":
-      return new LiaisoXmlError(
+      return new SezzleeXmlError(
         "malformed_xml",
         `The document is not well-formed XML at byte ${String(refusal.offset)}.`,
         "Fix the markup and read the file again.",

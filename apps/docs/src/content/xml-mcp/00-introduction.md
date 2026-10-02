@@ -1,11 +1,11 @@
 # Introduction
 
-`@liaiso/xml-mcp` is an MCP server that lets an agent read XML documents. You start it with one
+`@sezzlee/xml-mcp` is an MCP server that lets an agent read XML documents. You start it with one
 folder, and the agent can read the XML files inside that folder and nothing outside it. It has no
 tool that writes, so a document is never modified.
 
 ```sh
-npx -y @liaiso/xml-mcp /absolute/path/to/your/documents
+npx -y @sezzlee/xml-mcp /absolute/path/to/your/documents
 ```
 
 It reads files ending in `.xml`, `.xsd`, `.xhtml`, `.svg`, `.csproj`, `.props`, `.targets`,

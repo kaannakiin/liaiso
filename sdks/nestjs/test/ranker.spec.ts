@@ -4,10 +4,10 @@ import { Test } from "@nestjs/testing";
 import type { McpServer } from "@modelcontextprotocol/server";
 import { afterAll, describe, expect, it } from "vitest";
 import type { INestApplication } from "@nestjs/common";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import type { CallerScopeResolver } from "../src/cache.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoDispatcher } from "../src/dispatcher.js";
+import { SezzleeDispatcher } from "../src/dispatcher.js";
 import { extensionTokens } from "../src/extension-points.js";
 import type {
   RankRequest,
@@ -15,9 +15,9 @@ import type {
   VisibilityDeclaration,
 } from "../src/index.js";
 import type { InvokeResultMapper } from "../src/invoke-result-mapper.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
-import { registerLiaisoTools } from "../src/meta-tools.js";
-import { LIAISO_OPTIONS, type LiaisoOptions } from "../src/options.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
+import { registerSezzleeTools } from "../src/meta-tools.js";
+import { SEZZLEE_OPTIONS, type SezzleeOptions } from "../src/options.js";
 import { CallerVisibilityProvider } from "../src/visibility/provider.js";
 
 class AnonymousGuard {
@@ -69,11 +69,11 @@ const apps: INestApplication[] = [];
 
 async function searchWith(
   ranker: ToolRanker | undefined,
-  configure: (options: LiaisoOptions) => void = () => undefined,
+  configure: (options: SezzleeOptions) => void = () => undefined,
 ): Promise<(args: Record<string, unknown>) => Promise<Wire>> {
   const moduleRef = await Test.createTestingModule({
     imports: [
-      LiaisoModule.forRoot(
+      SezzleeModule.forRoot(
         (options) => {
           options.visibility.onUnknown = "hide";
           configure(options);
@@ -92,13 +92,13 @@ async function searchWith(
       handlers.set(name, handler);
     },
   } as unknown as McpServer;
-  registerLiaisoTools(server, {
-    catalog: app.get(LiaisoCatalog),
-    dispatcher: app.get(LiaisoDispatcher),
+  registerSezzleeTools(server, {
+    catalog: app.get(SezzleeCatalog),
+    dispatcher: app.get(SezzleeDispatcher),
     mapper: app.get<InvokeResultMapper>(extensionTokens.invokeResultMapper),
     visibility: app.get(CallerVisibilityProvider),
     scopes: app.get<CallerScopeResolver>(extensionTokens.callerScopeResolver),
-    options: app.get<LiaisoOptions>(LIAISO_OPTIONS),
+    options: app.get<SezzleeOptions>(SEZZLEE_OPTIONS),
   });
   const search = handlers.get("search_tools") as Handler;
   return (args) => search({ limit: 20, detail: "card", ...args }, {});

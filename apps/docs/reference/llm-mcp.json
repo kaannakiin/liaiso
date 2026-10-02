@@ -10,7 +10,7 @@
     },
     "sources": [
       ["packages/cores/mcp-core/src/errors.ts", "SourceErrorCode"],
-      ["packages/servers/llm-mcp/src/platform/errors.ts", "LiaisoLlmErrorCode"]
+      ["packages/servers/llm-mcp/src/platform/errors.ts", "SezzleeLlmErrorCode"]
     ],
     "sections": [
       {
@@ -26,7 +26,7 @@
         "title": "Files",
         "codes": {
           "outside_workspace": "A path resolves outside the working directory, directly or through a symbolic link. Paths are relative to the workspace, and `..` cannot leave it.",
-          "file_not_found": "No file exists at the given path. Paths are relative to the workspace, which is the server's working directory unless `LIAISO_LLM_ROOT` says otherwise.",
+          "file_not_found": "No file exists at the given path. Paths are relative to the workspace, which is the server's working directory unless `SEZZLEE_LLM_ROOT` says otherwise.",
           "not_text": "The file is not UTF-8 text. `local_task` reads plain text and `local_map` reads CSV; convert other formats first.",
           "input_too_large": "The input would not fit the model's context window, so it was not sent: the text or files are over the input budget for a kind other than `summarize` or `extract`, a long input needs more than 32 chunks or 1 MiB, a CSV has more than 2,000 rows or is over 8 MiB, or one row alone is over the budget. Nothing is ever cut to fit."
         }
@@ -34,8 +34,8 @@
       {
         "title": "The model",
         "codes": {
-          "backend_unavailable": "The model host did not answer, or did not answer within `LIAISO_LLM_TIMEOUT_MS`. `local_status` reports `reachable`; start Ollama or fix `LIAISO_LLM_BASE_URL`.",
-          "backend_refused": "The model host answered with an error, most often because `LIAISO_LLM_MODEL` names a model it has not pulled. The message carries the host's own text.",
+          "backend_unavailable": "The model host did not answer, or did not answer within `SEZZLEE_LLM_TIMEOUT_MS`. `local_status` reports `reachable`; start Ollama or fix `SEZZLEE_LLM_BASE_URL`.",
+          "backend_refused": "The model host answered with an error, most often because `SEZZLEE_LLM_MODEL` names a model it has not pulled. The message carries the host's own text.",
           "unparsable_output": "`jsonSchema` was given and the model's answer was not valid JSON for it. Retry once with a simpler schema, or do the work without the local model."
         }
       },
@@ -53,8 +53,8 @@
       {
         "title": "The context window",
         "keys": {
-          "inputBudgetRatio": "Share of `LIAISO_LLM_NUM_CTX` one call's input may use; a larger input is refused or split",
-          "outputBudgetRatio": "Share of `LIAISO_LLM_NUM_CTX` the answer may use",
+          "inputBudgetRatio": "Share of `SEZZLEE_LLM_NUM_CTX` one call's input may use; a larger input is refused or split",
+          "outputBudgetRatio": "Share of `SEZZLEE_LLM_NUM_CTX` the answer may use",
           "charsPerToken": "Characters counted as one token when the server estimates an input's size",
           "maxBytesPerChar": "UTF-8 bytes counted per character, so a file that cannot fit is refused before it is read"
         }

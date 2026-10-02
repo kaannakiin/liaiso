@@ -8,7 +8,7 @@ spec, a guard comment or the package README.
 
 - **A search ranker for the gateway CLI.** `createOpenApiMcpServer` takes a host ranker
   ([search-semantics.md](packages/http/spec/search-semantics.md), Replaceable ranker), but the
-  `liaiso-openapi` CLI has no way to bind one: loading a module would cross the gateway's file
+  `sezzlee-openapi` CLI has no way to bind one: loading a module would cross the gateway's file
   boundary, and calling a remote ranker by URL would be a second network egress beside
   `src/net/fetch.ts`. Either needs its own allowlist rule before it lands.
 - **Whole-document validation.** Ingestion validates by point checks on the constructs it lowers
@@ -24,13 +24,13 @@ spec, a guard comment or the package README.
   between security alternatives have no tests.
 - **A login credential source.** Listed under "Not specified" in
   [credentials.md](packages/http/spec/credentials.md).
-- **Publishing the gateway.** `@liaiso/openapi-mcp` depends on the private `@liaiso/core`, and a
+- **Publishing the gateway.** `@sezzlee/openapi-mcp` depends on the private `@sezzlee/core`, and a
   published package may not depend on a private one. Either publish core or bundle it.
 - **A route-normalisation conformance corpus.** Each SDK pins its own route folding with unit tests
   ([selection-hierarchy.md](packages/http/spec/selection-hierarchy.md), Known limits).
 - **Tool families from an OpenAPI document.** Ingestion never produces `family`
   ([tool-families.md](packages/http/spec/tool-families.md)), so `openapi-mcp` publishes a
-  dispatching endpoint as one opaque tool. An `x-liaiso-family` extension, or a member list the
+  dispatching endpoint as one opaque tool. An `x-sezzlee-family` extension, or a member list the
   gateway config names, would lower it the way the SDKs do.
 - **Per-caller family membership.** Members are global: a caller who may not run a method still
   sees it. Filtering members per caller needs a caller-dependent published schema, which the catalog
@@ -49,8 +49,8 @@ spec, a guard comment or the package README.
 
 ## Source servers
 
-- **`pg-mcp`.** A PostgreSQL server over `@liaiso/db-core`, which already names no driver.
-- **`docx-mcp` and `pptx-mcp`.** Further OOXML servers over `@liaiso/ooxml-core`. Moving media
+- **`pg-mcp`.** A PostgreSQL server over `@sezzlee/db-core`, which already names no driver.
+- **`docx-mcp` and `pptx-mcp`.** Further OOXML servers over `@sezzlee/ooxml-core`. Moving media
   selection from path prefixes to content types is the generalisation they need; `excel-mcp` keeps
   its prefix so its result set does not change.
 
@@ -63,8 +63,8 @@ spec, a guard comment or the package README.
   delegation's cost is known rather than assumed.
 - **A job model for large inputs.** Start and poll for work over 1 000 rows; `local_map` refuses more
   than 2 000 rows today.
-- **Configuration knobs.** A model per `local_task` kind (only `LIAISO_LLM_MODEL` exists),
-  `LIAISO_LLM_TOOLS` to register a subset of tools, `LIAISO_LLM_PROMPTS` to override the kind prompts
+- **Configuration knobs.** A model per `local_task` kind (only `SEZZLEE_LLM_MODEL` exists),
+  `SEZZLEE_LLM_TOOLS` to register a subset of tools, `SEZZLEE_LLM_PROMPTS` to override the kind prompts
   (hard-coded in `src/tools/prompts.ts`), and throughput in `local_status`.
 - **An OpenAI-compatible backend** for vLLM, llama.cpp and LM Studio. Only `src/backend/ollama.ts`
   exists; the port is `src/backend/port.ts`.

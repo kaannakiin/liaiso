@@ -3,7 +3,7 @@ import type {
   BackendErrorCode,
   InvokeSuccess,
   MappedError,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import { callTool } from "./mcp.js";
 
 export type ScenarioName =

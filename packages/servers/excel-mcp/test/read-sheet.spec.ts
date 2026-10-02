@@ -1,5 +1,5 @@
 import { describe, expect, inject, it } from "vitest";
-import type { LiaisoExcelError } from "../src/platform/errors.js";
+import type { SezzleeExcelError } from "../src/platform/errors.js";
 import { limits } from "../src/platform/limits.js";
 import {
   createWorkbookRoot,
@@ -42,7 +42,7 @@ async function codeOf(
   try {
     await action();
   } catch (error) {
-    return (error as LiaisoExcelError).code;
+    return (error as SezzleeExcelError).code;
   }
   return "no-error";
 }

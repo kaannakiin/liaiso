@@ -23,7 +23,7 @@ the narrowest folder that holds the documents the agent needs.
 ## Claude Code
 
 ```sh
-claude mcp add xml -- npx -y @liaiso/xml-mcp /Users/you/documents
+claude mcp add xml -- npx -y @sezzlee/xml-mcp /Users/you/documents
 ```
 
 The shell expands `~` here, so `~/documents` also works in this one place. Add `--scope project` to
@@ -38,7 +38,7 @@ Edit `claude_desktop_config.json` (**Settings → Developer → Edit Config**) a
   "mcpServers": {
     "xml": {
       "command": "npx",
-      "args": ["-y", "@liaiso/xml-mcp", "/Users/you/documents"]
+      "args": ["-y", "@sezzlee/xml-mcp", "/Users/you/documents"]
     }
   }
 }
@@ -62,7 +62,7 @@ transport stated:
     "xml": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@liaiso/xml-mcp", "/Users/you/documents"]
+      "args": ["-y", "@sezzlee/xml-mcp", "/Users/you/documents"]
     }
   }
 }
@@ -71,8 +71,8 @@ transport stated:
 ## Any other client
 
 Any client that starts a stdio server works. The command is `npx`, the arguments are `-y`,
-`@liaiso/xml-mcp` and the folder. If the client cannot run `npx`, install the package once with
-`npm install -g @liaiso/xml-mcp` and use the command `liaiso-xml` with the folder as its only
+`@sezzlee/xml-mcp` and the folder. If the client cannot run `npx`, install the package once with
+`npm install -g @sezzlee/xml-mcp` and use the command `sezzlee-xml` with the folder as its only
 argument.
 
 ## Check that it started

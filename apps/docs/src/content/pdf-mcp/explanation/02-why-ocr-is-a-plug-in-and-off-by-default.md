@@ -21,14 +21,14 @@ Without `--ocr`, nothing is loaded, and no page image can leave the process.
 
 The binding has two parts because they are two separate jobs with separate choices:
 
-- A **rasterizer** turns a PDF page into an image. `@liaiso/pdf-raster-pdfjs` does this with pdf.js
+- A **rasterizer** turns a PDF page into an image. `@sezzlee/pdf-raster-pdfjs` does this with pdf.js
   locally.
-- A **provider** turns an image into text. `@liaiso/ocr-ollama` sends it to an Ollama model. Another
+- A **provider** turns an image into text. `@sezzlee/ocr-ollama` sends it to an Ollama model. Another
   provider could call a hosted API or a local engine.
 
 The server depends on neither package. It declares what each part must do and checks a binding for
 those methods before it opens a document, so a broken binding fails at startup rather than on the
-first scanned page. The same stance runs through liaiso: the database layer names no database
+first scanned page. The same stance runs through sezzlee: the database layer names no database
 driver, and the PDF server names no model.
 
 ## Off unless a call asks

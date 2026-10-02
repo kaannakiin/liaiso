@@ -2,9 +2,9 @@ import "reflect-metadata";
 import { Controller, Get, Query } from "@nestjs/common";
 import { IsInt, IsOptional, IsString } from "class-validator";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import {
   discoverEndpoints,
   type DiscoveryDiagnostic,
@@ -122,12 +122,12 @@ describe("query grouping", () => {
 });
 
 describe("the Express query parser guard", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        LiaisoModule.forRoot((options) => {
+        SezzleeModule.forRoot((options) => {
           options.selection.default = "include";
           options.query.grouping = "group";
         }),
@@ -136,7 +136,7 @@ describe("the Express query parser guard", () => {
     }).compile();
     const app = moduleRef.createNestApplication({ logger: false });
     await app.init();
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
   });
 
   /**

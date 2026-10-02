@@ -19,7 +19,7 @@ export async function readWithin(root: string, path: string): Promise<string> {
   const offset = relative(base, target);
   if (offset.startsWith("..") || isAbsolute(offset)) {
     throw new Error(
-      `liaiso-openapi: '${path}' is outside the document's directory.`,
+      `sezzlee-openapi: '${path}' is outside the document's directory.`,
     );
   }
   return readFile(target, "utf8");

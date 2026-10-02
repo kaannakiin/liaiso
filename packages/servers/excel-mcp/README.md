@@ -1,10 +1,10 @@
-# @liaiso/excel-mcp
+# @sezzlee/excel-mcp
 
 A standalone MCP server that **reads** local Excel files for an agent. There is no write path.
 
-Reads `.xlsx`, `.xlsm` and `.csv`, sandboxed to one folder. Sandboxing, the document cache, the error envelope, the cursor codec and the tool registration layer come from [@liaiso/file-core](../../cores/file-core).
+Reads `.xlsx`, `.xlsm` and `.csv`, sandboxed to one folder. Sandboxing, the document cache, the error envelope, the cursor codec and the tool registration layer come from [@sezzlee/file-core](../../cores/file-core).
 
-**Documentation: <https://liaiso-docs.invokit-docs.workers.dev/docs/excel-mcp/introduction>** — a tutorial, task guides, and the tool, error-code and limit reference generated from this package.
+**Documentation: <https://sezzlee-docs.invokit-docs.workers.dev/docs/excel-mcp/introduction>** — a tutorial, task guides, and the tool, error-code and limit reference generated from this package.
 
 ## Quick start
 
@@ -15,7 +15,7 @@ The server takes the folder it is allowed to read as its only argument, as an ab
   "mcpServers": {
     "excel": {
       "command": "npx",
-      "args": ["-y", "@liaiso/excel-mcp", "/Users/me/sheets"]
+      "args": ["-y", "@sezzlee/excel-mcp", "/Users/me/sheets"]
     }
   }
 }
@@ -24,7 +24,7 @@ The server takes the folder it is allowed to read as its only argument, as an ab
 With Claude Code:
 
 ```bash
-claude mcp add excel -- npx -y @liaiso/excel-mcp /Users/me/sheets
+claude mcp add excel -- npx -y @sezzlee/excel-mcp /Users/me/sheets
 ```
 
 Requires Node.js 22 or 24 on macOS (x64, arm64), glibc Linux (x64, arm64) or Windows x64; file access goes through a native module with no JavaScript fallback.
@@ -44,11 +44,11 @@ Requires Node.js 22 or 24 on macOS (x64, arm64), glibc Linux (x64, arm64) or Win
 | `get_merged_ranges`       | Merged cell ranges                                                                               |
 | `get_images`              | Embedded pictures: anchor, size, extension. Charts, pivot tables and sparklines are refused      |
 
-Every argument, error code and limit is listed in the [reference](https://liaiso-docs.invokit-docs.workers.dev/docs/excel-mcp/tools).
+Every argument, error code and limit is listed in the [reference](https://sezzlee-docs.invokit-docs.workers.dev/docs/excel-mcp/tools).
 
 ## How the metadata is read
 
-Cells, ranges, merges, formulas and defined names are read by SheetJS. Data validation, Excel Tables, conditional formatting, images and frozen panes are read directly from the OOXML parts through `@liaiso/ooxml-core`. exceljs is not present at runtime; it is a dev dependency that writes the test fixtures.
+Cells, ranges, merges, formulas and defined names are read by SheetJS. Data validation, Excel Tables, conditional formatting, images and frozen panes are read directly from the OOXML parts through `@sezzlee/ooxml-core`. exceljs is not present at runtime; it is a dev dependency that writes the test fixtures.
 
 The OOXML parts are read namespace-aware with `saxes`. Matching is done on `(namespace uri, local name)` — the prefix the file happens to write is never consulted — so `<x:dataValidation>` and `<dataValidation>` are indistinguishable at the call site. These tools therefore work with any OPC layout, including prefixed .NET output and a worksheet part named `sheet.xml`.
 
@@ -66,11 +66,11 @@ A corrupt-file claim is split into three codes, and none substitutes for another
 ## Development
 
 ```bash
-pnpm turbo run build --filter=@liaiso/excel-mcp
-pnpm turbo run test --filter=@liaiso/excel-mcp
-pnpm turbo run check-types --filter=@liaiso/excel-mcp
+pnpm turbo run build --filter=@sezzlee/excel-mcp
+pnpm turbo run test --filter=@sezzlee/excel-mcp
+pnpm turbo run check-types --filter=@sezzlee/excel-mcp
 ```
 
-Run tests through Turbo, not `pnpm --filter @liaiso/excel-mcp test`: the bare filter skips `dependsOn: ["^build"]`, and this package resolves `@liaiso/file-core` through `exports.default → ./dist/index.js`, so a bare filter can test against a stale `dist`.
+Run tests through Turbo, not `pnpm --filter @sezzlee/excel-mcp test`: the bare filter skips `dependsOn: ["^build"]`, and this package resolves `@sezzlee/file-core` through `exports.default → ./dist/index.js`, so a bare filter can test against a stale `dist`.
 
-A change to a tool's arguments, an error code or a limit changes the generated reference in `apps/docs`; run `pnpm --filter @liaiso/docs gen` and commit the result, or `pnpm turbo run validate --filter=@liaiso/docs` fails.
+A change to a tool's arguments, an error code or a limit changes the generated reference in `apps/docs`; run `pnpm --filter @sezzlee/docs gen` and commit the result, or `pnpm turbo run validate --filter=@sezzlee/docs` fails.

@@ -5,7 +5,7 @@ import {
   type SeverityTable,
   type ToolFamily,
   type ToolVariant,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import type { McpToolEffect, McpVariantOptions } from "./decorators.js";
 
 /**

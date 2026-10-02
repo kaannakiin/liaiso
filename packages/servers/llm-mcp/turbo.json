@@ -8,14 +8,14 @@
     "test": {
       "dependsOn": ["build"],
       "passThroughEnv": [
-        "LIAISO_LLM_ROOT",
-        "LIAISO_LLM_OUTPUT_DIR",
-        "LIAISO_LLM_BASE_URL",
-        "LIAISO_LLM_MODEL",
-        "LIAISO_LLM_NUM_CTX",
-        "LIAISO_LLM_KEEP_ALIVE",
-        "LIAISO_LLM_TIMEOUT_MS",
-        "LIAISO_LLM_LIVE"
+        "SEZZLEE_LLM_ROOT",
+        "SEZZLEE_LLM_OUTPUT_DIR",
+        "SEZZLEE_LLM_BASE_URL",
+        "SEZZLEE_LLM_MODEL",
+        "SEZZLEE_LLM_NUM_CTX",
+        "SEZZLEE_LLM_KEEP_ALIVE",
+        "SEZZLEE_LLM_TIMEOUT_MS",
+        "SEZZLEE_LLM_LIVE"
       ]
     },
     "test:coverage": {
@@ -24,13 +24,13 @@
     },
     "dev": {
       "passThroughEnv": [
-        "LIAISO_LLM_ROOT",
-        "LIAISO_LLM_OUTPUT_DIR",
-        "LIAISO_LLM_BASE_URL",
-        "LIAISO_LLM_MODEL",
-        "LIAISO_LLM_NUM_CTX",
-        "LIAISO_LLM_KEEP_ALIVE",
-        "LIAISO_LLM_TIMEOUT_MS"
+        "SEZZLEE_LLM_ROOT",
+        "SEZZLEE_LLM_OUTPUT_DIR",
+        "SEZZLEE_LLM_BASE_URL",
+        "SEZZLEE_LLM_MODEL",
+        "SEZZLEE_LLM_NUM_CTX",
+        "SEZZLEE_LLM_KEEP_ALIVE",
+        "SEZZLEE_LLM_TIMEOUT_MS"
       ]
     }
   }

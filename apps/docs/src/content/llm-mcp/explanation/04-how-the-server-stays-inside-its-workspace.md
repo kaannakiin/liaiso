@@ -5,7 +5,7 @@ aim. This page explains what limits where it reads, where it writes, and where t
 
 ## One folder, checked twice
 
-At startup the server resolves its workspace, the working directory or `LIAISO_LLM_ROOT`, to its
+At startup the server resolves its workspace, the working directory or `SEZZLEE_LLM_ROOT`, to its
 real path. Every file argument is resolved against it and checked twice: the path as given, and
 the path after following symbolic links. A `..` that climbs out, an absolute path elsewhere, or a
 link inside the workspace that points outside it are all refused with `outside_workspace`. Only a
@@ -34,7 +34,7 @@ marked non-destructive.
 
 ## Where the text goes
 
-The files the tools read are sent to the model host named in `LIAISO_LLM_BASE_URL`, and nowhere
+The files the tools read are sent to the model host named in `SEZZLEE_LLM_BASE_URL`, and nowhere
 else. The server's code can reach the network only in the one module that talks to Ollama, which
 lint enforces, and it never passes the agent's credentials or its own environment to the host. With
 the default address that host is your own machine. Point it elsewhere only at a host you would give

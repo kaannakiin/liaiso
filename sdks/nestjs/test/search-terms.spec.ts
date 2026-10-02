@@ -2,9 +2,9 @@ import "reflect-metadata";
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import type { CatalogDiagnostic, VisibilityDeclaration } from "../src/index.js";
 
 class AnonymousGuard {
@@ -64,7 +64,7 @@ class PlainController {
 }
 
 describe("search term declaration", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
   let diagnostics: readonly CatalogDiagnostic[];
 
   const termsOf = (name: string): readonly string[] | undefined =>
@@ -73,7 +73,7 @@ describe("search term declaration", () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        LiaisoModule.forRoot((options) => {
+        SezzleeModule.forRoot((options) => {
           options.searchTerms = (container) =>
             container === "UndeclaredController" ? ["merkez"] : undefined;
         }),
@@ -87,7 +87,7 @@ describe("search term declaration", () => {
     }).compile();
     const app = moduleRef.createNestApplication({ logger: false });
     await app.init();
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
     diagnostics = catalog.diagnostics;
   });
 

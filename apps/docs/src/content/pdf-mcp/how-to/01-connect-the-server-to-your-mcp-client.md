@@ -23,7 +23,7 @@ the narrowest folder that holds the documents the agent needs.
 ## Claude Code
 
 ```sh
-claude mcp add pdf -- npx -y @liaiso/pdf-mcp /Users/you/documents
+claude mcp add pdf -- npx -y @sezzlee/pdf-mcp /Users/you/documents
 ```
 
 The shell expands `~` here, so `~/documents` also works in this one place. Add `--scope project` to
@@ -38,7 +38,7 @@ Edit `claude_desktop_config.json` (**Settings → Developer → Edit Config**) a
   "mcpServers": {
     "pdf": {
       "command": "npx",
-      "args": ["-y", "@liaiso/pdf-mcp", "/Users/you/documents"]
+      "args": ["-y", "@sezzlee/pdf-mcp", "/Users/you/documents"]
     }
   }
 }
@@ -62,7 +62,7 @@ transport stated:
     "pdf": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@liaiso/pdf-mcp", "/Users/you/documents"]
+      "args": ["-y", "@sezzlee/pdf-mcp", "/Users/you/documents"]
     }
   }
 }
@@ -71,15 +71,15 @@ transport stated:
 ## Any other client
 
 Any client that starts a stdio server works. The command is `npx`, the arguments are `-y`,
-`@liaiso/pdf-mcp` and the folder. If the client cannot run `npx`, install the package once with
-`npm install -g @liaiso/pdf-mcp` and use the command `liaiso-pdf` with the folder as its only
+`@sezzlee/pdf-mcp` and the folder. If the client cannot run `npx`, install the package once with
+`npm install -g @sezzlee/pdf-mcp` and use the command `sezzlee-pdf` with the folder as its only
 argument.
 
 ## Add OCR
 
 The folder is the only required argument. To let the agent read scanned pages, add `--ocr` and the
-path of an OCR binding after it, for example `["-y", "@liaiso/pdf-mcp", "/Users/you/documents",
-"--ocr", "/Users/you/liaiso-ocr/binding.mjs"]`. [How to read scanned pages with
+path of an OCR binding after it, for example `["-y", "@sezzlee/pdf-mcp", "/Users/you/documents",
+"--ocr", "/Users/you/sezzlee-ocr/binding.mjs"]`. [How to read scanned pages with
 OCR](/docs/pdf-mcp/read-scanned-pages-with-ocr) builds that binding.
 
 ## Check that it started

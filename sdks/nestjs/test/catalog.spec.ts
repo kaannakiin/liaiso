@@ -14,9 +14,9 @@ import {
 import { Test } from "@nestjs/testing";
 import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from "class-validator";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpIgnore, McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 
 class NoteDto {
   @IsString()
@@ -87,17 +87,17 @@ class UnmarkedController {
 }
 
 describe("nest catalog", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [LiaisoModule.forRoot()],
+      imports: [SezzleeModule.forRoot()],
       controllers: [CatalogOrdersController, UnmarkedController],
       providers: [OpaqueGuard, DeclaringGuard],
     }).compile();
     const app = moduleRef.createNestApplication({ logger: false });
     await app.init();
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
   });
 
   it("selects only opted-in operations, most specific marker wins", () => {

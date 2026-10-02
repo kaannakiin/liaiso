@@ -1,6 +1,6 @@
 # Error codes
 
-> Generated from the error-code union types of `@liaiso/llm-mcp` 0.1.2.
+> Generated from the error-code union types of `@sezzlee/llm-mcp` 0.1.2.
 
 A tool that fails answers with `isError: true` and one text item holding a JSON object with three fields: `error`, a stable machine code from this page; `message`, what went wrong; and `recovery`, what the next call should do differently. Branch on `error`, never on `message`.
 
@@ -44,17 +44,17 @@ The server has 12 codes.
 | Code                | Meaning                                                                                                                                                                                                                                                                                                                                |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `outside_workspace` | A path resolves outside the working directory, directly or through a symbolic link. Paths are relative to the workspace, and `..` cannot leave it.                                                                                                                                                                                     |
-| `file_not_found`    | No file exists at the given path. Paths are relative to the workspace, which is the server's working directory unless `LIAISO_LLM_ROOT` says otherwise.                                                                                                                                                                                |
+| `file_not_found`    | No file exists at the given path. Paths are relative to the workspace, which is the server's working directory unless `SEZZLEE_LLM_ROOT` says otherwise.                                                                                                                                                                               |
 | `not_text`          | The file is not UTF-8 text. `local_task` reads plain text and `local_map` reads CSV; convert other formats first.                                                                                                                                                                                                                      |
 | `input_too_large`   | The input would not fit the model's context window, so it was not sent: the text or files are over the input budget for a kind other than `summarize` or `extract`, a long input needs more than 32 chunks or 1 MiB, a CSV has more than 2,000 rows or is over 8 MiB, or one row alone is over the budget. Nothing is ever cut to fit. |
 
 ## The model
 
-| Code                  | Meaning                                                                                                                                                         |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `backend_unavailable` | The model host did not answer, or did not answer within `LIAISO_LLM_TIMEOUT_MS`. `local_status` reports `reachable`; start Ollama or fix `LIAISO_LLM_BASE_URL`. |
-| `backend_refused`     | The model host answered with an error, most often because `LIAISO_LLM_MODEL` names a model it has not pulled. The message carries the host's own text.          |
-| `unparsable_output`   | `jsonSchema` was given and the model's answer was not valid JSON for it. Retry once with a simpler schema, or do the work without the local model.              |
+| Code                  | Meaning                                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backend_unavailable` | The model host did not answer, or did not answer within `SEZZLEE_LLM_TIMEOUT_MS`. `local_status` reports `reachable`; start Ollama or fix `SEZZLEE_LLM_BASE_URL`. |
+| `backend_refused`     | The model host answered with an error, most often because `SEZZLEE_LLM_MODEL` names a model it has not pulled. The message carries the host's own text.           |
+| `unparsable_output`   | `jsonSchema` was given and the model's answer was not valid JSON for it. Retry once with a simpler schema, or do the work without the local model.                |
 
 ## Server
 

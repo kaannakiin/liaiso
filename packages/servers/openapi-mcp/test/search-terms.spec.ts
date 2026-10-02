@@ -10,12 +10,12 @@ const document = {
     "/orders": {
       post: {
         operationId: "createOrder",
-        "x-liaiso-search-terms": ["sipariş"],
+        "x-sezzlee-search-terms": ["sipariş"],
         responses: { "200": { description: "ok" } },
       },
       get: {
         operationId: "listOrders",
-        "x-liaiso-search-terms": ["from-document"],
+        "x-sezzlee-search-terms": ["from-document"],
         responses: { "200": { description: "ok" } },
       },
     },

@@ -2,7 +2,7 @@ import {
   createFormatRegistry,
   type FormatRegistry,
   type SourceExtension,
-} from "@liaiso/file-core";
+} from "@sezzlee/file-core";
 import { fail } from "./errors.js";
 import { vocabulary } from "./vocabulary.js";
 

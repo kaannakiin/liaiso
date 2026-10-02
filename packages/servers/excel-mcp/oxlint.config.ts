@@ -1,9 +1,9 @@
 import { defineConfig } from "oxlint";
-import { config } from "@liaiso/oxlint-config/base";
-import { casing } from "@liaiso/oxlint-config/casing";
+import { config } from "@sezzlee/oxlint-config/base";
+import { casing } from "@sezzlee/oxlint-config/casing";
 
 const platformMessage =
-  "The platform layer is the @liaiso/file-core and node boundary; it may not import a layer above it.";
+  "The platform layer is the @sezzlee/file-core and node boundary; it may not import a layer above it.";
 const gridMessage =
   "The grid layer sees sheets only through SheetView; it must not reach a format adapter, a metadata reader or the tool surface.";
 const metadataMessage =
@@ -20,11 +20,11 @@ const parserPackages = ["@e965/xlsx", "csv-parse", "csv-parse/sync"];
  * leading bytes decides whether a file is readable at all and that is a
  * precondition of reading, not an adapter concern. No layer above platform may.
  */
-const containerPackages = ["@liaiso/ooxml-core"];
+const containerPackages = ["@sezzlee/ooxml-core"];
 
 const formatPackages = [...parserPackages, ...containerPackages];
 const serverPackages = [
-  "@liaiso/file-core",
+  "@sezzlee/file-core",
   "@modelcontextprotocol/server",
   "zod",
 ];

@@ -1,4 +1,4 @@
-import { truncateWellFormed } from "@liaiso/mcp-core";
+import { truncateWellFormed } from "@sezzlee/mcp-core";
 import type {
   ColumnKind,
   EncodedValue,

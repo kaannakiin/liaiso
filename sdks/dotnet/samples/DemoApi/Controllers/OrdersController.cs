@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Liaiso.AspNetCore.Discovery;
+using Sezzlee.AspNetCore.Discovery;
 
 namespace DemoApi.Controllers;
 

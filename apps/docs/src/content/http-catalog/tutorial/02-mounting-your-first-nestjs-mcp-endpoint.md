@@ -13,7 +13,7 @@ Open `sdks/nestjs/samples/demo-api/src/app.module.ts`:
 ```ts
 @Module({
   imports: [
-    LiaisoModule.forRoot((options) => {
+    SezzleeModule.forRoot((options) => {
       options.visibility.tier = "probe";
     }),
   ],
@@ -34,22 +34,22 @@ injected config.
 ```ts
 @Controller()
 export class McpController {
-  private readonly serve: LiaisoRequestHandler;
+  private readonly serve: SezzleeRequestHandler;
 
   constructor(
-    private readonly streamableHttp: LiaisoStreamableHttp,
-    private readonly catalog: LiaisoCatalog,
-    private readonly dispatcher: LiaisoDispatcher,
+    private readonly streamableHttp: SezzleeStreamableHttp,
+    private readonly catalog: SezzleeCatalog,
+    private readonly dispatcher: SezzleeDispatcher,
     private readonly visibility: CallerVisibilityProvider,
     @Inject(extensionTokens.invokeResultMapper)
     private readonly mapper: InvokeResultMapper,
     @Inject(extensionTokens.callerScopeResolver)
     private readonly scopes: CallerScopeResolver,
-    @Inject(LIAISO_OPTIONS) private readonly options: LiaisoOptions,
+    @Inject(SEZZLEE_OPTIONS) private readonly options: SezzleeOptions,
   ) {
     this.serve = this.streamableHttp.serve(() => {
       const server = new McpServer({ name: "demo-api", version: "0.0.0" });
-      registerLiaisoTools(server, {
+      registerSezzleeTools(server, {
         catalog: this.catalog,
         dispatcher: this.dispatcher,
         mapper: this.mapper,
@@ -69,7 +69,7 @@ export class McpController {
 ```
 
 The seven injections are not guessable and the SDK cannot supply them for you — a NestJS controller
-is your code, and the module has no way to add a route to it. `LiaisoModule` is `@Global()`, so the
+is your code, and the module has no way to add a route to it. `SezzleeModule` is `@Global()`, so the
 providers are available without importing anything else.
 
 Bind the handler once, in the constructor, and keep it. `serve` creates the endpoint's handler, and
@@ -124,7 +124,7 @@ the tool's input schema, and `@UseGuards(JwtGuard)` is untouched — it runs whe
 ## 5. Build and start
 
 ```bash
-pnpm turbo run build --filter=@liaiso/demo-nestjs
+pnpm turbo run build --filter=@sezzlee/demo-nestjs
 node sdks/nestjs/samples/demo-api/dist/main.js
 ```
 
@@ -142,7 +142,7 @@ Leave it running.
 In a second terminal:
 
 ```bash
-LIAISO_BASE_URL=http://127.0.0.1:3000 LIAISO_AUTH=token LIAISO_USER=alice \
+SEZZLEE_BASE_URL=http://127.0.0.1:3000 SEZZLEE_AUTH=token SEZZLEE_USER=alice \
   node sdks/nestjs/samples/agent-client/dist/main.js \
   --scenario smoke --query "create order" \
   --tool create_order --arguments '{"item":"usb-c dock","quantity":1}'
@@ -156,7 +156,7 @@ load_tool create_order       ok    {"type":"object","properties":{"item":{"type"
 invoke_tool create_order     ok    {"status":201,"body":{"id":1,"item":"usb-c dock","quantity":1,"owner":"alice","notes":[]}}
 ```
 
-`LIAISO_AUTH=token` uses the sample's `POST /auth/token` shortcut. The order id increments on each
+`SEZZLEE_AUTH=token` uses the sample's `POST /auth/token` shortcut. The order id increments on each
 run.
 
 `load_tool` built that schema from `CreateOrderDto`: `minLength: 1` came from `@MinLength(1)`,
@@ -170,7 +170,7 @@ An agent can search, read and call your NestJS endpoints, and every call went th
 Two things in that output are worth chasing. The schema has no property descriptions, because
 NestJS exposes no equivalent of ASP.NET's description metadata — you supply those with
 `@McpTool({ description })` per method. And `search_tools` returned 7 of 8, not 8 of 8, because
-this sample's guards are imperative code, so liaiso cannot read what they mean and falls back to
+this sample's guards are imperative code, so sezzlee cannot read what they mean and falls back to
 probing.
 
 That second one is the SDK's defining behaviour:

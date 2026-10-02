@@ -18,7 +18,7 @@ back while the later calls are still waiting. The seventeen documents above clea
 
 ## What the queue changes for the caller
 
-The server's own timeout, `LIAISO_LLM_TIMEOUT_MS`, starts when a call leaves the queue, so waiting
+The server's own timeout, `SEZZLEE_LLM_TIMEOUT_MS`, starts when a call leaves the queue, so waiting
 never uses it up. The client's timeout is different: it starts when the agent makes the call, and
 it has to cover the wait. That is why the Codex configuration allows 900 seconds per tool call.
 

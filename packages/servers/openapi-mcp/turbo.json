@@ -8,13 +8,13 @@
     "test": {
       "dependsOn": ["build"],
       "passThroughEnv": [
-        "LIAISO_OPENAPI_CONFIG",
-        "LIAISO_OPENAPI_ACCEPTANCE_DOC",
-        "LIAISO_PARITY_DIR"
+        "SEZZLEE_OPENAPI_CONFIG",
+        "SEZZLEE_OPENAPI_ACCEPTANCE_DOC",
+        "SEZZLEE_PARITY_DIR"
       ]
     },
     "dev": {
-      "passThroughEnv": ["LIAISO_OPENAPI_CONFIG"]
+      "passThroughEnv": ["SEZZLEE_OPENAPI_CONFIG"]
     }
   }
 }

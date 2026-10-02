@@ -1,5 +1,5 @@
 {
-  "name": "@liaiso/file-core-native",
+  "name": "@sezzlee/file-core-native",
   "version": "0.2.0",
   "description": "Handle-relative filesystem access for file-core (Node-API).",
   "keywords": [
@@ -8,7 +8,7 @@
     "native",
     "filesystem",
     "sandbox",
-    "liaiso"
+    "sezzlee"
   ],
   "type": "module",
   "license": "MIT",

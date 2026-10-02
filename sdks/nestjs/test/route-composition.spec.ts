@@ -11,12 +11,12 @@ import {
 import { RouterModule } from "@nestjs/core";
 import { Test, type TestingModuleBuilder } from "@nestjs/testing";
 import { beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import type {
-  LiaisoOptions,
-  LiaisoResourceServerOptions,
+  SezzleeOptions,
+  SezzleeResourceServerOptions,
 } from "../src/options.js";
 
 @Controller("orders")
@@ -85,24 +85,24 @@ class OrdersFeatureModule {}
 async function catalogOf(
   build: TestingModuleBuilder,
   prepare?: (app: INestApplication) => void,
-): Promise<LiaisoCatalog> {
+): Promise<SezzleeCatalog> {
   const moduleRef = await build.compile();
   const app = moduleRef.createNestApplication({ logger: false });
   prepare?.(app);
   await app.init();
-  return app.get(LiaisoCatalog);
+  return app.get(SezzleeCatalog);
 }
 
-const routesOf = (catalog: LiaisoCatalog): string[] =>
+const routesOf = (catalog: SezzleeCatalog): string[] =>
   catalog.current.entries.map((entry) => entry.descriptor.route).sort();
 
 describe("R1: global prefix", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     catalog = await catalogOf(
       Test.createTestingModule({
-        imports: [LiaisoModule.forRoot()],
+        imports: [SezzleeModule.forRoot()],
         controllers: [
           PrefixedOrdersController,
           HealthController,
@@ -128,12 +128,12 @@ describe("R1: global prefix", () => {
 });
 
 describe("R2: a controller mounted at several paths", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     catalog = await catalogOf(
       Test.createTestingModule({
-        imports: [LiaisoModule.forRoot()],
+        imports: [SezzleeModule.forRoot()],
         controllers: [MultiPathController],
       }),
     );
@@ -163,12 +163,12 @@ describe("R2: a controller mounted at several paths", () => {
 });
 
 describe("R3: URI versioning", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     catalog = await catalogOf(
       Test.createTestingModule({
-        imports: [LiaisoModule.forRoot()],
+        imports: [SezzleeModule.forRoot()],
         controllers: [VersionedOrdersController],
       }),
       (app) => {
@@ -187,13 +187,13 @@ describe("R3: URI versioning", () => {
 });
 
 describe("R4: a module mounted through RouterModule", () => {
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
 
   beforeAll(async () => {
     catalog = await catalogOf(
       Test.createTestingModule({
         imports: [
-          LiaisoModule.forRoot(),
+          SezzleeModule.forRoot(),
           OrdersFeatureModule,
           RouterModule.register([
             { path: "admin", module: OrdersFeatureModule },
@@ -213,9 +213,9 @@ describe("R5: protected-resource metadata under a global prefix", () => {
     resource: new URL("https://api.example.com/mcp"),
     authorizationServers: [new URL("https://auth.example.com")],
     verifier: { verifyAccessToken: () => Promise.reject(new Error("unused")) },
-  } as unknown as LiaisoResourceServerOptions;
+  } as unknown as SezzleeResourceServerOptions;
 
-  const configure = (options: LiaisoOptions): void => {
+  const configure = (options: SezzleeOptions): void => {
     options.resourceServer = resourceServer;
     options.diagnostics.failOn = undefined;
   };
@@ -223,7 +223,7 @@ describe("R5: protected-resource metadata under a global prefix", () => {
   it("is fatal when the metadata path is not excluded from the prefix", async () => {
     const catalog = await catalogOf(
       Test.createTestingModule({
-        imports: [LiaisoModule.forRoot(configure)],
+        imports: [SezzleeModule.forRoot(configure)],
         controllers: [PrefixedOrdersController],
       }),
       (app) => app.setGlobalPrefix("api"),
@@ -240,7 +240,7 @@ describe("R5: protected-resource metadata under a global prefix", () => {
   it("is silent once the host excludes it", async () => {
     const catalog = await catalogOf(
       Test.createTestingModule({
-        imports: [LiaisoModule.forRoot(configure)],
+        imports: [SezzleeModule.forRoot(configure)],
         controllers: [PrefixedOrdersController],
       }),
       (app) =>

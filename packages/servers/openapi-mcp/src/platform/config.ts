@@ -1,4 +1,4 @@
-import { invokeLimits } from "@liaiso/core";
+import { invokeLimits } from "@sezzlee/core";
 import { z } from "zod";
 
 const secret = z.object({ fromEnv: z.string().min(1) }).strict();

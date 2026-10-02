@@ -9,35 +9,35 @@ install steps are in [`sdks/dotnet/README.md`](https://github.com/sezzlee/mcp/bl
 
 ## 1. Look at the three calls
 
-Open `sdks/dotnet/samples/DemoApi/Program.cs`. Every liaiso integration is these three calls and
+Open `sdks/dotnet/samples/DemoApi/Program.cs`. Every sezzlee integration is these three calls and
 nothing else:
 
 ```csharp
-builder.Services.AddLiaiso();
+builder.Services.AddSezzlee();
 
 var app = builder.Build();
 
-app.UseLiaisoCapture();
+app.UseSezzleeCapture();
 
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapLiaiso("/mcp");
+app.MapSezzlee("/mcp");
 ```
 
-`AddLiaiso()` registers discovery. `UseLiaisoCapture()` takes a handle on the pipeline. `MapLiaiso()`
+`AddSezzlee()` registers discovery. `UseSezzleeCapture()` takes a handle on the pipeline. `MapSezzlee()`
 serves the MCP endpoint.
 
-`UseLiaisoCapture()` captures the pipeline **from that point onward** and replays agent calls into
+`UseSezzleeCapture()` captures the pipeline **from that point onward** and replays agent calls into
 it. Put it before `UseRouting`, `UseAuthentication` and `UseAuthorization`, as early as you can. If
 it sits after them, agent requests never reach your authentication layer. If you leave it out
 entirely, the host refuses to start:
 
 ```text
-MapLiaiso() requires app.UseLiaisoCapture() earlier in the pipeline, before UseRouting(),
-UseAuthentication() and UseAuthorization(). Add app.UseLiaisoCapture() near the top of the pipeline.
+MapSezzlee() requires app.UseSezzleeCapture() earlier in the pipeline, before UseRouting(),
+UseAuthentication() and UseAuthorization(). Add app.UseSezzleeCapture() near the top of the pipeline.
 ```
 
 ## 2. Mark one endpoint
@@ -54,10 +54,10 @@ public IActionResult GetOrder([Description("Order id")] int id) =>
 ```
 
 Two things carry into the catalog. `[McpTool]` on the class opts the controller in. `[Description]`
-becomes the tool description an agent searches against — liaiso reads ASP.NET's own description
+becomes the tool description an agent searches against — sezzlee reads ASP.NET's own description
 metadata, so you are not writing a second copy of anything.
 
-The `[Authorize(Policy = "OrdersRead")]` line is untouched by liaiso. It will run when the agent
+The `[Authorize(Policy = "OrdersRead")]` line is untouched by sezzlee. It will run when the agent
 calls.
 
 ## 3. Start the backend
@@ -69,8 +69,8 @@ dotnet run --project sdks/dotnet/samples/DemoApi
 The catalog is built at startup and reports what it found:
 
 ```text
-info: Liaiso.AspNetCore.LiaisoCatalogProvider[0]
-      liaiso catalog: 16 discovered, 9 selected, 9 tools, 0 diagnostic(s)
+info: Sezzlee.AspNetCore.SezzleeCatalogProvider[0]
+      sezzlee catalog: 16 discovered, 9 selected, 9 tools, 0 diagnostic(s)
 ```
 
 Sixteen endpoints exist; nine were selected, because selection is opt-in and only the decorated
@@ -102,7 +102,7 @@ the agent searches it. `search_tools` matched your description and returned a co
 route constraint says `{id:int}`, and the description came from your attribute. `invoke_tool`
 called the endpoint and got the order back with a `200`.
 
-The client authenticated as `alice` and her token satisfied `OrdersRead`. Your policy ran; liaiso
+The client authenticated as `alice` and her token satisfied `OrdersRead`. Your policy ran; sezzlee
 did not evaluate it.
 
 ## What you just built

@@ -1,10 +1,10 @@
-# @liaiso/xml-mcp
+# @sezzlee/xml-mcp
 
 A read-only, sandboxed MCP server that reads local XML documents.
-It builds on [@liaiso/file-core](../../cores/file-core); it does **not** depend on
-`@liaiso/core` and imports nothing from `packages/lab/xml-lab`.
+It builds on [@sezzlee/file-core](../../cores/file-core); it does **not** depend on
+`@sezzlee/core` and imports nothing from `packages/lab/xml-lab`.
 
-**Documentation: <https://liaiso-docs.invokit-docs.workers.dev/docs/xml-mcp/introduction>** — a
+**Documentation: <https://sezzlee-docs.invokit-docs.workers.dev/docs/xml-mcp/introduction>** — a
 tutorial, task guides, and the tool, error-code and limit reference generated from this package.
 
 ## Quick start
@@ -16,7 +16,7 @@ The root is the only argument, as an absolute path; there is no environment vari
   "mcpServers": {
     "xml": {
       "command": "npx",
-      "args": ["-y", "@liaiso/xml-mcp", "/path/to/xml/root"]
+      "args": ["-y", "@sezzlee/xml-mcp", "/path/to/xml/root"]
     }
   }
 }
@@ -25,7 +25,7 @@ The root is the only argument, as an absolute path; there is no environment vari
 With Claude Code:
 
 ```bash
-claude mcp add xml -- npx -y @liaiso/xml-mcp /path/to/xml/root
+claude mcp add xml -- npx -y @sezzlee/xml-mcp /path/to/xml/root
 ```
 
 Readable extensions: `.xml`, `.xsd`, `.xhtml`, `.svg`, `.csproj`, `.props`, `.targets`, `.config`,
@@ -45,7 +45,7 @@ behavior. Requires Node.js 22 or 24 on macOS (x64, arm64), glibc Linux (x64, arm
 | `aggregate_document` | Counts, distinct counts and, with `numericMode: binary64`, sums and averages per group                                                 |
 
 Every argument, error code and limit is listed in the
-[reference](https://liaiso-docs.invokit-docs.workers.dev/docs/xml-mcp/tools).
+[reference](https://sezzlee-docs.invokit-docs.workers.dev/docs/xml-mcp/tools).
 
 A document over the 8 MiB resident ceiling is read in a reduced-capability `chunked` mode:
 `select_xpath`, `find_in_document` and `aggregate_document` are unavailable there, while
@@ -82,7 +82,7 @@ so roughly 81 MiB resident per document at the 8 MiB ceiling; the default
 
 **Parsing happens in the worker.** The main process only ever holds a
 serializable handle; a WASM pointer never crosses the boundary. No disposal
-hook was needed on `@liaiso/file-core`'s document store because of this.
+hook was needed on `@sezzlee/file-core`'s document store because of this.
 
 **Layout follows the worker/host boundary.** `engine/` is the worker-side
 graph and never names `host/` or `tools/`; `model/` and `primitives/` are the
@@ -118,17 +118,17 @@ invalidate the F0-01 integrity record; the CI tarball checker enforces this.
 ## Development
 
 ```bash
-pnpm turbo run build --filter=@liaiso/xml-mcp
-pnpm turbo run test --filter=@liaiso/xml-mcp
-pnpm turbo run check-types --filter=@liaiso/xml-mcp
+pnpm turbo run build --filter=@sezzlee/xml-mcp
+pnpm turbo run test --filter=@sezzlee/xml-mcp
+pnpm turbo run check-types --filter=@sezzlee/xml-mcp
 ```
 
-Run tests through Turbo, not `pnpm --filter @liaiso/xml-mcp test`: the bare
+Run tests through Turbo, not `pnpm --filter @sezzlee/xml-mcp test`: the bare
 filter skips `dependsOn: ["^build"]`.
 
 A change to a tool's arguments, an error code or a limit changes the generated reference in
-`apps/docs`; run `pnpm --filter @liaiso/docs gen` and commit the result, or
-`pnpm turbo run validate --filter=@liaiso/docs` fails.
+`apps/docs`; run `pnpm --filter @sezzlee/docs gen` and commit the result, or
+`pnpm turbo run validate --filter=@sezzlee/docs` fails.
 
 Large-document tests are opt-in and skipped by default; set
-`LIAISO_XML_LARGE=1` to run them.
+`SEZZLEE_XML_LARGE=1` to run them.

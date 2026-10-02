@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ModelContextProtocol.Authentication;
-using Liaiso.AspNetCore;
-using Liaiso.AspNetCore.Discovery;
-using Liaiso.Samples.DemoAuthServer;
+using Sezzlee.AspNetCore;
+using Sezzlee.AspNetCore.Discovery;
+using Sezzlee.Samples.DemoAuthServer;
 
 const string McpResource = "http://127.0.0.1:5178/mcp";
 const string Issuer = "http://127.0.0.1:5178/oauth";
@@ -41,9 +41,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("BusinessHours", policy => policy.RequireAssertion(_ => DateTime.UtcNow.Hour is >= 6 and < 22));
 });
 
-builder.Services.AddSingleton<Liaiso.AspNetCore.Files.ILiaisoFileResolver, DemoApi.DemoAttachmentResolver>();
+builder.Services.AddSingleton<Sezzlee.AspNetCore.Files.ISezzleeFileResolver, DemoApi.DemoAttachmentResolver>();
 builder.Services.AddOpenApi();
-builder.Services.AddLiaiso(options =>
+builder.Services.AddSezzlee(options =>
 {
     options.Visibility.Tier = VisibilityTier.Probe;
     options.Families.Provide(DemoApi.DemoDynamicMethods.Source, DemoApi.DemoDynamicMethods.LoadAsync);
@@ -62,7 +62,7 @@ builder.Services.AddLiaiso(options =>
 
 var app = builder.Build();
 
-app.UseLiaisoCapture();
+app.UseSezzleeCapture();
 
 app.UseRouting();
 app.UseAuthentication();
@@ -74,7 +74,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
     .AllowAnonymous()
     .WithMetadata(new McpToolAttribute(), new EndpointDescriptionAttribute("Service health status; requires no identity."));
 app.MapDemoAuthorizationServer(authServer);
-app.MapLiaiso("/mcp").RequireAuthorization();
+app.MapSezzlee("/mcp").RequireAuthorization();
 
 app.MapPost("/auth/token", (TokenRequest request) =>
 {
