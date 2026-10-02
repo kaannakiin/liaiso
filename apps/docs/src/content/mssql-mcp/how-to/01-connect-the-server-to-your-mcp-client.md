@@ -11,17 +11,17 @@ its environment. The server runs until the client closes it.
 
 Four are required. The server stops at startup and names the missing ones if any is absent:
 
-| Variable                                | Default  | Meaning                                                        |
-| --------------------------------------- | -------- | -------------------------------------------------------------- |
-| `LIAISO_MSSQL_SERVER`                   | required | Host name or address of the SQL Server.                        |
-| `LIAISO_MSSQL_DATABASE`                 | required | The one database the server reads.                             |
-| `LIAISO_MSSQL_USER`                     | required | SQL Server login.                                              |
-| `LIAISO_MSSQL_PASSWORD`                 | required | Its password.                                                  |
-| `LIAISO_MSSQL_PORT`                     | `1433`   | TCP port.                                                      |
-| `LIAISO_MSSQL_ENCRYPT`                  | `true`   | Encrypt the connection.                                        |
-| `LIAISO_MSSQL_TRUST_SERVER_CERTIFICATE` | `false`  | Accept a server certificate that cannot be verified.           |
-| `LIAISO_MSSQL_CONNECT_TIMEOUT_MS`       | `15000`  | Time allowed to open a connection.                             |
-| `LIAISO_MSSQL_QUERY_TIMEOUT_MS`         | `30000`  | Deadline for a statement when a call does not set `timeoutMs`. |
+| Variable                                 | Default  | Meaning                                                        |
+| ---------------------------------------- | -------- | -------------------------------------------------------------- |
+| `SEZZLEE_MSSQL_SERVER`                   | required | Host name or address of the SQL Server.                        |
+| `SEZZLEE_MSSQL_DATABASE`                 | required | The one database the server reads.                             |
+| `SEZZLEE_MSSQL_USER`                     | required | SQL Server login.                                              |
+| `SEZZLEE_MSSQL_PASSWORD`                 | required | Its password.                                                  |
+| `SEZZLEE_MSSQL_PORT`                     | `1433`   | TCP port.                                                      |
+| `SEZZLEE_MSSQL_ENCRYPT`                  | `true`   | Encrypt the connection.                                        |
+| `SEZZLEE_MSSQL_TRUST_SERVER_CERTIFICATE` | `false`  | Accept a server certificate that cannot be verified.           |
+| `SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS`       | `15000`  | Time allowed to open a connection.                             |
+| `SEZZLEE_MSSQL_QUERY_TIMEOUT_MS`         | `30000`  | Deadline for a statement when a call does not set `timeoutMs`. |
 
 A wrong value is caught at startup too: a port or timeout that is not a positive integer, or a flag
 that is not `true` or `false`, stops the server with a message naming the variable. A database that
@@ -34,9 +34,9 @@ the server](/docs/mssql-mcp/create-a-read-only-login-for-the-server).
 ## Claude Code
 
 ```sh
-claude mcp add sales -e LIAISO_MSSQL_SERVER=db.example.com -e LIAISO_MSSQL_DATABASE=Sales \
-  -e LIAISO_MSSQL_USER=mcp_reader -e LIAISO_MSSQL_PASSWORD=your_password \
-  -- npx -y @liaiso/mssql-mcp
+claude mcp add sales -e SEZZLEE_MSSQL_SERVER=db.example.com -e SEZZLEE_MSSQL_DATABASE=Sales \
+  -e SEZZLEE_MSSQL_USER=mcp_reader -e SEZZLEE_MSSQL_PASSWORD=your_password \
+  -- npx -y @sezzlee/mssql-mcp
 ```
 
 Keep this entry in your user or local scope. `--scope project` writes it to `.mcp.json`, which is
@@ -51,12 +51,12 @@ Edit `claude_desktop_config.json` (**Settings → Developer → Edit Config**) a
   "mcpServers": {
     "sales": {
       "command": "npx",
-      "args": ["-y", "@liaiso/mssql-mcp"],
+      "args": ["-y", "@sezzlee/mssql-mcp"],
       "env": {
-        "LIAISO_MSSQL_SERVER": "db.example.com",
-        "LIAISO_MSSQL_DATABASE": "Sales",
-        "LIAISO_MSSQL_USER": "mcp_reader",
-        "LIAISO_MSSQL_PASSWORD": "your_password"
+        "SEZZLEE_MSSQL_SERVER": "db.example.com",
+        "SEZZLEE_MSSQL_DATABASE": "Sales",
+        "SEZZLEE_MSSQL_USER": "mcp_reader",
+        "SEZZLEE_MSSQL_PASSWORD": "your_password"
       }
     }
   }
@@ -80,12 +80,12 @@ stated, and can prompt for the password instead of storing it:
     "sales": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@liaiso/mssql-mcp"],
+      "args": ["-y", "@sezzlee/mssql-mcp"],
       "env": {
-        "LIAISO_MSSQL_SERVER": "db.example.com",
-        "LIAISO_MSSQL_DATABASE": "Sales",
-        "LIAISO_MSSQL_USER": "mcp_reader",
-        "LIAISO_MSSQL_PASSWORD": "${input:mssql-password}"
+        "SEZZLEE_MSSQL_SERVER": "db.example.com",
+        "SEZZLEE_MSSQL_DATABASE": "Sales",
+        "SEZZLEE_MSSQL_USER": "mcp_reader",
+        "SEZZLEE_MSSQL_PASSWORD": "${input:mssql-password}"
       }
     }
   }
@@ -95,7 +95,7 @@ stated, and can prompt for the password instead of storing it:
 ## More than one database
 
 One server reads one database. To give an agent two, add two entries with different names and
-different `LIAISO_MSSQL_DATABASE` values. Each tool's answer names the database it came from.
+different `SEZZLEE_MSSQL_DATABASE` values. Each tool's answer names the database it came from.
 
 ## Check that it started
 

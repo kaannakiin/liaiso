@@ -1,6 +1,6 @@
 import { defineConfig } from "oxlint";
-import { config } from "@liaiso/oxlint-config/base";
-import { casing } from "@liaiso/oxlint-config/casing";
+import { config } from "@sezzlee/oxlint-config/base";
+import { casing } from "@sezzlee/oxlint-config/casing";
 
 export default defineConfig({
   extends: [config],

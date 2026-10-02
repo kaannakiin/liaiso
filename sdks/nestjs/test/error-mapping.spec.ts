@@ -21,14 +21,14 @@ import {
   createRequestTemplate,
   extensionTokens,
   isMappedError,
-  LiaisoDispatcher,
-  LiaisoModule,
+  SezzleeDispatcher,
+  SezzleeModule,
   type ExtensionOverrides,
   type InvokeResult,
   type InvokeResultMapper,
   type MappedError,
   type Recognizer,
-  type LiaisoOptions,
+  type SezzleeOptions,
 } from "../src/index.js";
 
 const validateTemplate = createRequestTemplate({
@@ -111,24 +111,24 @@ class ErrorMappingProbeController {
 
 interface TestApp {
   app: INestApplication;
-  dispatcher: LiaisoDispatcher;
+  dispatcher: SezzleeDispatcher;
   mapper: InvokeResultMapper;
   close(): Promise<void>;
 }
 
 async function createApp(
-  configure?: (options: LiaisoOptions) => void,
+  configure?: (options: SezzleeOptions) => void,
   overrides?: ExtensionOverrides,
 ): Promise<TestApp> {
   const moduleRef = await Test.createTestingModule({
-    imports: [LiaisoModule.forRoot(configure, overrides)],
+    imports: [SezzleeModule.forRoot(configure, overrides)],
     controllers: [ErrorMappingProbeController],
   }).compile();
   const app = moduleRef.createNestApplication({ logger: false });
   await app.init();
   return {
     app,
-    dispatcher: app.get(LiaisoDispatcher),
+    dispatcher: app.get(SezzleeDispatcher),
     mapper: app.get<InvokeResultMapper>(extensionTokens.invokeResultMapper),
     close: () => app.close(),
   };

@@ -4,19 +4,19 @@ import {
   armDeadline,
   compose,
   mergeCookieHeader,
-  LiaisoDispatchAborted,
+  SezzleeDispatchAborted,
   untilAbandoned,
   writeBody,
   type ComposedRequest,
   type DispatchDeadline,
   type RefResolver,
   type RequestTemplate,
-} from "@liaiso/core";
-import { LiaisoFileRefused } from "./files.js";
+} from "@sezzlee/core";
+import { SezzleeFileRefused } from "./files.js";
 import {
   callerOf,
-  LIAISO_OPTIONS,
-  LiaisoOptions,
+  SEZZLEE_OPTIONS,
+  SezzleeOptions,
   type InvokeTarget,
   type OuterRequest,
   type SyntheticHeaders,
@@ -64,13 +64,13 @@ function usableMediaType(value: string | undefined): string | undefined {
   return value !== undefined && safeMediaType.test(value) ? value : undefined;
 }
 
-const defaultUserAgent = "liaiso/0.0.0";
+const defaultUserAgent = "sezzlee/0.0.0";
 
 @Injectable()
-export class LiaisoDispatcher {
+export class SezzleeDispatcher {
   constructor(
     private readonly adapterHost: HttpAdapterHost,
-    @Inject(LIAISO_OPTIONS) private readonly options: LiaisoOptions,
+    @Inject(SEZZLEE_OPTIONS) private readonly options: SezzleeOptions,
   ) {}
 
   dispatch(
@@ -146,7 +146,7 @@ export class LiaisoDispatcher {
       this.adapterHost.httpAdapter?.getInstance<PipelineFunction>();
     if (!pipeline) {
       throw new Error(
-        "liaiso: HTTP adapter is not available; initialize the Nest application before dispatching.",
+        "sezzlee: HTTP adapter is not available; initialize the Nest application before dispatching.",
       );
     }
 
@@ -211,7 +211,7 @@ export class LiaisoDispatcher {
             );
       const abandoned = deadlineState.reason();
       if (abandoned !== undefined) {
-        throw new LiaisoDispatchAborted(abandoned);
+        throw new SezzleeDispatchAborted(abandoned);
       }
       if (written !== undefined) {
         headers["content-type"] = written.contentType;
@@ -256,7 +256,7 @@ export class LiaisoDispatcher {
       const resolver = this.options.files.resolver;
       if (resolver === undefined || files === undefined) {
         throw new Error(
-          `liaiso: file argument '${field}' is a ref but no file resolver is bound.`,
+          `sezzlee: file argument '${field}' is a ref but no file resolver is bound.`,
         );
       }
       const limit = files.maxFileBytes;
@@ -269,10 +269,10 @@ export class LiaisoDispatcher {
         signal,
       });
       if (!outcome.ok) {
-        throw new LiaisoFileRefused(field, outcome.reason, limit);
+        throw new SezzleeFileRefused(field, outcome.reason, limit);
       }
       if (outcome.bytes.byteLength > limit) {
-        throw new LiaisoFileRefused(field, "too_large", limit);
+        throw new SezzleeFileRefused(field, "too_large", limit);
       }
       return {
         bytes: outcome.bytes,

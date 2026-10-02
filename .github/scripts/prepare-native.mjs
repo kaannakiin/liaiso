@@ -6,7 +6,7 @@ import { join } from "node:path";
 
 const folder = join(
   process.env.RUNNER_TEMP ?? tmpdir(),
-  `liaiso-node-${process.versions.node}`,
+  `sezzlee-node-${process.versions.node}`,
 );
 await mkdir(folder, { recursive: true });
 const base = `https://nodejs.org/dist/v${process.versions.node}`;
@@ -34,7 +34,7 @@ const unpack = spawnSync("tar", ["-xzf", archive, "-C", folder], {
 });
 if (unpack.status !== 0) throw new Error("Node headers extraction failed");
 const variables = {
-  LIAISO_NODE_HEADERS: join(
+  SEZZLEE_NODE_HEADERS: join(
     folder,
     `node-v${process.versions.node}`,
     "include",
@@ -44,7 +44,7 @@ const variables = {
 if (process.platform === "win32") {
   const library = join(folder, "node.lib");
   await download("win-x64/node.lib", library);
-  variables.LIAISO_NODE_LIB = library;
+  variables.SEZZLEE_NODE_LIB = library;
   const vswhere = join(
     process.env["ProgramFiles(x86)"],
     "Microsoft Visual Studio",

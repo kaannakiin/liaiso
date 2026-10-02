@@ -16,7 +16,7 @@ import {
   buildCatalog,
   combineMarkers,
   matchesRoute,
-  LiaisoTemplateError,
+  SezzleeTemplateError,
   textMediaType,
   urlEncodedMediaType,
   type ArgumentCuration,
@@ -28,7 +28,7 @@ import {
   type ToolAnnotations,
   type ToolRanker,
   type ToolVariant,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import { severityOf, type CatalogDiagnostic } from "./discovery/diagnostics.js";
 import {
   createRoutePaths,
@@ -45,14 +45,14 @@ import {
   type FamilyResolution,
 } from "./families.js";
 import {
-  LIAISO_OPTIONS,
+  SEZZLEE_OPTIONS,
   type CurationRule,
-  type LiaisoOptions,
+  type SezzleeOptions,
 } from "./options.js";
 import { extensionTokens } from "./extension-points.js";
 import { protectedResourceMetadataPath } from "./transport/protected-resource-metadata.js";
 
-export { cleanTags } from "@liaiso/core";
+export { cleanTags } from "@sezzlee/core";
 
 export interface NestSource {
   readonly controller: NewableFunction;
@@ -68,7 +68,7 @@ export interface CatalogSnapshot extends CatalogBuild<NestSource> {
 type LoweredFamily = Extract<FamilyResolution, { kind: "members" }>;
 
 @Injectable()
-export class LiaisoCatalog implements OnApplicationBootstrap {
+export class SezzleeCatalog implements OnApplicationBootstrap {
   private snapshot: CatalogSnapshot | undefined;
   private currentGeneration = 0;
   private readonly listeners = new Set<() => void>();
@@ -79,7 +79,7 @@ export class LiaisoCatalog implements OnApplicationBootstrap {
     private readonly discovery: DiscoveryService,
     private readonly modules: ModulesContainer,
     private readonly applicationConfig: ApplicationConfig,
-    @Inject(LIAISO_OPTIONS) private readonly options: LiaisoOptions,
+    @Inject(SEZZLEE_OPTIONS) private readonly options: SezzleeOptions,
     @Optional() private readonly adapterHost?: HttpAdapterHost,
     @Optional()
     @Inject(extensionTokens.toolRanker)
@@ -112,7 +112,7 @@ export class LiaisoCatalog implements OnApplicationBootstrap {
    * current catalog kept ([tool-families.md] §Membership): member data added under a name another
    * tool already has would otherwise take every tool offline.
    *
-   * @throws LiaisoCatalogError through the returned promise when the rebuild is refused
+   * @throws SezzleeCatalogError through the returned promise when the rebuild is refused
    */
   reload(): Promise<void> {
     if (this.options.families.sources.size === 0) {
@@ -422,7 +422,7 @@ export class LiaisoCatalog implements OnApplicationBootstrap {
     for (const layer of layers) {
       for (const [name, rule] of Object.entries(layer.rules)) {
         if (sealed.has(name) && !layer.sealed) {
-          throw new LiaisoTemplateError(
+          throw new SezzleeTemplateError(
             "sealed_curation_overridden",
             `Argument '${name}' is sealed on ${endpoint.controller.name}.${endpoint.handlerName}; a sealed rule cannot be overridden.`,
           );
@@ -467,7 +467,7 @@ function assertUnambiguous(
       const written = JSON.stringify(declaration);
       const existing = claimed.get(key);
       if (existing !== undefined && existing !== written) {
-        throw new LiaisoTemplateError(
+        throw new SezzleeTemplateError(
           "ambiguous_curation",
           `Two curation rules of equal specificity declare argument '${name}' differently on ${endpoint.controller.name}.${endpoint.handlerName}; narrow one of their targets.`,
         );

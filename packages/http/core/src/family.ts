@@ -1,5 +1,5 @@
 import type { CatalogSeverity } from "./catalog/diagnostics.js";
-import { LiaisoTemplateError, type FamilyErrorCode } from "./errors.js";
+import { SezzleeTemplateError, type FamilyErrorCode } from "./errors.js";
 import type {
   ArgumentCuration,
   EndpointDescriptor,
@@ -63,7 +63,7 @@ export function assertFamily(operation: EndpointDescriptor): void {
       (variant) => variant.requestBody !== undefined,
     );
     if (bodied !== undefined) {
-      throw new LiaisoTemplateError(
+      throw new SezzleeTemplateError(
         "variant_body_without_family",
         `Variant '${bodied.name}' of ${where} declares its own request body; only a family member may replace the operation's body.`,
       );
@@ -74,13 +74,13 @@ export function assertFamily(operation: EndpointDescriptor): void {
     (candidate) => candidate.name === family.parameter,
   );
   if (parameter === undefined || !dispatchable(parameter)) {
-    throw new LiaisoTemplateError(
+    throw new SezzleeTemplateError(
       "family_parameter_unresolved",
       `${where} dispatches on '${family.parameter}', which is not a declared scalar parameter outside the body.`,
     );
   }
   if (operation.variants === undefined) {
-    throw new LiaisoTemplateError(
+    throw new SezzleeTemplateError(
       "family_without_members",
       `${where} declares a family on '${family.parameter}' with no member; no tool is produced for it.`,
     );
@@ -89,7 +89,7 @@ export function assertFamily(operation: EndpointDescriptor): void {
   for (const variant of operation.variants) {
     const fill = recordFor(operation, variant, family.parameter)?.hidden;
     if (fill?.kind !== "constant" || !isFamilyKey(fill.value)) {
-      throw new LiaisoTemplateError(
+      throw new SezzleeTemplateError(
         "family_key_unfilled",
         `Member '${variant.name}' of ${where} does not write a scalar constant into '${family.parameter}'; a member must hide its own key.`,
       );
@@ -97,7 +97,7 @@ export function assertFamily(operation: EndpointDescriptor): void {
     const key = JSON.stringify(fill.value);
     const first = claimed.get(key);
     if (first !== undefined) {
-      throw new LiaisoTemplateError(
+      throw new SezzleeTemplateError(
         "family_key_duplicate",
         `Members '${first}' and '${variant.name}' of ${where} both dispatch with key ${key}.`,
       );
@@ -108,7 +108,7 @@ export function assertFamily(operation: EndpointDescriptor): void {
         ? undefined
         : declaredSchemaProblem(variant.requestBody.schema);
     if (problem !== undefined) {
-      throw new LiaisoTemplateError(
+      throw new SezzleeTemplateError(
         "variant_body_invalid",
         `Member '${variant.name}' of ${where} declares a body schema that ${problem}.`,
       );

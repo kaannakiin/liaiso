@@ -5,13 +5,13 @@ this page to change that window, and to know what each size lets one call carry.
 
 ## Set the window
 
-`LIAISO_LLM_NUM_CTX` sets the window, at least 4096:
+`SEZZLEE_LLM_NUM_CTX` sets the window, at least 4096:
 
 ```json
 {
   "env": {
-    "LIAISO_LLM_MODEL": "qwen3:8b",
-    "LIAISO_LLM_NUM_CTX": "32768"
+    "SEZZLEE_LLM_MODEL": "qwen3:8b",
+    "SEZZLEE_LLM_NUM_CTX": "32768"
   }
 }
 ```
@@ -27,11 +27,11 @@ Of the window, 45% is the input budget and 40% is the most the answer may use; t
 the server's own instructions. The server estimates 1.8 characters per token, which is about right
 for Turkish and cautious for English, where a token is closer to four characters:
 
-| `LIAISO_LLM_NUM_CTX` | Input budget  | About this much text | Answer at most |
-| -------------------- | ------------- | -------------------- | -------------- |
-| 4,096                | 1,843 tokens  | 3,300 characters     | 1,638 tokens   |
-| 16,384               | 7,372 tokens  | 13,300 characters    | 6,553 tokens   |
-| 32,768               | 14,745 tokens | 26,500 characters    | 13,107 tokens  |
+| `SEZZLEE_LLM_NUM_CTX` | Input budget  | About this much text | Answer at most |
+| --------------------- | ------------- | -------------------- | -------------- |
+| 4,096                 | 1,843 tokens  | 3,300 characters     | 1,638 tokens   |
+| 16,384                | 7,372 tokens  | 13,300 characters    | 6,553 tokens   |
+| 32,768                | 14,745 tokens | 26,500 characters    | 13,107 tokens  |
 
 `local_status` reports `contextTokens` and `inputBudgetTokens` for the running server. A larger
 window lets `classify`, `transform` and `free` take longer inputs, and lets `summarize` and
@@ -39,13 +39,13 @@ window lets `classify`, `transform` and `free` take longer inputs, and lets `sum
 
 ## Keep the model loaded
 
-`LIAISO_LLM_KEEP_ALIVE`, `30m` by default, is how long Ollama keeps the model in memory after a
+`SEZZLEE_LLM_KEEP_ALIVE`, `30m` by default, is how long Ollama keeps the model in memory after a
 call. Loading a model takes seconds to minutes, so an agent that delegates in bursts is faster with
 the model kept warm. The server asks Ollama to load the model as soon as it starts.
 
 ## Give slow calls time
 
-`LIAISO_LLM_TIMEOUT_MS`, five minutes by default, bounds one request to the model, from the moment
+`SEZZLEE_LLM_TIMEOUT_MS`, five minutes by default, bounds one request to the model, from the moment
 it leaves the queue. A request that runs out fails with `backend_unavailable`. Calls run one at a
 time, so the client's own tool timeout has to cover the wait behind other calls as well; that is why
 the Codex configuration in [How to connect the server to your MCP

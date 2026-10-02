@@ -42,12 +42,12 @@ array creation expression, and a C# collection expression is neither.
 For containers that come from a package, declare the rule centrally:
 
 ```csharp
-builder.Services.AddLiaiso(options => options.Tags = container =>
+builder.Services.AddSezzlee(options => options.Tags = container =>
     container.Contains("Billing") ? ["billing"] : null);
 ```
 
 ```ts
-LiaisoModule.forRoot((options) => {
+SezzleeModule.forRoot((options) => {
   options.tags = (container) =>
     container.includes("Billing") ? ["billing"] : undefined;
 });

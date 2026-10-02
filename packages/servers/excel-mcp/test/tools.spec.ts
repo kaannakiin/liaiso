@@ -44,7 +44,7 @@ describe("tool registration", () => {
     ]);
 
     expect(client.getServerVersion()).toEqual({
-      name: "liaiso-excel",
+      name: "sezzlee-excel",
       version: manifest.version,
     });
 

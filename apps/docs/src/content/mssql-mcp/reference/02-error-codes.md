@@ -1,10 +1,10 @@
 # Error codes
 
-> Generated from the error-code union types of `@liaiso/mssql-mcp` 0.1.2.
+> Generated from the error-code union types of `@sezzlee/mssql-mcp` 0.1.2.
 
 A tool that fails answers with `isError: true` and one text item holding a JSON object with three fields: `error`, a stable machine code from this page; `message`, what went wrong; and `recovery`, what the next call should do differently. Branch on `error`, never on `message`.
 
-This is the answer to `describe_table {"schema":"liaiso_shop","table":"orders"}` from a server started with an address where no SQL Server is listening:
+This is the answer to `describe_table {"schema":"sezzlee_shop","table":"orders"}` from a server started with an address where no SQL Server is listening:
 
 ```json
 {
@@ -44,14 +44,14 @@ The server has 15 codes.
 | Code                    | Meaning                                                                                                                                                                                  |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `connection_failed`     | The server could not be reached, or the connection dropped: a wrong host or port, a firewall, an encryption setting the server does not accept, or no answer within the connect timeout. |
-| `authentication_failed` | SQL Server refused the login. Check `LIAISO_MSSQL_USER`, `LIAISO_MSSQL_PASSWORD` and that the login may open `LIAISO_MSSQL_DATABASE`.                                                    |
+| `authentication_failed` | SQL Server refused the login. Check `SEZZLEE_MSSQL_USER`, `SEZZLEE_MSSQL_PASSWORD` and that the login may open `SEZZLEE_MSSQL_DATABASE`.                                                 |
 
 ## Queries
 
 | Code                  | Meaning                                                                                                                                                                                                                                    |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `write_not_permitted` | The statement does not begin with `SELECT` or `WITH`, holds more than one statement, or contains a write keyword. This refusal comes from the statement guard, which is advisory: the database principal is what actually prevents writes. |
-| `query_timeout`       | The statement ran past its deadline and was cancelled. The deadline is `timeoutMs`, or `LIAISO_MSSQL_QUERY_TIMEOUT_MS` when the call does not set one.                                                                                     |
+| `query_timeout`       | The statement ran past its deadline and was cancelled. The deadline is `timeoutMs`, or `SEZZLEE_MSSQL_QUERY_TIMEOUT_MS` when the call does not set one.                                                                                    |
 | `query_cancelled`     | The call was cancelled, by the client or because the call ended, before the statement finished.                                                                                                                                            |
 | `query_failed`        | SQL Server reported an error this server has no more specific code for. The message carries the engine's text and error number.                                                                                                            |
 | `object_not_found`    | The table or view does not exist, or the login cannot see it. Names come from `search_catalog`.                                                                                                                                            |

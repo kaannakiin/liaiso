@@ -9,7 +9,7 @@ first database](/docs/mssql-mcp/querying-your-first-database):
 
 ```sh
 sql() {
-  npx -y @modelcontextprotocol/inspector --cli --config ~/liaiso-mssql.json --server shop \
+  npx -y @modelcontextprotocol/inspector --cli --config ~/sezzlee-mssql.json --server shop \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```
@@ -17,7 +17,7 @@ sql() {
 ## See which values are approximate
 
 ```sh
-sql run_query --tool-arg sql="SELECT entry_id, booked_at, amount FROM liaiso_shop.ledger ORDER BY entry_id" \
+sql run_query --tool-arg sql="SELECT entry_id, booked_at, amount FROM sezzlee_shop.ledger ORDER BY entry_id" \
   | jq -c '.columns[] | del(.nullable)'
 ```
 
@@ -30,7 +30,7 @@ sql run_query --tool-arg sql="SELECT entry_id, booked_at, amount FROM liaiso_sho
 And the rows those columns describe:
 
 ```sh
-sql run_query --tool-arg sql="SELECT entry_id, booked_at, amount FROM liaiso_shop.ledger ORDER BY entry_id" \
+sql run_query --tool-arg sql="SELECT entry_id, booked_at, amount FROM sezzlee_shop.ledger ORDER BY entry_id" \
   | jq -c '.rows[]'
 ```
 
@@ -57,7 +57,7 @@ Three different things happened:
 Ask SQL Server to turn the value into text. Text reaches the agent unchanged:
 
 ```sh
-sql run_query --tool-arg sql="SELECT CAST(entry_id AS varchar(20)) AS entry_id, CONVERT(varchar(33), booked_at, 126) AS booked_at, CAST(amount AS varchar(50)) AS amount FROM liaiso_shop.ledger ORDER BY entry_id" \
+sql run_query --tool-arg sql="SELECT CAST(entry_id AS varchar(20)) AS entry_id, CONVERT(varchar(33), booked_at, 126) AS booked_at, CAST(amount AS varchar(50)) AS amount FROM sezzlee_shop.ledger ORDER BY entry_id" \
   | jq -c '.rows[]'
 ```
 
@@ -75,7 +75,7 @@ on these in SQL, where the value is exact, rather than on the JSON numbers.
 queries which columns need a cast:
 
 ```sh
-sql describe_table --tool-arg schema=liaiso_shop table=ledger \
+sql describe_table --tool-arg schema=sezzlee_shop table=ledger \
   | jq -c '.columns[] | select(.lossy) | del(.nullable)'
 ```
 

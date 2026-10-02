@@ -1,7 +1,7 @@
 import type { CallerScope, CallerScopeKey, CacheTag } from "./caller-scope.js";
-import type { CacheKey, LiaisoCache } from "./cache.js";
+import type { CacheKey, SezzleeCache } from "./cache.js";
 
-export interface MemoryLiaisoCacheOptions {
+export interface MemorySezzleeCacheOptions {
   readonly lifetimeMs: number;
   readonly maxCallers: number;
   readonly now?: () => number;
@@ -18,14 +18,14 @@ function valueKey(key: CacheKey): string {
   return key.subkey === undefined ? key.kind : `${key.kind}:${key.subkey}`;
 }
 
-export class MemoryLiaisoCache implements LiaisoCache {
+export class MemorySezzleeCache implements SezzleeCache {
   private readonly lifetimeMs: number;
   private readonly maxCallers: number;
   private readonly now: () => number;
   private scopes = new Map<CallerScopeKey, ScopeEntry>();
   private tagIndex = new Map<CacheTag, Set<CallerScopeKey>>();
 
-  constructor(options: MemoryLiaisoCacheOptions) {
+  constructor(options: MemorySezzleeCacheOptions) {
     this.lifetimeMs = options.lifetimeMs;
     this.maxCallers = options.maxCallers;
     this.now = options.now ?? Date.now;

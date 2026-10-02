@@ -101,7 +101,7 @@ is `0` with `counted: 0`; an `avg` over no values has no value at all.
 
 ```sh
 printf '<ledger><entry amount="0.1"/><entry amount="0.2"/><entry amount="3"/></ledger>\n' \
-  > ~/liaiso-xml/small.xml
+  > ~/sezzlee-xml/small.xml
 xml aggregate_document --tool-arg filePath=small.xml \
   'itemAddress={"ancestors":[{"namespaceUri":"","localName":"ledger"}],"name":{"namespaceUri":"","localName":"entry"}}' \
   'columns=[{"label":"amount","value":{"from":"attribute","namespaceUri":"","localName":"amount"}}]' \
@@ -122,7 +122,7 @@ wrong without saying so:
 
 ```sh
 printf '<ledger><entry amount="12345678901234567890.5"/><entry amount="0.1"/></ledger>\n' \
-  > ~/liaiso-xml/ledger.xml
+  > ~/sezzlee-xml/ledger.xml
 xml aggregate_document --tool-arg filePath=ledger.xml \
   'itemAddress={"ancestors":[{"namespaceUri":"","localName":"ledger"}],"name":{"namespaceUri":"","localName":"entry"}}' \
   'columns=[{"label":"amount","value":{"from":"attribute","namespaceUri":"","localName":"amount"}}]' \

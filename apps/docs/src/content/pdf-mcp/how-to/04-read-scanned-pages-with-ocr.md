@@ -10,7 +10,7 @@ provider, which turns the image into text. Whichever provider you bind is where 
 Here that is Ollama on your own machine; the same binding can point at another host.
 
 You need [Ollama](https://ollama.com/download) running, and the steps of [Reading your first
-PDF](/docs/pdf-mcp/reading-your-first-pdf) done, so that `~/liaiso-pdf` holds
+PDF](/docs/pdf-mcp/reading-your-first-pdf) done, so that `~/sezzlee-pdf` holds
 [supply-agreement.pdf](/samples/pdf-mcp/supply-agreement.pdf), whose page 2 is a scan.
 
 ## 1. Pull an OCR model
@@ -27,23 +27,23 @@ text. Another vision model works too, but measure its answers before relying on 
 The binding lives in a folder of its own, which holds the two adapter packages:
 
 ```sh
-mkdir -p ~/liaiso-ocr && cd ~/liaiso-ocr && npm init -y >/dev/null
-npm install --silent @liaiso/pdf-raster-pdfjs @liaiso/ocr-ollama
+mkdir -p ~/sezzlee-ocr && cd ~/sezzlee-ocr && npm init -y >/dev/null
+npm install --silent @sezzlee/pdf-raster-pdfjs @sezzlee/ocr-ollama
 ```
 
-`@liaiso/pdf-raster-pdfjs` renders pages with pdf.js, and `@liaiso/ocr-ollama` sends each image to
+`@sezzlee/pdf-raster-pdfjs` renders pages with pdf.js, and `@sezzlee/ocr-ollama` sends each image to
 Ollama. Write the binding next to them:
 
 ```sh
-cat > ~/liaiso-ocr/binding.mjs <<'EOF'
-import { createPdfjsRasterizer } from "@liaiso/pdf-raster-pdfjs";
-import { createOllamaOcrProvider } from "@liaiso/ocr-ollama";
+cat > ~/sezzlee-ocr/binding.mjs <<'EOF'
+import { createPdfjsRasterizer } from "@sezzlee/pdf-raster-pdfjs";
+import { createOllamaOcrProvider } from "@sezzlee/ocr-ollama";
 
 export default {
   rasterizer: createPdfjsRasterizer(),
   provider: createOllamaOcrProvider({
-    baseUrl: process.env.LIAISO_PDF_OCR_URL ?? "http://127.0.0.1:11434",
-    model: process.env.LIAISO_PDF_OCR_MODEL ?? "deepseek-ocr:3b",
+    baseUrl: process.env.SEZZLEE_PDF_OCR_URL ?? "http://127.0.0.1:11434",
+    model: process.env.SEZZLEE_PDF_OCR_MODEL ?? "deepseek-ocr:3b",
   }),
   dpi: 200,
 };
@@ -61,7 +61,7 @@ everything before it belongs to the server's command line:
 
 ```sh
 pdfocr() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-pdf ~/liaiso-pdf --ocr ~/liaiso-ocr/binding.mjs \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-pdf ~/sezzlee-pdf --ocr ~/sezzlee-ocr/binding.mjs \
     -- --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```
@@ -156,16 +156,16 @@ The contract value is found on page 2, and `coverageComplete` is `true`: every p
 ## Connect it to your client
 
 In a client configuration, add `--ocr` and the binding's absolute path after the folder. To reach an
-Ollama on another machine, set `LIAISO_PDF_OCR_URL` in the server's environment; the binding above
-reads it, and `LIAISO_PDF_OCR_MODEL` for the model:
+Ollama on another machine, set `SEZZLEE_PDF_OCR_URL` in the server's environment; the binding above
+reads it, and `SEZZLEE_PDF_OCR_MODEL` for the model:
 
 ```json
 {
   "mcpServers": {
     "pdf": {
       "command": "npx",
-      "args": ["-y", "@liaiso/pdf-mcp", "/Users/you/documents", "--ocr", "/Users/you/liaiso-ocr/binding.mjs"],
-      "env": { "LIAISO_PDF_OCR_URL": "http://10.0.0.5:11434" }
+      "args": ["-y", "@sezzlee/pdf-mcp", "/Users/you/documents", "--ocr", "/Users/you/sezzlee-ocr/binding.mjs"],
+      "env": { "SEZZLEE_PDF_OCR_URL": "http://10.0.0.5:11434" }
     }
   }
 }

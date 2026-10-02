@@ -14,10 +14,10 @@ export { limits, workerCapacityFor } from "./host/platform/limits.js";
 export { createGate, type Gate } from "./host/platform/gate.js";
 export { vocabulary } from "./host/platform/vocabulary.js";
 export {
-  LiaisoXmlError,
+  SezzleeXmlError,
   asXmlError,
   fail,
-  type LiaisoXmlErrorCode,
+  type SezzleeXmlErrorCode,
 } from "./host/platform/errors.js";
 export {
   scanProlog,

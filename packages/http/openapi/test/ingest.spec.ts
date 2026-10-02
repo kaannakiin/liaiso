@@ -1,4 +1,4 @@
-import { buildCatalog, compose, severityIn } from "@liaiso/core";
+import { buildCatalog, compose, severityIn } from "@sezzlee/core";
 import { describe, expect, it } from "vitest";
 import { ingest, type IngestionResult } from "../src/index.js";
 

@@ -4,16 +4,16 @@ import {
   type CatalogSeverity,
   type DiagnosticsOptions,
   type SeverityTable,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 
 import { sdkFamilySeverities } from "../families.js";
 
-export { atLeast } from "@liaiso/core";
+export { atLeast } from "@sezzlee/core";
 export type {
   CatalogDiagnostic,
   CatalogSeverity,
   DiagnosticsOptions,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 
 const defaults: SeverityTable = {
   ...familySeverities,

@@ -8,10 +8,10 @@ import { redact, fail } from "../src/platform/errors.js";
 import { createMssqlSource } from "../src/server.js";
 
 const complete = {
-  LIAISO_MSSQL_SERVER: "db.internal",
-  LIAISO_MSSQL_DATABASE: "Sales",
-  LIAISO_MSSQL_USER: "mcp_reader",
-  LIAISO_MSSQL_PASSWORD: "hunter2",
+  SEZZLEE_MSSQL_SERVER: "db.internal",
+  SEZZLEE_MSSQL_DATABASE: "Sales",
+  SEZZLEE_MSSQL_USER: "mcp_reader",
+  SEZZLEE_MSSQL_PASSWORD: "hunter2",
 };
 
 describe("readMssqlEnv", () => {
@@ -24,7 +24,7 @@ describe("readMssqlEnv", () => {
   });
 
   it("treats an empty string as missing", () => {
-    const outcome = readMssqlEnv({ ...complete, LIAISO_MSSQL_PASSWORD: "" });
+    const outcome = readMssqlEnv({ ...complete, SEZZLEE_MSSQL_PASSWORD: "" });
     expect(outcome.kind).toBe("usage");
   });
 
@@ -50,7 +50,7 @@ describe("readMssqlEnv", () => {
       ["false", false],
       ["0", false],
     ] as const) {
-      const outcome = readMssqlEnv({ ...complete, LIAISO_MSSQL_ENCRYPT: raw });
+      const outcome = readMssqlEnv({ ...complete, SEZZLEE_MSSQL_ENCRYPT: raw });
       expect(outcome.kind).toBe("config");
       if (outcome.kind === "config") {
         expect(outcome.config.encrypt).toBe(expected);
@@ -60,13 +60,13 @@ describe("readMssqlEnv", () => {
 
   it("refuses a flag it cannot read rather than guessing", () => {
     expect(
-      readMssqlEnv({ ...complete, LIAISO_MSSQL_ENCRYPT: "yes" }).kind,
+      readMssqlEnv({ ...complete, SEZZLEE_MSSQL_ENCRYPT: "yes" }).kind,
     ).toBe("invalid");
   });
 
   it("refuses a port that is not a positive integer", () => {
     for (const port of ["0", "-1", "1.5", "abc"]) {
-      expect(readMssqlEnv({ ...complete, LIAISO_MSSQL_PORT: port }).kind).toBe(
+      expect(readMssqlEnv({ ...complete, SEZZLEE_MSSQL_PORT: port }).kind).toBe(
         "invalid",
       );
     }
@@ -119,8 +119,8 @@ describe("createMssqlSource", () => {
   it("enforces the timeouts the environment sets, not the defaults", () => {
     const outcome = readMssqlEnv({
       ...complete,
-      LIAISO_MSSQL_QUERY_TIMEOUT_MS: "5000",
-      LIAISO_MSSQL_CONNECT_TIMEOUT_MS: "2000",
+      SEZZLEE_MSSQL_QUERY_TIMEOUT_MS: "5000",
+      SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS: "2000",
     });
     if (outcome.kind !== "config") throw new Error(outcome.kind);
     const source = createMssqlSource(outcome.config);

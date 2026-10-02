@@ -1,14 +1,14 @@
 # How to embed the server in your own program
 
-The `liaiso-pdf` command covers the common case. Start the server from your own Node.js program
+The `sezzlee-pdf` command covers the common case. Start the server from your own Node.js program
 instead when you want to set the options the command line does not expose: how many extracted
 documents stay in memory, how many reads may run at once, or an OCR binding built in code.
 
 ## 1. Install the packages
 
 ```sh
-mkdir -p ~/liaiso-embed && cd ~/liaiso-embed && npm init -y >/dev/null
-npm install --silent @liaiso/pdf-mcp @modelcontextprotocol/server
+mkdir -p ~/sezzlee-embed && cd ~/sezzlee-embed && npm init -y >/dev/null
+npm install --silent @sezzlee/pdf-mcp @modelcontextprotocol/server
 ```
 
 `@modelcontextprotocol/server` provides the stdio transport the server is served over.
@@ -16,9 +16,9 @@ npm install --silent @liaiso/pdf-mcp @modelcontextprotocol/server
 ## 2. Write the program
 
 ```sh
-cat > ~/liaiso-embed/server.mjs <<'EOF'
+cat > ~/sezzlee-embed/server.mjs <<'EOF'
 import { serveStdio } from "@modelcontextprotocol/server/stdio";
-import { createDocumentRoot, createPdfMcpServer } from "@liaiso/pdf-mcp";
+import { createDocumentRoot, createPdfMcpServer } from "@sezzlee/pdf-mcp";
 
 const root = await createDocumentRoot(process.argv[2]);
 const server = createPdfMcpServer(root, {
@@ -46,7 +46,7 @@ A `documentCacheSize` outside 1 to 16 throws `invalid_argument` when the server 
 The program is a stdio MCP server like the command, so the Inspector can start it:
 
 ```sh
-npx -y @modelcontextprotocol/inspector --cli node ~/liaiso-embed/server.mjs ~/liaiso-pdf \
+npx -y @modelcontextprotocol/inspector --cli node ~/sezzlee-embed/server.mjs ~/sezzlee-pdf \
   --method tools/call --tool-name describe_document --tool-arg filePath=annual-report.pdf \
   | jq -c '.content[0].text | fromjson | {pageCount, documentType}'
 ```
@@ -64,8 +64,8 @@ The `ocr` option takes the binding object directly, so the adapters from [How to
 with OCR](/docs/pdf-mcp/read-scanned-pages-with-ocr) can be configured without a separate module:
 
 ```js
-import { createPdfjsRasterizer } from "@liaiso/pdf-raster-pdfjs";
-import { createOllamaOcrProvider } from "@liaiso/ocr-ollama";
+import { createPdfjsRasterizer } from "@sezzlee/pdf-raster-pdfjs";
+import { createOllamaOcrProvider } from "@sezzlee/ocr-ollama";
 
 const server = createPdfMcpServer(root, {
   ocr: {

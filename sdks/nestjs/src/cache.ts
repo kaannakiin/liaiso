@@ -5,10 +5,14 @@ import {
   digestInput,
   type CacheTag,
   type CallerScope,
-  type LiaisoCache,
-} from "@liaiso/core";
+  type SezzleeCache,
+} from "@sezzlee/core";
 import { extensionTokens } from "./extension-points.js";
-import { LIAISO_OPTIONS, LiaisoOptions, type OuterRequest } from "./options.js";
+import {
+  SEZZLEE_OPTIONS,
+  SezzleeOptions,
+  type OuterRequest,
+} from "./options.js";
 
 export interface CallerScopeResolver {
   resolve(outer: OuterRequest | undefined): CallerScope;
@@ -17,7 +21,7 @@ export interface CallerScopeResolver {
 @Injectable()
 export class CarrierHashCallerScopeResolver implements CallerScopeResolver {
   constructor(
-    @Inject(LIAISO_OPTIONS) private readonly options: LiaisoOptions,
+    @Inject(SEZZLEE_OPTIONS) private readonly options: SezzleeOptions,
   ) {}
 
   resolve(outer: OuterRequest | undefined): CallerScope {
@@ -27,12 +31,12 @@ export class CarrierHashCallerScopeResolver implements CallerScopeResolver {
   }
 }
 
-export const LIAISO_CACHE_INVALIDATOR = Symbol("LIAISO_CACHE_INVALIDATOR");
+export const SEZZLEE_CACHE_INVALIDATOR = Symbol("SEZZLEE_CACHE_INVALIDATOR");
 
 @Injectable()
-export class LiaisoCacheInvalidator {
+export class SezzleeCacheInvalidator {
   constructor(
-    @Inject(extensionTokens.cache) private readonly cache: LiaisoCache,
+    @Inject(extensionTokens.cache) private readonly cache: SezzleeCache,
   ) {}
 
   invalidateCaller(scope: CallerScope): Promise<void> {

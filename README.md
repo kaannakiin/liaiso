@@ -1,6 +1,6 @@
-# liaiso
+# Sezzlee MCP
 
-**Swagger for agents.** liaiso turns what you already have — an HTTP backend, a folder of
+**Swagger for agents.** Sezzlee turns what you already have — an HTTP backend, a folder of
 spreadsheets, a SQL Server database — into tools an AI agent can find and call over the
 [Model Context Protocol](https://modelcontextprotocol.io).
 
@@ -21,7 +21,7 @@ It comes in two shapes:
 
 A naive MCP adapter turns every endpoint into a tool and forwards calls over the network. That
 floods the agent's context, loses the caller's identity and silently papers over what it cannot
-represent. liaiso instead:
+represent. Sezzlee instead:
 
 - shows the agent **three meta-tools** (`search_tools`, `load_tool`, `invoke_tool`) rather than the
   whole catalog, so the size of your API does not grow the agent's context;
@@ -31,15 +31,15 @@ represent. liaiso instead:
   an error with a code the agent can act on.
 
 The longer argument is on the docs site:
-[why liaiso is not an OpenAPI adapter](apps/docs/src/content/http-catalog/explanation/06-why-liaiso-is-not-an-openapi-adapter.md).
+[why sezzlee is not an OpenAPI adapter](apps/docs/src/content/http-catalog/explanation/06-why-sezzlee-is-not-an-openapi-adapter.md).
 
 ## Quick start
 
 Requirements: Node.js 24+, pnpm 11 (`corepack enable`), and the .NET 8 or 10 SDK for the C# side.
 
 ```bash
-git clone https://github.com/kaannakiin/liaiso.git
-cd liaiso
+git clone https://github.com/sezzlee/mcp.git
+cd sezzlee
 pnpm install
 pnpm build
 ```
@@ -64,38 +64,38 @@ Each package README has its own quick start, configuration and limits.
 
 ### HTTP catalog
 
-| Package                                             | What it is                                                            | Status    |
-| --------------------------------------------------- | --------------------------------------------------------------------- | --------- |
-| [Liaiso.AspNetCore](sdks/dotnet)                    | ASP.NET Core SDK                                                      | alpha     |
-| [@liaiso/sdk-nestjs](sdks/nestjs)                   | NestJS SDK                                                            | internal  |
-| [@liaiso/openapi-mcp](packages/servers/openapi-mcp) | Gateway: an OpenAPI document as a catalog over a remote backend       | internal  |
-| [@liaiso/openapi](packages/http/openapi)            | Swagger 2.0 / OpenAPI 3.0–3.2 ingestion                               | internal  |
-| [@liaiso/core](packages/http/core)                  | TypeScript reference implementation of the spec                       | internal  |
-| [spec](packages/http/spec)                          | The normative spec and JSON Schemas — the single source of truth      | normative |
-| [conformance](packages/http/conformance)            | 480 JSON fixtures across 11 kinds that every implementation must pass | —         |
+| Package                                              | What it is                                                            | Status    |
+| ---------------------------------------------------- | --------------------------------------------------------------------- | --------- |
+| [Sezzlee.AspNetCore](sdks/dotnet)                    | ASP.NET Core SDK                                                      | alpha     |
+| [@sezzlee/sdk-nestjs](sdks/nestjs)                   | NestJS SDK                                                            | internal  |
+| [@sezzlee/openapi-mcp](packages/servers/openapi-mcp) | Gateway: an OpenAPI document as a catalog over a remote backend       | internal  |
+| [@sezzlee/openapi](packages/http/openapi)            | Swagger 2.0 / OpenAPI 3.0–3.2 ingestion                               | internal  |
+| [@sezzlee/core](packages/http/core)                  | TypeScript reference implementation of the spec                       | internal  |
+| [spec](packages/http/spec)                           | The normative spec and JSON Schemas — the single source of truth      | normative |
+| [conformance](packages/http/conformance)             | 480 JSON fixtures across 11 kinds that every implementation must pass | —         |
 
 ### Source servers and their cores
 
-| Package                                                        | What it is                                                   | Status      |
-| -------------------------------------------------------------- | ------------------------------------------------------------ | ----------- |
-| [@liaiso/excel-mcp](packages/servers/excel-mcp)                | Reads local Excel workbooks                                  | publishable |
-| [@liaiso/xml-mcp](packages/servers/xml-mcp)                    | Reads local XML documents                                    | publishable |
-| [@liaiso/pdf-mcp](packages/servers/pdf-mcp)                    | Reads local PDF documents, with pluggable OCR                | publishable |
-| [@liaiso/mssql-mcp](packages/servers/mssql-mcp)                | Read-only Microsoft SQL Server                               | publishable |
-| [@liaiso/llm-mcp](packages/servers/llm-mcp)                    | Delegates bounded language work to a local model (Ollama)    | publishable |
-| [@liaiso/ocr-ollama](packages/adapters/ocr-ollama)             | OCR provider for pdf-mcp                                     | publishable |
-| [@liaiso/pdf-raster-pdfjs](packages/adapters/pdf-raster-pdfjs) | Page rasterizer for pdf-mcp                                  | publishable |
-| [@liaiso/mcp-core](packages/cores/mcp-core)                    | Source-agnostic machinery for read-only MCP servers          | publishable |
-| [@liaiso/file-core](packages/cores/file-core)                  | Sandboxed file layer over mcp-core                           | publishable |
-| [@liaiso/db-core](packages/cores/db-core)                      | Relational layer over mcp-core; dialects and drivers plug in | publishable |
-| [@liaiso/ooxml-core](packages/cores/ooxml-core)                | Reader for OOXML (zip/OPC) containers                        | publishable |
+| Package                                                         | What it is                                                   | Status      |
+| --------------------------------------------------------------- | ------------------------------------------------------------ | ----------- |
+| [@sezzlee/excel-mcp](packages/servers/excel-mcp)                | Reads local Excel workbooks                                  | publishable |
+| [@sezzlee/xml-mcp](packages/servers/xml-mcp)                    | Reads local XML documents                                    | publishable |
+| [@sezzlee/pdf-mcp](packages/servers/pdf-mcp)                    | Reads local PDF documents, with pluggable OCR                | publishable |
+| [@sezzlee/mssql-mcp](packages/servers/mssql-mcp)                | Read-only Microsoft SQL Server                               | publishable |
+| [@sezzlee/llm-mcp](packages/servers/llm-mcp)                    | Delegates bounded language work to a local model (Ollama)    | publishable |
+| [@sezzlee/ocr-ollama](packages/adapters/ocr-ollama)             | OCR provider for pdf-mcp                                     | publishable |
+| [@sezzlee/pdf-raster-pdfjs](packages/adapters/pdf-raster-pdfjs) | Page rasterizer for pdf-mcp                                  | publishable |
+| [@sezzlee/mcp-core](packages/cores/mcp-core)                    | Source-agnostic machinery for read-only MCP servers          | publishable |
+| [@sezzlee/file-core](packages/cores/file-core)                  | Sandboxed file layer over mcp-core                           | publishable |
+| [@sezzlee/db-core](packages/cores/db-core)                      | Relational layer over mcp-core; dialects and drivers plug in | publishable |
+| [@sezzlee/ooxml-core](packages/cores/ooxml-core)                | Reader for OOXML (zip/OPC) containers                        | publishable |
 
 "Publishable" means the package is built and checked for publication in CI but not on npm yet.
 
 ### Also in this repository
 
 - [apps/docs](apps/docs) — the documentation site (TanStack Start). Run it with
-  `pnpm --filter @liaiso/docs dev` and open `http://localhost:5180`.
+  `pnpm --filter @sezzlee/docs dev` and open `http://localhost:5180`.
 
 ## How the HTTP catalog works
 

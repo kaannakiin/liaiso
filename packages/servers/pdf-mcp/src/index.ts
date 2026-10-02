@@ -17,10 +17,10 @@ export {
 export { createGate, type Gate } from "./platform/gate.js";
 export { vocabulary } from "./platform/vocabulary.js";
 export {
-  LiaisoPdfError,
+  SezzleePdfError,
   asPdfError,
   fail,
-  type LiaisoPdfErrorCode,
+  type SezzleePdfErrorCode,
 } from "./platform/errors.js";
 export {
   createPdfDocumentStore,

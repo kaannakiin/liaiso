@@ -1,5 +1,5 @@
 {
-  "name": "@liaiso/file-core-native",
+  "name": "@sezzlee/file-core-native",
   "version": "0.2.0",
   "description": "Handle-relative filesystem access for file-core (Node-API).",
   "keywords": [
@@ -8,18 +8,18 @@
     "native",
     "filesystem",
     "sandbox",
-    "liaiso"
+    "sezzlee"
   ],
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kaannakiin/liaiso.git",
+    "url": "git+https://github.com/sezzlee/mcp.git",
     "directory": "packages/cores/file-core-native"
   },
-  "homepage": "https://github.com/kaannakiin/liaiso/tree/main/packages/cores/file-core-native#readme",
+  "homepage": "https://github.com/sezzlee/mcp/tree/main/packages/cores/file-core-native#readme",
   "bugs": {
-    "url": "https://github.com/kaannakiin/liaiso/issues"
+    "url": "https://github.com/sezzlee/mcp/issues"
   },
   "engines": {
     "node": ">=22"

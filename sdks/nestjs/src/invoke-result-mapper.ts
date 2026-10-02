@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { mapInvokeResult, type InvokeResult } from "@liaiso/core";
+import { mapInvokeResult, type InvokeResult } from "@sezzlee/core";
 import type { DispatchResult } from "./dispatcher.js";
-import { LIAISO_OPTIONS, LiaisoOptions } from "./options.js";
+import { SEZZLEE_OPTIONS, SezzleeOptions } from "./options.js";
 
 /** The names a reported field may be canonicalised against. */
 export interface FieldVocabulary {
@@ -20,7 +20,7 @@ export interface InvokeResultMapper {
 @Injectable()
 export class DefaultInvokeResultMapper implements InvokeResultMapper {
   constructor(
-    @Inject(LIAISO_OPTIONS) private readonly options: LiaisoOptions,
+    @Inject(SEZZLEE_OPTIONS) private readonly options: SezzleeOptions,
   ) {}
 
   map(

@@ -1,4 +1,4 @@
-import { coreLimits, type ModePolicy } from "@liaiso/file-core";
+import { coreLimits, type ModePolicy } from "@sezzlee/file-core";
 
 /**
  * The worker keeps a document alive while the store still holds it, so its map

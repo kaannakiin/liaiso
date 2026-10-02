@@ -4,14 +4,14 @@ import {
   severityIn,
   type CatalogBuild,
   type CatalogDiagnostic,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import {
   ingest,
   type IngestionDiagnostic,
   type SecurityModel,
   type SourcedEndpoint,
-} from "@liaiso/openapi";
-import type { DocumentLoader } from "@liaiso/openapi";
+} from "@sezzlee/openapi";
+import type { DocumentLoader } from "@sezzlee/openapi";
 import {
   chooseCredentials,
   type ChosenCredentials,

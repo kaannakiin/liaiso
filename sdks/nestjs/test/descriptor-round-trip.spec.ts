@@ -24,13 +24,13 @@ import {
   createRequestTemplateFromEndpoint,
   createToolDefinition,
   expandToolProductions,
-  LiaisoTemplateError,
+  SezzleeTemplateError,
   type EndpointDescriptor,
   type FileOptions,
   type Fixture,
   type JsonSchemaObject,
   type ToolDefinition,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import { describe, expect, it } from "vitest";
 import { cleanTags, declaredDescriptor, toCuration } from "../src/catalog.js";
 import {
@@ -1243,8 +1243,8 @@ describe("nest descriptor round-trip against metadata-extraction", () => {
           toolsOf(descriptor, host.files);
           expect.unreachable("expected a template error");
         } catch (error) {
-          expect(error).toBeInstanceOf(LiaisoTemplateError);
-          expect((error as LiaisoTemplateError).code).toBe(expected.error);
+          expect(error).toBeInstanceOf(SezzleeTemplateError);
+          expect((error as SezzleeTemplateError).code).toBe(expected.error);
         }
         return;
       }

@@ -1,4 +1,4 @@
-import { LiaisoArgumentError } from "./errors.js";
+import { SezzleeArgumentError } from "./errors.js";
 import type { ObjectNotation, ParameterKind } from "./request-template.js";
 
 /**
@@ -77,7 +77,7 @@ export function formatScalar(
       }
       break;
   }
-  throw new LiaisoArgumentError(
+  throw new SezzleeArgumentError(
     errorCode,
     `Argument '${parameter.name}' must be of type ${parameter.kind}.`,
   );

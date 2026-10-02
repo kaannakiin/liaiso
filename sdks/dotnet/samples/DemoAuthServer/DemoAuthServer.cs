@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Liaiso.Samples.DemoAuthServer;
+namespace Sezzlee.Samples.DemoAuthServer;
 
 public sealed class DemoAuthServer
 {

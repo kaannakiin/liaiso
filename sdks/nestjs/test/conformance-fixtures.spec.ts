@@ -29,9 +29,9 @@ import {
   searchParameters,
   sdkError,
   simplifySchema,
-  LiaisoArgumentError,
-  LiaisoCatalogError,
-  LiaisoTemplateError,
+  SezzleeArgumentError,
+  SezzleeCatalogError,
+  SezzleeTemplateError,
   ToolIndex,
   type ArgumentFill,
   type BackendResponse,
@@ -46,7 +46,7 @@ import {
   type ParameterBinding,
   type RequestTemplate,
   type ToolDefinition,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 
 type FixtureOf<K extends Fixture["kind"]> = Extract<Fixture, { kind: K }>;
 
@@ -73,8 +73,8 @@ function catalogErrorCode(run: () => unknown): string {
   try {
     run();
   } catch (error) {
-    expect(error).toBeInstanceOf(LiaisoCatalogError);
-    return (error as LiaisoCatalogError).code;
+    expect(error).toBeInstanceOf(SezzleeCatalogError);
+    return (error as SezzleeCatalogError).code;
   }
   return expect.unreachable("expected a catalog error");
 }
@@ -359,8 +359,8 @@ describe("conformance: argument-mapping", () => {
           composeFixture(template, fixture.input);
           expect.unreachable(`expected error ${expected}`);
         } catch (error) {
-          expect(error).toBeInstanceOf(LiaisoArgumentError);
-          expect((error as LiaisoArgumentError).code).toBe(expected);
+          expect(error).toBeInstanceOf(SezzleeArgumentError);
+          expect((error as SezzleeArgumentError).code).toBe(expected);
         }
       } else {
         const composed = composeFixture(template, fixture.input);
@@ -447,8 +447,8 @@ function templateErrorCode(run: () => unknown): string {
   try {
     run();
   } catch (error) {
-    expect(error).toBeInstanceOf(LiaisoTemplateError);
-    return (error as LiaisoTemplateError).code;
+    expect(error).toBeInstanceOf(SezzleeTemplateError);
+    return (error as SezzleeTemplateError).code;
   }
   return expect.unreachable("expected a template error");
 }

@@ -14,7 +14,7 @@ This writes a 9 MB log with one `event` element per request:
 ```sh
 node -e '
 const fs = require("fs");
-const out = fs.openSync(process.env.HOME + "/liaiso-xml/events.xml", "w");
+const out = fs.openSync(process.env.HOME + "/sezzlee-xml/events.xml", "w");
 fs.writeSync(out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<log>\n");
 let size = 0;
 for (let i = 0; size < 9 * 1024 * 1024; i++) {

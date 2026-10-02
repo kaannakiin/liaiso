@@ -2,8 +2,8 @@ import { beforeAll, describe, expect, inject, it } from "vitest";
 import { loadDocument } from "../src/format/document.js";
 import {
   asExcelError,
-  type LiaisoExcelError,
-  LiaisoExcelError as ExcelError,
+  type SezzleeExcelError,
+  SezzleeExcelError as ExcelError,
 } from "../src/platform/errors.js";
 import {
   createWorkbookRoot,
@@ -12,7 +12,7 @@ import {
 } from "../src/platform/paths.js";
 
 describe("asExcelError", () => {
-  it("passes a LiaisoExcelError through untouched", () => {
+  it("passes a SezzleeExcelError through untouched", () => {
     const original = new ExcelError("unknown_sheet", "no such sheet", "look");
     expect(asExcelError(original)).toBe(original);
   });
@@ -59,7 +59,7 @@ describe("a workbook that passes the magic-byte gate but cannot be parsed", () =
     try {
       await loadDocument(await resolveWorkbookPath(root, filePath));
     } catch (error) {
-      return (error as LiaisoExcelError).code;
+      return (error as SezzleeExcelError).code;
     }
     return "no-error";
   };
@@ -82,7 +82,7 @@ describe("a workbook that passes the magic-byte gate but cannot be parsed", () =
       );
       expect.unreachable();
     } catch (error) {
-      const failure = error as LiaisoExcelError;
+      const failure = error as SezzleeExcelError;
       expect(failure.code).not.toBe("internal_error");
       expect(failure.code).not.toBe("unknown_sheet");
       expect(failure.recovery).toContain("not a spreadsheet");

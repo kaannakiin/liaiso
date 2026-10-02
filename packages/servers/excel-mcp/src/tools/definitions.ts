@@ -5,7 +5,7 @@ import {
   type ToolDefinitions,
   type ToolInputOf,
   type ToolNameOf,
-} from "@liaiso/file-core";
+} from "@sezzlee/file-core";
 import { z } from "zod";
 import { limits } from "../platform/limits.js";
 import {

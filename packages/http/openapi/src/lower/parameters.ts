@@ -1,4 +1,4 @@
-import type { EndpointDescriptor, IdentityCarrier } from "@liaiso/core";
+import type { EndpointDescriptor, IdentityCarrier } from "@sezzlee/core";
 import { OperationDropped, type DiagnosticSink } from "../diagnostics.js";
 import { childPointer, type JsonPointer } from "../ir/brand.js";
 import {

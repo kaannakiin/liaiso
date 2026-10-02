@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Liaiso.AspNetCore.Discovery;
+using Sezzlee.AspNetCore.Discovery;
 
 namespace DemoApi;
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildCatalog,
   compose,
-  LiaisoArgumentError,
+  SezzleeArgumentError,
   type CatalogCandidate,
   type Auth,
   type EndpointDescriptor,
@@ -131,7 +131,7 @@ describe("buildCatalog", () => {
     expect(composed.body).toMatchObject({ value: { minBalance: 1000 } });
     expect(() =>
       compose(template, { minBalance: 1000, methodId: "other" }),
-    ).toThrow(LiaisoArgumentError);
+    ).toThrow(SezzleeArgumentError);
   });
 
   it("publishes nothing for a family without members", () => {

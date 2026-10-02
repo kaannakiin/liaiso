@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { asciiLower } from "@liaiso/mcp-core";
+import { asciiLower } from "@sezzlee/mcp-core";
 
 const root = fileURLToPath(new URL("../src", import.meta.url));
 

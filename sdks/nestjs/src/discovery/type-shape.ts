@@ -7,7 +7,7 @@ import type {
   ScalarKind,
   TypeNode,
   TypeShape,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 
 const load = createRequire(import.meta.url);
 

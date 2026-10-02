@@ -13,7 +13,7 @@ Create a semicolon-separated file:
 
 ```sh
 printf 'Order;Region;Units\n1001;North;4\n1002;South;10\n1003;East;012\n' \
-  > ~/liaiso-sheets/orders.csv
+  > ~/sezzlee-sheets/orders.csv
 ```
 
 A CSV has one sheet. Read it like any other:
@@ -74,7 +74,7 @@ problem:
 
 ```sh
 printf 'Şehir;Adet\nİstanbul;3\nİzmir;5\n' | iconv -f UTF-8 -t WINDOWS-1254 \
-  > ~/liaiso-sheets/cities.csv
+  > ~/sezzlee-sheets/cities.csv
 excel read_sheet --tool-arg filePath=cities.csv
 ```
 

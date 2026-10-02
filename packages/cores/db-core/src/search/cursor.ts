@@ -6,7 +6,7 @@ import {
   type Cursor,
   type ErrorFactory,
   type Fingerprint,
-} from "@liaiso/mcp-core";
+} from "@sezzlee/mcp-core";
 import type { DbErrorCode } from "../errors.js";
 
 export interface CatalogPosition {

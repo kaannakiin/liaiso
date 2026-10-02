@@ -6,7 +6,7 @@ export type FamilyErrorCode =
   | "variant_body_without_family"
   | "variant_body_invalid";
 
-export type LiaisoTemplateErrorCode =
+export type SezzleeTemplateErrorCode =
   | FamilyErrorCode
   | "empty_route"
   | "body_not_allowed"
@@ -35,17 +35,17 @@ export type LiaisoTemplateErrorCode =
   | "multiple_querystring"
   | "querystring_with_query";
 
-export class LiaisoTemplateError extends Error {
+export class SezzleeTemplateError extends Error {
   constructor(
-    readonly code: LiaisoTemplateErrorCode,
+    readonly code: SezzleeTemplateErrorCode,
     message: string,
   ) {
     super(message);
-    this.name = "LiaisoTemplateError";
+    this.name = "SezzleeTemplateError";
   }
 }
 
-export type LiaisoArgumentErrorCode =
+export type SezzleeArgumentErrorCode =
   | "unknown_argument"
   | "invalid_path_type"
   | "missing_path_parameter"
@@ -59,25 +59,25 @@ export type LiaisoArgumentErrorCode =
   | "invalid_file_argument"
   | "file_too_large";
 
-export class LiaisoArgumentError extends Error {
+export class SezzleeArgumentError extends Error {
   constructor(
-    readonly code: LiaisoArgumentErrorCode,
+    readonly code: SezzleeArgumentErrorCode,
     message: string,
   ) {
     super(message);
-    this.name = "LiaisoArgumentError";
+    this.name = "SezzleeArgumentError";
   }
 }
 
-export type LiaisoCatalogErrorCode =
+export type SezzleeCatalogErrorCode =
   "name_collision" | "invalid_name" | "ambiguous_selection";
 
-export class LiaisoCatalogError extends Error {
+export class SezzleeCatalogError extends Error {
   constructor(
-    readonly code: LiaisoCatalogErrorCode,
+    readonly code: SezzleeCatalogErrorCode,
     message: string,
   ) {
     super(message);
-    this.name = "LiaisoCatalogError";
+    this.name = "SezzleeCatalogError";
   }
 }

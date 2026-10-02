@@ -95,7 +95,7 @@ function pdf(title, pages) {
   }
   objects[1] = `<</Type/Pages/Kids[${kids.join(" ")}]/Count ${pages.length}>>`;
   objects.push(
-    `<</Title (${escape(title)})/Producer (liaiso docs samples)/CreationDate (D:20260101000000Z)>>`,
+    `<</Title (${escape(title)})/Producer (sezzlee docs samples)/CreationDate (D:20260101000000Z)>>`,
   );
   return assemble(objects, objects.length);
 }

@@ -1,5 +1,5 @@
 import type { CellFacts, CellSnapshot } from "../grid/cell-value.js";
-import { LiaisoExcelError } from "../platform/errors.js";
+import { SezzleeExcelError } from "../platform/errors.js";
 
 export interface SheetJsCell {
   readonly t?: string;
@@ -66,7 +66,7 @@ function factsOf(cell: SheetJsCell): CellFacts {
   }
   if (typeof value === "number") {
     if (!Number.isFinite(value)) {
-      throw new LiaisoExcelError(
+      throw new SezzleeExcelError(
         "numeric_overflow",
         "A cell contains a non-finite number.",
       );

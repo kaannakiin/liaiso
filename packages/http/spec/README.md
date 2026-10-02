@@ -1,6 +1,6 @@
-# @liaiso/spec
+# @sezzlee/spec
 
-The normative specification for liaiso: prose plus the JSON Schemas that every language's
+The normative specification for sezzlee: prose plus the JSON Schemas that every language's
 types are generated from.
 
 `private: true`, version `1.0.0`, never published. It is consumed as a `workspace:*` dependency by
@@ -56,7 +56,7 @@ pnpm turbo run gen
 ```
 
 That writes `packages/http/core/src/generated/` and
-`sdks/dotnet/src/Liaiso.AspNetCore/Generated/`. Both are committed; both are off-limits to manual
+`sdks/dotnet/src/Sezzlee.AspNetCore/Generated/`. Both are committed; both are off-limits to manual
 edits.
 
 Two schema constraints, enforced by the generator's limits: `$id` must equal the file name, and

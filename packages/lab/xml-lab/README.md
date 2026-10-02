@@ -1,4 +1,4 @@
-# @liaiso/xml-lab
+# @sezzlee/xml-lab
 
 The F0 evidence harness for the XML MCP engine gate.
 
@@ -40,13 +40,13 @@ reliable evidence of resident memory is measured RSS.
 ## Running
 
 ```bash
-pnpm turbo run check-types lint --filter=@liaiso/xml-lab
-pnpm turbo run test --filter=@liaiso/xml-lab --force
+pnpm turbo run check-types lint --filter=@sezzlee/xml-lab
+pnpm turbo run test --filter=@sezzlee/xml-lab --force
 node packages/lab/xml-lab/collect-evidence.mjs
 ```
 
 `collect-evidence.mjs` writes its JSON evidence files to `packages/lab/xml-lab/out/f0/`
 (git-ignored).
 
-`LIAISO_XML_BENCH=1` turns on the full measurement tier; by default only the 1 MiB tier runs.
-`LIAISO_XML_F0_NO_NETWORK=1` skips F0-02 and records it as "not run" in the evidence.
+`SEZZLEE_XML_BENCH=1` turns on the full measurement tier; by default only the 1 MiB tier runs.
+`SEZZLEE_XML_F0_NO_NETWORK=1` skips F0-02 and records it as "not run" in the evidence.

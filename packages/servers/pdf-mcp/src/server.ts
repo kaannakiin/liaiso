@@ -1,8 +1,8 @@
 import { createRequire } from "node:module";
 import type { McpServer } from "@modelcontextprotocol/server";
-import { createFileSourceServer } from "@liaiso/file-core";
+import { createFileSourceServer } from "@sezzlee/file-core";
 import { createPdfDocumentStore } from "./document/store.js";
-import { LiaisoPdfError } from "./platform/errors.js";
+import { SezzleePdfError } from "./platform/errors.js";
 import { limits } from "./platform/limits.js";
 import type { OcrBinding } from "./ocr/port.js";
 import type { DocumentRoot } from "./platform/paths.js";
@@ -42,7 +42,7 @@ function requireCacheSize(value: number | undefined): number {
     value < 1 ||
     value > maxDocumentCacheSize
   ) {
-    throw new LiaisoPdfError(
+    throw new SezzleePdfError(
       "invalid_argument",
       `documentCacheSize must be an integer between 1 and ${String(maxDocumentCacheSize)}.`,
     );
@@ -59,7 +59,7 @@ export function createPdfMcpServer(
     requireCacheSize(options.documentCacheSize),
   );
   const server = createFileSourceServer(
-    { name: "liaiso-pdf", version: manifest.version },
+    { name: "sezzlee-pdf", version: manifest.version },
     toolDefinitions,
     createHandlers(root, {
       store,

@@ -1,14 +1,14 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { EndpointDescriptor } from "@liaiso/core";
-import { ingest } from "@liaiso/openapi";
+import type { EndpointDescriptor } from "@sezzlee/core";
+import { ingest } from "@sezzlee/openapi";
 import { describe, expect, it } from "vitest";
 
 /**
  * Compares OpenAPI ingestion with framework discovery on the same controllers. The inputs are
- * written by sdks/dotnet/tests/Liaiso.Tests/OpenApiParityDump.cs into LIAISO_PARITY_DIR.
+ * written by sdks/dotnet/tests/Sezzlee.Tests/OpenApiParityDump.cs into SEZZLEE_PARITY_DIR.
  */
-const directory = process.env["LIAISO_PARITY_DIR"];
+const directory = process.env["SEZZLEE_PARITY_DIR"];
 
 /**
  * Differences a document cannot avoid: the generator omits a fact the SDK reads from the type.

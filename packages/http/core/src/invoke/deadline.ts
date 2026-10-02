@@ -3,21 +3,21 @@ import type { ComposedRequest } from "../request-composer.js";
 
 export type DispatchAbortReason = "timeout" | "caller" | "pipeline";
 
-export class LiaisoDispatchAborted extends Error {
+export class SezzleeDispatchAborted extends Error {
   constructor(readonly reason: DispatchAbortReason) {
     super(messageFor(reason));
-    this.name = "LiaisoDispatchAborted";
+    this.name = "SezzleeDispatchAborted";
   }
 }
 
 function messageFor(reason: DispatchAbortReason): string {
   switch (reason) {
     case "timeout":
-      return "liaiso: the backend did not answer within the invoke deadline.";
+      return "sezzlee: the backend did not answer within the invoke deadline.";
     case "caller":
-      return "liaiso: the caller cancelled the request.";
+      return "sezzlee: the caller cancelled the request.";
     case "pipeline":
-      return "liaiso: the backend pipeline threw before it produced a response.";
+      return "sezzlee: the backend pipeline threw before it produced a response.";
   }
 }
 
@@ -106,7 +106,7 @@ export function untilAbandoned<T>(
   return new Promise<T>((resolve, reject) => {
     const onAbort = (): void => {
       work.catch(() => undefined);
-      reject(new LiaisoDispatchAborted(reason() ?? "caller"));
+      reject(new SezzleeDispatchAborted(reason() ?? "caller"));
     };
     if (signal.aborted) {
       onAbort();

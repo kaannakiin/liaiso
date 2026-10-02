@@ -1,8 +1,8 @@
 import { createRequire } from "node:module";
 import type { McpServer } from "@modelcontextprotocol/server";
-import { createFileSourceServer } from "@liaiso/file-core";
+import { createFileSourceServer } from "@sezzlee/file-core";
 import { createXmlDocumentCache } from "./host/document.js";
-import { LiaisoXmlError } from "./host/platform/errors.js";
+import { SezzleeXmlError } from "./host/platform/errors.js";
 import { limits, workerCapacityFor } from "./host/platform/limits.js";
 import type { DocumentRoot } from "./host/platform/paths.js";
 import { toolDefinitions } from "./tools/definitions.js";
@@ -33,7 +33,7 @@ function requireCacheSize(value: number | undefined): number {
     value < 1 ||
     value > maxDocumentCacheSize
   ) {
-    throw new LiaisoXmlError(
+    throw new SezzleeXmlError(
       "invalid_argument",
       `documentCacheSize must be an integer between 1 and ${String(maxDocumentCacheSize)}.`,
     );
@@ -51,7 +51,7 @@ export function createXmlMcpServer(
   });
   const cache = createXmlDocumentCache(pool, root.real, documentCacheSize);
   const server = createFileSourceServer(
-    { name: "liaiso-xml", version: manifest.version },
+    { name: "sezzlee-xml", version: manifest.version },
     toolDefinitions,
     createHandlers(root, {
       pool,

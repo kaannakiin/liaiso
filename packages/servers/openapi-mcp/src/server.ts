@@ -23,7 +23,7 @@ import {
   type CatalogEntry,
   type SearchRankerOptions,
   type VisibilityDecision,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 import { z } from "zod";
 import type { GatewaySource } from "./catalog/build.js";
 import type { GatewayCatalog } from "./catalog/build.js";
@@ -42,11 +42,11 @@ interface ToolContext {
 }
 
 /** Where the http transport's auth gate leaves the token the caller's own was exchanged for. */
-export const exchangedTokenKey = "liaisoExchangedToken";
+export const exchangedTokenKey = "sezzleeExchangedToken";
 
 /**
  * Guard: `name` binds as `unknown` so a call that misspells the argument reaches the handler and
- * leaves as an liaiso envelope; a `z.string()` would be rejected by the framework's validator with
+ * leaves as an sezzlee envelope; a `z.string()` would be rejected by the framework's validator with
  * a bare text error the agent cannot parse. The published schema is byte-identical to the SDKs'.
  */
 function namedArgument(description: string) {
@@ -78,7 +78,7 @@ export function createOpenApiMcpServer(
 ): McpServer {
   const { catalog } = gateway;
   const budget = (): number => limits.maxResponseBytes;
-  const server = new McpServer({ name: "liaiso-openapi", version });
+  const server = new McpServer({ name: "sezzlee-openapi", version });
 
   server.registerTool(
     "search_tools",

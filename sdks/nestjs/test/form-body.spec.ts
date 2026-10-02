@@ -22,18 +22,18 @@ import {
 import type { Request, Response } from "express";
 import { IsInt, IsOptional, IsString } from "class-validator";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoDispatcher } from "../src/dispatcher.js";
+import { SezzleeDispatcher } from "../src/dispatcher.js";
 import { extensionTokens } from "../src/extension-points.js";
 import type { FileResolveRequest, FileResolver } from "../src/files.js";
 import type { InvokeResultMapper } from "../src/invoke-result-mapper.js";
-import { registerLiaisoTools } from "../src/meta-tools.js";
-import { LIAISO_OPTIONS, type LiaisoOptions } from "../src/options.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { registerSezzleeTools } from "../src/meta-tools.js";
+import { SEZZLEE_OPTIONS, type SezzleeOptions } from "../src/options.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import {
-  LiaisoStreamableHttp,
-  type LiaisoRequestHandler,
+  SezzleeStreamableHttp,
+  type SezzleeRequestHandler,
 } from "../src/transport/streamable-http.js";
 import type { CallerScopeResolver } from "../src/cache.js";
 import { CallerVisibilityProvider } from "../src/visibility/provider.js";
@@ -115,23 +115,23 @@ interface Wire {
 
 @Controller()
 class FormMcpController {
-  private readonly serve: LiaisoRequestHandler;
+  private readonly serve: SezzleeRequestHandler;
 
   constructor(
-    streamableHttp: LiaisoStreamableHttp,
-    catalog: LiaisoCatalog,
-    dispatcher: LiaisoDispatcher,
+    streamableHttp: SezzleeStreamableHttp,
+    catalog: SezzleeCatalog,
+    dispatcher: SezzleeDispatcher,
     visibility: CallerVisibilityProvider,
   ) {
     this.serve = streamableHttp.serve(() => {
       const server = new McpServer({ name: "nest-form", version: "0.0.0" });
-      registerLiaisoTools(server, {
+      registerSezzleeTools(server, {
         catalog,
         dispatcher,
         mapper: state.mapper as InvokeResultMapper,
         visibility,
         scopes: state.scopes as CallerScopeResolver,
-        options: state.options as LiaisoOptions,
+        options: state.options as SezzleeOptions,
       });
       return server;
     });
@@ -146,7 +146,7 @@ class FormMcpController {
 const state: {
   mapper?: InvokeResultMapper;
   scopes?: CallerScopeResolver;
-  options?: LiaisoOptions;
+  options?: SezzleeOptions;
 } = {};
 
 const stored: Record<string, Buffer> = {
@@ -191,16 +191,16 @@ class MemoryResolver implements FileResolver {
 
 interface Host {
   readonly app: INestApplication;
-  readonly catalog: LiaisoCatalog;
+  readonly catalog: SezzleeCatalog;
   readonly client: Client;
 }
 
 async function startHost(
-  configure: (options: LiaisoOptions) => void,
+  configure: (options: SezzleeOptions) => void,
   textParser: boolean,
 ): Promise<Host> {
   const moduleRef = await Test.createTestingModule({
-    imports: [LiaisoModule.forRoot(configure)],
+    imports: [SezzleeModule.forRoot(configure)],
     controllers: [FormController, FormMcpController],
   }).compile();
   const app = moduleRef.createNestApplication<NestExpressApplication>({
@@ -217,12 +217,12 @@ async function startHost(
   state.scopes = app.get<CallerScopeResolver>(
     extensionTokens.callerScopeResolver,
   );
-  state.options = app.get<LiaisoOptions>(LIAISO_OPTIONS);
+  state.options = app.get<SezzleeOptions>(SEZZLEE_OPTIONS);
   const client = new Client({ name: "form-probe", version: "0.0.0" });
   await client.connect(
     new StreamableHTTPClientTransport(new URL(`${await app.getUrl()}/mcp`)),
   );
-  return { app, catalog: app.get(LiaisoCatalog), client };
+  return { app, catalog: app.get(SezzleeCatalog), client };
 }
 
 function toolFor(host: Host, route: string): string {

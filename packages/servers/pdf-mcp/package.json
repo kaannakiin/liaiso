@@ -1,5 +1,5 @@
 {
-  "name": "@liaiso/pdf-mcp",
+  "name": "@sezzlee/pdf-mcp",
   "version": "0.1.1",
   "description": "Read-only MCP server that lets AI agents extract text from local PDF documents, with optional pluggable OCR. Never reaches the network.",
   "keywords": [
@@ -9,7 +9,7 @@
     "ai-agents",
     "llm",
     "claude",
-    "liaiso",
+    "sezzlee",
     "pdf",
     "pdf-to-text",
     "pdf-extraction",
@@ -22,19 +22,19 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kaannakiin/liaiso.git",
+    "url": "git+https://github.com/sezzlee/mcp.git",
     "directory": "packages/servers/pdf-mcp"
   },
-  "homepage": "https://github.com/kaannakiin/liaiso/tree/main/packages/servers/pdf-mcp#readme",
+  "homepage": "https://github.com/sezzlee/mcp/tree/main/packages/servers/pdf-mcp#readme",
   "bugs": {
-    "url": "https://github.com/kaannakiin/liaiso/issues"
+    "url": "https://github.com/sezzlee/mcp/issues"
   },
   "type": "module",
   "engines": {
     "node": ">=22"
   },
   "bin": {
-    "liaiso-pdf": "./dist/cli.js"
+    "sezzlee-pdf": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -61,15 +61,15 @@
   "dependencies": {
     "@firecrawl/pdf-inspector": "1.23.0",
     "@modelcontextprotocol/server": "^2.0.0",
-    "@liaiso/file-core": "workspace:^",
+    "@sezzlee/file-core": "workspace:^",
     "zod": "^4.5.4"
   },
   "devDependencies": {
     "@modelcontextprotocol/client": "^2.0.0",
-    "@liaiso/ocr-ollama": "workspace:^",
-    "@liaiso/oxlint-config": "workspace:*",
-    "@liaiso/pdf-raster-pdfjs": "workspace:^",
-    "@liaiso/typescript-config": "workspace:*",
+    "@sezzlee/ocr-ollama": "workspace:^",
+    "@sezzlee/oxlint-config": "workspace:*",
+    "@sezzlee/pdf-raster-pdfjs": "workspace:^",
+    "@sezzlee/typescript-config": "workspace:*",
     "@types/node": "^24.3.0",
     "@vitest/coverage-v8": "3.2.7",
     "oxlint": "1.85.0",

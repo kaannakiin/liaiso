@@ -8,8 +8,8 @@ export {
 export {
   asLlmError,
   fail,
-  LiaisoLlmError,
-  type LiaisoLlmErrorCode,
+  SezzleeLlmError,
+  type SezzleeLlmErrorCode,
 } from "./platform/errors.js";
 export { inputBudgetTokens, limits } from "./platform/limits.js";
 export {

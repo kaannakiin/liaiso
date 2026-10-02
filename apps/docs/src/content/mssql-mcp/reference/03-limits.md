@@ -1,20 +1,20 @@
 # Limits
 
-> Generated from the exported `limits` object of `@liaiso/mssql-mcp` 0.1.2.
+> Generated from the exported `limits` object of `@sezzlee/mssql-mcp` 0.1.2.
 
 Every limit is fixed at build time; none is configurable. A call that would cross one either answers with `truncated: true` and a way to continue, or fails with `resource_limit`.
 
 ## Queries
 
-| Limit                                                                                                   | Value  |
-| ------------------------------------------------------------------------------------------------------- | ------ |
-| Rows `run_query` returns when `maxRows` is omitted                                                      | 100    |
-| Largest `maxRows` for `run_query`                                                                       | 1,000  |
-| Most columns `describe_table` reports for one table                                                     | 512    |
-| Largest serialized answer; a longer result is cut at the last row that fits                             | 512 KB |
-| Longest text value returned for one cell, in characters; a longer one is cut                            | 4,096  |
-| Longest binary value returned for one cell, before base64 encoding; a longer one is cut                 | 4 KB   |
-| Deadline for a statement when the call sets no `timeoutMs`; `LIAISO_MSSQL_QUERY_TIMEOUT_MS` replaces it | 30 s   |
+| Limit                                                                                                    | Value  |
+| -------------------------------------------------------------------------------------------------------- | ------ |
+| Rows `run_query` returns when `maxRows` is omitted                                                       | 100    |
+| Largest `maxRows` for `run_query`                                                                        | 1,000  |
+| Most columns `describe_table` reports for one table                                                      | 512    |
+| Largest serialized answer; a longer result is cut at the last row that fits                              | 512 KB |
+| Longest text value returned for one cell, in characters; a longer one is cut                             | 4,096  |
+| Longest binary value returned for one cell, before base64 encoding; a longer one is cut                  | 4 KB   |
+| Deadline for a statement when the call sets no `timeoutMs`; `SEZZLEE_MSSQL_QUERY_TIMEOUT_MS` replaces it | 30 s   |
 
 ## Catalogue search
 
@@ -37,5 +37,5 @@ Every limit is fixed at build time; none is configurable. A call that would cros
 | ------------------------------------------------------------------------------------------------ | ----- |
 | Connections open to SQL Server at once                                                           | 4     |
 | Calls that may wait for a free connection before a new one fails with `resource_limit`           | 32    |
-| Time to open a connection; `LIAISO_MSSQL_CONNECT_TIMEOUT_MS` replaces it                         | 15 s  |
+| Time to open a connection; `SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS` replaces it                        | 15 s  |
 | Time a cancelled statement may take to stop before its connection is discarded instead of reused | 5 s   |

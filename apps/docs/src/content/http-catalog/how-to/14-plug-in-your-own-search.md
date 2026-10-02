@@ -42,7 +42,7 @@ For the OpenAPI gateway, put the terms on the operation in the document:
 {
   "post": {
     "operationId": "createOrder",
-    "x-liaiso-search-terms": ["sipariş", "  ", "satın alma"],
+    "x-sezzlee-search-terms": ["sipariş", "  ", "satın alma"],
     "responses": { "200": { "description": "ok" } }
   }
 }
@@ -72,7 +72,7 @@ internal sealed class StubRanker(Func<ToolRankRequest, CancellationToken, Task<I
 
 IToolRanker ranker = new StubRanker((_, _) => Task.FromResult<IReadOnlyList<string>>(["ghost", "ranked_two", "ranked_one"]));
 builder.Services.AddSingleton(ranker);
-builder.Services.AddLiaiso(options => options.Search.RankerTimeout = TimeSpan.FromMilliseconds(50));
+builder.Services.AddSezzlee(options => options.Search.RankerTimeout = TimeSpan.FromMilliseconds(50));
 ```
 
 ```ts
@@ -80,7 +80,7 @@ const ranker: ToolRanker = {
   rank: async () => ["audit_log", "list_orders", "get_order"],
 };
 
-LiaisoModule.forRoot(
+SezzleeModule.forRoot(
   (options) => {
     options.search.rankerTimeoutMs = 20;
   },
@@ -90,10 +90,10 @@ LiaisoModule.forRoot(
 
 `useClass` and `useFactory` work as for every other extension point, so a ranker with its own
 dependencies is an `@Injectable()` class. Your controller does not change: the ranker reaches
-`search_tools` through the catalog that `registerLiaisoTools` already receives.
+`search_tools` through the catalog that `registerSezzleeTools` already receives.
 
 To embed the OpenAPI gateway in your own process, pass the ranker to `createOpenApiMcpServer` as
-`{ ranker: { ranker, timeoutMs, onFailure } }`. The `liaiso-openapi` CLI reads only a JSON
+`{ ranker: { ranker, timeoutMs, onFailure } }`. The `sezzlee-openapi` CLI reads only a JSON
 configuration, so it cannot bind one.
 
 ### What the ranker decides, and what it does not

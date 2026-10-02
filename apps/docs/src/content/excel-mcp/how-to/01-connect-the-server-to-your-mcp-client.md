@@ -14,7 +14,7 @@ relative path resolves against whatever directory the client happens to start in
 server exits at once:
 
 ```text
-The workbook root '~/liaiso-sheets' does not exist.
+The workbook root '~/sezzlee-sheets' does not exist.
 ```
 
 Everything under the folder is readable, including subfolders, and nothing outside it is. Point it at
@@ -23,7 +23,7 @@ the narrowest folder that holds the files the agent needs.
 ## Claude Code
 
 ```sh
-claude mcp add excel -- npx -y @liaiso/excel-mcp /Users/you/sheets
+claude mcp add excel -- npx -y @sezzlee/excel-mcp /Users/you/sheets
 ```
 
 The shell expands `~` here, so `~/sheets` also works in this one place. Add `--scope project` to
@@ -38,7 +38,7 @@ Edit `claude_desktop_config.json` (**Settings → Developer → Edit Config**) a
   "mcpServers": {
     "excel": {
       "command": "npx",
-      "args": ["-y", "@liaiso/excel-mcp", "/Users/you/sheets"]
+      "args": ["-y", "@sezzlee/excel-mcp", "/Users/you/sheets"]
     }
   }
 }
@@ -62,7 +62,7 @@ transport stated:
     "excel": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@liaiso/excel-mcp", "/Users/you/sheets"]
+      "args": ["-y", "@sezzlee/excel-mcp", "/Users/you/sheets"]
     }
   }
 }
@@ -71,8 +71,8 @@ transport stated:
 ## Any other client
 
 Any client that starts a stdio server works. The command is `npx`, the arguments are `-y`,
-`@liaiso/excel-mcp` and the folder. If the client cannot run `npx`, install the package once with
-`npm install -g @liaiso/excel-mcp` and use the command `liaiso-excel` with the folder as its only
+`@sezzlee/excel-mcp` and the folder. If the client cannot run `npx`, install the package once with
+`npm install -g @sezzlee/excel-mcp` and use the command `sezzlee-excel` with the folder as its only
 argument.
 
 ## Check that it started

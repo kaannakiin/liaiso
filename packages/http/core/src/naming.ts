@@ -1,4 +1,4 @@
-import { LiaisoCatalogError, LiaisoTemplateError } from "./errors.js";
+import { SezzleeCatalogError, SezzleeTemplateError } from "./errors.js";
 import { assertFamily, productionDescriptor } from "./family.js";
 import type {
   EndpointDescriptor,
@@ -130,7 +130,7 @@ export function applyPrefix(body: string, prefix: string | undefined): string {
 
 function validate(name: string, endpoint: EndpointDescriptor): string {
   if (!toolNamePattern.test(name)) {
-    throw new LiaisoCatalogError(
+    throw new SezzleeCatalogError(
       "invalid_name",
       `Generated tool name '${name}' for ${endpoint.method} ${endpoint.route} does not match the required pattern; define an operationId or a tool name.`,
     );
@@ -143,7 +143,7 @@ function validateVariant(
   operation: EndpointDescriptor,
 ): string {
   if (!toolNamePattern.test(variant.name)) {
-    throw new LiaisoCatalogError(
+    throw new SezzleeCatalogError(
       "invalid_name",
       `Variant name '${variant.name}' of ${operation.method} ${operation.route} does not match the required pattern.`,
     );
@@ -275,7 +275,7 @@ export function expandToolProductions<T>(
 /**
  * The productions of one already-folded operation.
  *
- * @throws LiaisoTemplateError when the operation's variant or family declaration is refused; the
+ * @throws SezzleeTemplateError when the operation's variant or family declaration is refused; the
  * refusal concerns this operation alone
  */
 export function productionsOf(operation: EndpointDescriptor): ToolProduction[] {
@@ -284,7 +284,7 @@ export function productionsOf(operation: EndpointDescriptor): ToolProduction[] {
     return [{ operation, endpoint: operation }];
   }
   if (operation.toolName !== undefined) {
-    throw new LiaisoTemplateError(
+    throw new SezzleeTemplateError(
       "variant_declaration_conflict",
       `${operation.method} ${operation.route} declares both a tool name and variants; a variant names itself.`,
     );
@@ -310,7 +310,7 @@ export function createToolNames(
 /**
  * Names already-expanded productions, one name per production in order.
  *
- * @throws LiaisoCatalogError `invalid_name` or `name_collision`; both concern the catalog as a
+ * @throws SezzleeCatalogError `invalid_name` or `name_collision`; both concern the catalog as a
  * whole, because a name is only valid relative to every other name
  */
 export function nameProductions(
@@ -361,7 +361,7 @@ export function nameProductions(
     const name = names[index] as string;
     const owner = claimed.get(name);
     if (owner !== undefined) {
-      throw new LiaisoCatalogError(
+      throw new SezzleeCatalogError(
         "name_collision",
         `Tool name '${name}' is produced by both ${owner.method} ${owner.route} and ${operation.method} ${operation.route}; declare a tool name on one of them.`,
       );

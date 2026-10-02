@@ -21,31 +21,31 @@ const check = process.argv.includes("--check");
 const servers = [
   {
     product: "excel-mcp",
-    pkg: "@liaiso/excel-mcp",
+    pkg: "@sezzlee/excel-mcp",
     dir: "excel-mcp",
     root: true,
   },
-  { product: "xml-mcp", pkg: "@liaiso/xml-mcp", dir: "xml-mcp", root: true },
-  { product: "pdf-mcp", pkg: "@liaiso/pdf-mcp", dir: "pdf-mcp", root: true },
+  { product: "xml-mcp", pkg: "@sezzlee/xml-mcp", dir: "xml-mcp", root: true },
+  { product: "pdf-mcp", pkg: "@sezzlee/pdf-mcp", dir: "pdf-mcp", root: true },
   {
     product: "mssql-mcp",
-    pkg: "@liaiso/mssql-mcp",
+    pkg: "@sezzlee/mssql-mcp",
     dir: "mssql-mcp",
     env: {
-      LIAISO_MSSQL_SERVER: "127.0.0.1",
-      LIAISO_MSSQL_DATABASE: "docs",
-      LIAISO_MSSQL_USER: "docs",
-      LIAISO_MSSQL_PASSWORD: "docs",
+      SEZZLEE_MSSQL_SERVER: "127.0.0.1",
+      SEZZLEE_MSSQL_DATABASE: "docs",
+      SEZZLEE_MSSQL_USER: "docs",
+      SEZZLEE_MSSQL_PASSWORD: "docs",
     },
   },
   {
     product: "llm-mcp",
-    pkg: "@liaiso/llm-mcp",
+    pkg: "@sezzlee/llm-mcp",
     dir: "llm-mcp",
     workspace: true,
     env: {
-      LIAISO_LLM_MODEL: "docs",
-      LIAISO_LLM_BASE_URL: "http://127.0.0.1:9",
+      SEZZLEE_LLM_MODEL: "docs",
+      SEZZLEE_LLM_BASE_URL: "http://127.0.0.1:9",
     },
   },
 ];
@@ -61,8 +61,8 @@ function interrogate(server, scratch, example) {
   const args = server.root ? [cli, scratch] : [cli];
   const env = { ...process.env, ...server.env };
   if (server.workspace) {
-    env.LIAISO_LLM_ROOT = scratch;
-    env.LIAISO_LLM_OUTPUT_DIR = scratch;
+    env.SEZZLEE_LLM_ROOT = scratch;
+    env.SEZZLEE_LLM_OUTPUT_DIR = scratch;
   }
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, args, {
@@ -123,7 +123,7 @@ function interrogate(server, scratch, example) {
       params: {
         protocolVersion: "2025-06-18",
         capabilities: {},
-        clientInfo: { name: "liaiso-docs", version: "0.0.0" },
+        clientInfo: { name: "sezzlee-docs", version: "0.0.0" },
       },
     });
   });
@@ -390,7 +390,7 @@ const registered = new Set(
 );
 const published = servers.filter((server) => registered.has(server.product));
 
-const scratch = mkdtempSync(path.join(tmpdir(), "liaiso-docs-"));
+const scratch = mkdtempSync(path.join(tmpdir(), "sezzlee-docs-"));
 const stale = [];
 try {
   const answers = await Promise.all(
@@ -447,7 +447,7 @@ if (problems.length > 0) {
 }
 if (stale.length > 0) {
   process.stderr.write(
-    `Generated reference is out of date; run \`pnpm --filter @liaiso/docs gen\`:\n${stale.map((file) => `  ${file}`).join("\n")}\n`,
+    `Generated reference is out of date; run \`pnpm --filter @sezzlee/docs gen\`:\n${stale.map((file) => `  ${file}`).join("\n")}\n`,
   );
   process.exit(1);
 }

@@ -1,31 +1,31 @@
-const LIAISO_REQUEST = Symbol("liaiso.request");
-const LIAISO_PROBE = Symbol("liaiso.probe");
-const LIAISO_SHORT_CIRCUIT = Symbol("liaiso.probe.short-circuited");
+const SEZZLEE_REQUEST = Symbol("sezzlee.request");
+const SEZZLEE_PROBE = Symbol("sezzlee.probe");
+const SEZZLEE_SHORT_CIRCUIT = Symbol("sezzlee.probe.short-circuited");
 
 type Marked = Record<symbol, boolean | undefined>;
 
 export function markSyntheticRequest(request: object, probe: boolean): void {
   const marked = request as Marked;
-  marked[LIAISO_REQUEST] = true;
+  marked[SEZZLEE_REQUEST] = true;
   if (probe) {
-    marked[LIAISO_PROBE] = true;
+    marked[SEZZLEE_PROBE] = true;
   }
 }
 
 export function markShortCircuited(request: object): void {
-  (request as Marked)[LIAISO_SHORT_CIRCUIT] = true;
+  (request as Marked)[SEZZLEE_SHORT_CIRCUIT] = true;
 }
 
-export function isLiaisoRequest(request: unknown): boolean {
-  return reads(request, LIAISO_REQUEST);
+export function isSezzleeRequest(request: unknown): boolean {
+  return reads(request, SEZZLEE_REQUEST);
 }
 
-export function isLiaisoProbe(request: unknown): boolean {
-  return reads(request, LIAISO_PROBE);
+export function isSezzleeProbe(request: unknown): boolean {
+  return reads(request, SEZZLEE_PROBE);
 }
 
 export function wasShortCircuited(request: unknown): boolean {
-  return reads(request, LIAISO_SHORT_CIRCUIT);
+  return reads(request, SEZZLEE_SHORT_CIRCUIT);
 }
 
 function reads(request: unknown, key: symbol): boolean {

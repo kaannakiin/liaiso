@@ -9,20 +9,20 @@ receives. You need Node.js 22 or later and `jq`.
 ## 1. Install the server
 
 ```sh
-npm install -g @liaiso/xml-mcp
+npm install -g @sezzlee/xml-mcp
 ```
 
-This puts the `liaiso-xml` command on your path.
+This puts the `sezzlee-xml` command on your path.
 
 ## 2. Give it a folder
 
 The server reads one folder and nothing outside it:
 
 ```sh
-mkdir -p ~/liaiso-xml
+mkdir -p ~/sezzlee-xml
 ```
 
-Download [orders.xml](/samples/xml-mcp/orders.xml) and save it into `~/liaiso-xml`. It holds six
+Download [orders.xml](/samples/xml-mcp/orders.xml) and save it into `~/sezzlee-xml`. It holds six
 orders in the namespace `urn:example:orders`, each with a date, a region, a customer, one or more
 order lines, and a payment in a second namespace, `urn:example:payments`. One order has no region
 and one has no payment, as real exports do.
@@ -34,7 +34,7 @@ function so each call below is one line:
 
 ```sh
 xml() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-xml ~/liaiso-xml \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-xml ~/sezzlee-xml \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```

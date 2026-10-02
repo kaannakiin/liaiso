@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CellScalar } from "../src/grid/cell-value.js";
-import type { LiaisoExcelError } from "../src/platform/errors.js";
+import type { SezzleeExcelError } from "../src/platform/errors.js";
 import {
   classify,
   compareWithin,
@@ -27,7 +27,7 @@ function codeOf(action: () => unknown): string {
   try {
     action();
   } catch (error) {
-    return (error as LiaisoExcelError).code;
+    return (error as SezzleeExcelError).code;
   }
   return "no-error";
 }

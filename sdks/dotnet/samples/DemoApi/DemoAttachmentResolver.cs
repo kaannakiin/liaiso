@@ -1,5 +1,5 @@
 using System.Text;
-using Liaiso.AspNetCore.Files;
+using Sezzlee.AspNetCore.Files;
 
 namespace DemoApi;
 
@@ -8,7 +8,7 @@ namespace DemoApi;
 /// A ref is a string the agent wrote, so the owner check is the only thing between one caller and
 /// another caller's files.
 /// </remarks>
-public sealed class DemoAttachmentResolver : ILiaisoFileResolver
+public sealed class DemoAttachmentResolver : ISezzleeFileResolver
 {
     private sealed record Stored(string Owner, string Name, string Type, byte[] Bytes);
 

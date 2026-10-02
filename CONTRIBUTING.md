@@ -26,7 +26,7 @@ pnpm check-types
 | `sdks/`              | The ASP.NET Core and NestJS SDKs                                         |
 | `apps/docs`          | The documentation site                                                   |
 
-Package names are flat (`@liaiso/excel-mcp`), so `--filter` never mentions a folder. The boundaries
+Package names are flat (`@sezzlee/excel-mcp`), so `--filter` never mentions a folder. The boundaries
 between packages — which may depend on which, and what each must never name — are listed in
 [CLAUDE.md](CLAUDE.md) and enforced by lint.
 
@@ -35,8 +35,8 @@ between packages — which may depend on which, and what each must never name �
 Run tests through Turbo, so dependencies are built first:
 
 ```bash
-pnpm turbo run test --filter=@liaiso/excel-mcp
-pnpm turbo run test --filter=@liaiso/sdk-dotnet     # net8.0 + net10.0
+pnpm turbo run test --filter=@sezzlee/excel-mcp
+pnpm turbo run test --filter=@sezzlee/sdk-dotnet     # net8.0 + net10.0
 ```
 
 `pnpm --filter <pkg> test` skips `dependsOn: ["^build"]` and can test against a stale `dist`.
@@ -48,7 +48,7 @@ Prefer a single file or name filter while iterating — the full suite is large.
   import what, which package may reach the network or the filesystem — are lint rules.
 - **Spec types are generated.** Change a schema in `packages/http/spec/schemas`, then run
   `pnpm turbo run gen`. `packages/http/core/src/generated/` and
-  `sdks/dotnet/src/Liaiso.AspNetCore/Generated/` are committed and never edited by hand.
+  `sdks/dotnet/src/Sezzlee.AspNetCore/Generated/` are committed and never edited by hand.
 - **A spec change moves a fixture.** If a schema or rule change breaks fixtures, update them in the
   same change; a rule that no fixture pins has not been made.
 - **No silent resolution.** A name collision, an unknown argument or an unrepresentable construct is

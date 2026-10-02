@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildColumnIndex, resolveColumn } from "../src/grid/columns.js";
-import type { LiaisoExcelError } from "../src/platform/errors.js";
+import type { SezzleeExcelError } from "../src/platform/errors.js";
 import type { GridBounds } from "../src/grid/range.js";
 
 const bounds: GridBounds = { top: 1, left: 1, bottom: 10, right: 8 };
@@ -18,7 +18,7 @@ function codeOf(action: () => unknown): string {
   try {
     action();
   } catch (error) {
-    return (error as LiaisoExcelError).code;
+    return (error as SezzleeExcelError).code;
   }
   return "no-error";
 }
@@ -45,8 +45,8 @@ describe("conflicts are errors", () => {
     try {
       resolveColumn(index, "Total");
     } catch (error) {
-      expect((error as LiaisoExcelError).recovery).toContain('"B"');
-      expect((error as LiaisoExcelError).recovery).toContain('"E"');
+      expect((error as SezzleeExcelError).recovery).toContain('"B"');
+      expect((error as SezzleeExcelError).recovery).toContain('"E"');
     }
   });
 
@@ -80,7 +80,7 @@ describe("columns without header text", () => {
     try {
       resolveColumn(letterOnly, "Region");
     } catch (error) {
-      expect((error as LiaisoExcelError).recovery).toContain("headerRow is 0");
+      expect((error as SezzleeExcelError).recovery).toContain("headerRow is 0");
     }
   });
 });
@@ -91,7 +91,7 @@ describe("unknown columns", () => {
       resolveColumn(index, "Nope");
       expect.unreachable();
     } catch (error) {
-      const failure = error as LiaisoExcelError;
+      const failure = error as SezzleeExcelError;
       expect(failure.code).toBe("unknown_column");
       expect(failure.message).toContain("Sales!A1:H10");
       expect(failure.recovery).toContain("A (Region)");
@@ -119,7 +119,7 @@ describe("a header row that carries no text", () => {
       resolveColumn(blank, "Region");
       expect.unreachable();
     } catch (error) {
-      expect((error as LiaisoExcelError).recovery).toContain(
+      expect((error as SezzleeExcelError).recovery).toContain(
         "row 1 (headerRow)",
       );
     }
@@ -130,7 +130,7 @@ describe("a header row that carries no text", () => {
       resolveColumn(blank, "Region");
       expect.unreachable();
     } catch (error) {
-      expect((error as LiaisoExcelError).recovery).toContain("Pass headerRow");
+      expect((error as SezzleeExcelError).recovery).toContain("Pass headerRow");
     }
   });
 
@@ -139,7 +139,7 @@ describe("a header row that carries no text", () => {
       resolveColumn(index, "Nope");
       expect.unreachable();
     } catch (error) {
-      expect((error as LiaisoExcelError).recovery).not.toContain(
+      expect((error as SezzleeExcelError).recovery).not.toContain(
         "Pass headerRow",
       );
     }

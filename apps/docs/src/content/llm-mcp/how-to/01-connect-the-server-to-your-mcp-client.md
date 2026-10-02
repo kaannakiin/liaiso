@@ -11,15 +11,15 @@ environment. The server's working directory is its workspace: the only folder it
 
 Only the model is required:
 
-| Variable                | Default                  | Meaning                                                            |
-| ----------------------- | ------------------------ | ------------------------------------------------------------------ |
-| `LIAISO_LLM_MODEL`      | required                 | The Ollama model name, as `ollama list` shows it.                  |
-| `LIAISO_LLM_BASE_URL`   | `http://127.0.0.1:11434` | The Ollama host.                                                   |
-| `LIAISO_LLM_ROOT`       | the working directory    | The workspace every file argument is resolved against.             |
-| `LIAISO_LLM_OUTPUT_DIR` | `.llm-mcp/out`           | Where `local_map` writes, relative to the workspace and inside it. |
-| `LIAISO_LLM_NUM_CTX`    | `16384`                  | The context window asked of Ollama, at least 4096.                 |
-| `LIAISO_LLM_KEEP_ALIVE` | `30m`                    | How long Ollama keeps the model loaded after a call.               |
-| `LIAISO_LLM_TIMEOUT_MS` | `300000`                 | Time one request to the model may take, once it leaves the queue.  |
+| Variable                 | Default                  | Meaning                                                            |
+| ------------------------ | ------------------------ | ------------------------------------------------------------------ |
+| `SEZZLEE_LLM_MODEL`      | required                 | The Ollama model name, as `ollama list` shows it.                  |
+| `SEZZLEE_LLM_BASE_URL`   | `http://127.0.0.1:11434` | The Ollama host.                                                   |
+| `SEZZLEE_LLM_ROOT`       | the working directory    | The workspace every file argument is resolved against.             |
+| `SEZZLEE_LLM_OUTPUT_DIR` | `.llm-mcp/out`           | Where `local_map` writes, relative to the workspace and inside it. |
+| `SEZZLEE_LLM_NUM_CTX`    | `16384`                  | The context window asked of Ollama, at least 4096.                 |
+| `SEZZLEE_LLM_KEEP_ALIVE` | `30m`                    | How long Ollama keeps the model loaded after a call.               |
+| `SEZZLEE_LLM_TIMEOUT_MS` | `300000`                 | Time one request to the model may take, once it leaves the queue.  |
 
 A missing model or an invalid number stops the server at startup with a message naming the variable.
 An Ollama that is not running does not: the server starts, `local_status` reports `reachable:
@@ -31,7 +31,7 @@ to load the model, so the first real call does not pay for the load.
 Claude Code starts the server in the project directory, which becomes the workspace:
 
 ```sh
-claude mcp add local -e LIAISO_LLM_MODEL=qwen3:8b -- npx -y @liaiso/llm-mcp
+claude mcp add local -e SEZZLEE_LLM_MODEL=qwen3:8b -- npx -y @sezzlee/llm-mcp
 ```
 
 ## Codex
@@ -41,12 +41,12 @@ Add the server to `~/.codex/config.toml`:
 ```toml
 [mcp_servers.local]
 command = "npx"
-args = ["-y", "@liaiso/llm-mcp"]
+args = ["-y", "@sezzlee/llm-mcp"]
 default_tools_approval_mode = "auto"
 tool_timeout_sec = 900
 
 [mcp_servers.local.env]
-LIAISO_LLM_MODEL = "qwen3:8b"
+SEZZLEE_LLM_MODEL = "qwen3:8b"
 ```
 
 Codex passes an MCP server none of its own environment, so every setting goes in `env`. Under
@@ -65,10 +65,10 @@ Claude Desktop does not start a server in a project folder, so name the workspac
   "mcpServers": {
     "local": {
       "command": "npx",
-      "args": ["-y", "@liaiso/llm-mcp"],
+      "args": ["-y", "@sezzlee/llm-mcp"],
       "env": {
-        "LIAISO_LLM_MODEL": "qwen3:8b",
-        "LIAISO_LLM_ROOT": "/Users/you/documents"
+        "SEZZLEE_LLM_MODEL": "qwen3:8b",
+        "SEZZLEE_LLM_ROOT": "/Users/you/documents"
       }
     }
   }
@@ -83,7 +83,7 @@ workspace.
 
 ## An Ollama on another machine
 
-Set `LIAISO_LLM_BASE_URL` to its address, for example `http://10.0.0.5:11434`. The files the tools
+Set `SEZZLEE_LLM_BASE_URL` to its address, for example `http://10.0.0.5:11434`. The files the tools
 read are sent there, so use a host you trust with them.
 
 ## Check that it started

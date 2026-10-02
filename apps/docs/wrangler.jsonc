@@ -1,13 +1,16 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "liaiso-docs",
+  "name": "sezzlee-docs",
+  "account_id": "9a3e2156b439a4ae8a2ac5b153252fee",
+  "workers_dev": false,
+  "routes": [{ "pattern": "docs.sezzlee.app", "custom_domain": true }],
   "compatibility_date": "2026-09-25",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
   "assets": {
-    "html_handling": "drop-trailing-slash"
+    "html_handling": "drop-trailing-slash",
   },
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }

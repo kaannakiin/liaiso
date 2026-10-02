@@ -9,7 +9,7 @@
 
 ### Tool surface
 
-- An argument a tool does not declare, a value of the wrong type and a missing required argument are refused with `invalid_argument` in the error envelope, whose `recovery` lists the accepted arguments (`@liaiso/mcp-core` 0.2.0). Before, an unknown key was dropped — a misspelt `caseSensitiv` succeeded with the default — and a shape failure was plain text with no `error` code. Every input schema is published with `additionalProperties: false`.
+- An argument a tool does not declare, a value of the wrong type and a missing required argument are refused with `invalid_argument` in the error envelope, whose `recovery` lists the accepted arguments (`@sezzlee/mcp-core` 0.2.0). Before, an unknown key was dropped — a misspelt `caseSensitiv` succeeded with the default — and a shape failure was plain text with no `error` code. Every input schema is published with `additionalProperties: false`.
 - Every argument now carries a description, so an agent no longer sees `aggregate_sheet`'s `range`, `metrics`, `metrics[].fn`, `where[].op`, `where[].value`, `where[].values`, or `find_in_sheet`'s `query` and `range` as a bare name and type.
 - `describe_workbook`'s `includeDefinedNames` no longer mentions ExcelJS, which is not present at runtime.
 - `aggregate_sheet`'s truncation `hint` no longer tells a caller that already passed `orderBy: "metric"` to set it; it suggests raising `maxGroups` or adding a `where` clause instead.

@@ -10,21 +10,21 @@ receives. You need Node.js 22 or later, `jq`, and a Mac with Apple silicon, Linu
 ## 1. Install the server
 
 ```sh
-npm install -g @liaiso/pdf-mcp
+npm install -g @sezzlee/pdf-mcp
 ```
 
-This puts the `liaiso-pdf` command on your path.
+This puts the `sezzlee-pdf` command on your path.
 
 ## 2. Give it a folder
 
 The server reads one folder and nothing outside it:
 
 ```sh
-mkdir -p ~/liaiso-pdf
+mkdir -p ~/sezzlee-pdf
 ```
 
 Download [annual-report.pdf](/samples/pdf-mcp/annual-report.pdf) and
-[supply-agreement.pdf](/samples/pdf-mcp/supply-agreement.pdf) and save both into `~/liaiso-pdf`. The
+[supply-agreement.pdf](/samples/pdf-mcp/supply-agreement.pdf) and save both into `~/sezzlee-pdf`. The
 report has four pages of text, one of them a table. The agreement has three pages, and the middle
 one is a scanned image, as signed pages often are.
 
@@ -35,7 +35,7 @@ function so each call below is one line:
 
 ```sh
 pdf() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-pdf ~/liaiso-pdf \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-pdf ~/sezzlee-pdf \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```

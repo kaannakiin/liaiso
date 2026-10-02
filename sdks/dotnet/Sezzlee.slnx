@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/DemoApi/DemoApi.csproj" />
+    <Project Path="samples/DemoAuthServer/DemoAuthServer.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Sezzlee.AspNetCore/Sezzlee.AspNetCore.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Sezzlee.Tests/Sezzlee.Tests.csproj" />
+  </Folder>
+</Solution>

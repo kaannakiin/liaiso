@@ -1,4 +1,4 @@
-import { createOoxmlReader } from "@liaiso/ooxml-core";
+import { createOoxmlReader } from "@sezzlee/ooxml-core";
 import { failOoxml } from "./errors.js";
 
 const reader = createOoxmlReader({ fail: failOoxml });

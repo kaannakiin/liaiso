@@ -42,5 +42,5 @@ When an input is over the budget, the server does one of two things, never a thi
   is.
 
 The third option, sending the input and letting it be cut, is the one the design rules out.
-`LIAISO_LLM_NUM_CTX` has to match what the GPU really delivers for the same reason: the budget is
+`SEZZLEE_LLM_NUM_CTX` has to match what the GPU really delivers for the same reason: the budget is
 only as honest as the window it is computed from.

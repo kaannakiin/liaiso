@@ -5,7 +5,7 @@ import {
   type ToolDefinitions,
   type ToolInputOf,
   type ToolNameOf,
-} from "@liaiso/mcp-core";
+} from "@sezzlee/mcp-core";
 import { z } from "zod";
 import { dbCoreLimits } from "../limits.js";
 

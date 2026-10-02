@@ -23,7 +23,7 @@ export type BackendProbe =
   | { readonly reachable: false; readonly detail: string };
 
 /**
- * One model host. Failures are thrown as `LiaisoLlmError` with
+ * One model host. Failures are thrown as `SezzleeLlmError` with
  * `backend_unavailable` (no answer) or `backend_refused` (the host said no).
  */
 export interface Backend {

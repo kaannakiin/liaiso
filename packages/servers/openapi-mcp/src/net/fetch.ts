@@ -1,16 +1,16 @@
 import { asciiLower } from "../platform/ascii.js";
-import type { BackendResponse } from "@liaiso/core";
+import type { BackendResponse } from "@sezzlee/core";
 
 export class HostNotAllowed extends Error {
   constructor(readonly host: string) {
-    super(`liaiso-openapi: host '${host}' is not on the allowlist.`);
+    super(`sezzlee-openapi: host '${host}' is not on the allowlist.`);
     this.name = "HostNotAllowed";
   }
 }
 
 export class ResponseTooLarge extends Error {
   constructor(readonly limit: number) {
-    super(`liaiso-openapi: the response exceeded ${String(limit)} bytes.`);
+    super(`sezzlee-openapi: the response exceeded ${String(limit)} bytes.`);
     this.name = "ResponseTooLarge";
   }
 }

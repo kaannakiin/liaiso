@@ -2,8 +2,8 @@
 
 A small CLI that drives the `search_tools` → `load_tool` → `invoke_tool` flow with a real MCP
 client (`@modelcontextprotocol/sdk`) and automates the "done" criteria for each flow. It runs
-against `sdks/dotnet/samples/DemoApi` and the Nest demo; with `LIAISO_AUTH=bearer` it can run
-against any liaiso backend.
+against `sdks/dotnet/samples/DemoApi` and the Nest demo; with `SEZZLEE_AUTH=bearer` it can run
+against any sezzlee backend.
 
 ## Setup and build
 
@@ -11,32 +11,32 @@ From the repository root:
 
 ```sh
 pnpm install
-pnpm turbo run build --filter=@liaiso/agent-client
+pnpm turbo run build --filter=@sezzlee/agent-client
 ```
 
 ## Environment variables
 
-| Variable          | Default                 | Description                                                         |
-| ----------------- | ----------------------- | ------------------------------------------------------------------- |
-| `LIAISO_BASE_URL` | `http://127.0.0.1:5178` | The backend's root URL; the MCP endpoint is called at `{base}/mcp`. |
-| `LIAISO_USER`     | `alice`                 | The demo username (used as `login_hint` in `token`/`oauth` modes).  |
-| `LIAISO_AUTH`     | `oauth`                 | `oauth` \| `token` \| `bearer`.                                     |
-| `LIAISO_TOKEN`    | —                       | Required only when `LIAISO_AUTH=bearer`, a ready-made access token. |
+| Variable           | Default                 | Description                                                          |
+| ------------------ | ----------------------- | -------------------------------------------------------------------- |
+| `SEZZLEE_BASE_URL` | `http://127.0.0.1:5178` | The backend's root URL; the MCP endpoint is called at `{base}/mcp`.  |
+| `SEZZLEE_USER`     | `alice`                 | The demo username (used as `login_hint` in `token`/`oauth` modes).   |
+| `SEZZLEE_AUTH`     | `oauth`                 | `oauth` \| `token` \| `bearer`.                                      |
+| `SEZZLEE_TOKEN`    | —                       | Required only when `SEZZLEE_AUTH=bearer`, a ready-made access token. |
 
 ## Auth modes
 
 - **`oauth`** (default): `src/headless-oauth-provider.ts` implements
   `@modelcontextprotocol/sdk`'s `OAuthClientProvider` in memory. The first connection attempt
   through `StreamableHTTPClientTransport` throws `UnauthorizedError`; the provider's
-  `redirectToAuthorization` method appends `login_hint=<LIAISO_USER>` to the authorization URL and
+  `redirectToAuthorization` method appends `login_hint=<SEZZLEE_USER>` to the authorization URL and
   fetches it with `redirect: "manual"`, capturing the authorization code from the `Location`
   header. `finishAuth` is then called on a fresh transport with the captured callback parameters,
   and the session reconnects through it. Because the demo authorization server auto-consents, the
   whole flow is headless.
-- **`token`**: `POST {base}/auth/token {"user": LIAISO_USER}` → `{ access_token }`; the token is
+- **`token`**: `POST {base}/auth/token {"user": SEZZLEE_USER}` → `{ access_token }`; the token is
   then sent on every request as a static `Authorization: Bearer` header. This is today's DemoApi
   shortcut.
-- **`bearer`**: uses `LIAISO_TOKEN` as-is, as a static bearer token — for running against a real
+- **`bearer`**: uses `SEZZLEE_TOKEN` as-is, as a static bearer token — for running against a real
   backend with your own token.
 
 If the connection cannot be established (a wrong or missing token, an incomplete OAuth flow, and
@@ -99,18 +99,18 @@ Against DemoApi (default OAuth flow):
 
 ```sh
 cd sdks/dotnet/samples/DemoApi && dotnet run &
-LIAISO_AUTH=oauth LIAISO_USER=alice node sdks/nestjs/samples/agent-client/dist/main.js --scenario smoke
+SEZZLEE_AUTH=oauth SEZZLEE_USER=alice node sdks/nestjs/samples/agent-client/dist/main.js --scenario smoke
 ```
 
 With today's demo token shortcut:
 
 ```sh
-LIAISO_AUTH=token LIAISO_USER=alice node sdks/nestjs/samples/agent-client/dist/main.js --scenario validation-retry
+SEZZLEE_AUTH=token SEZZLEE_USER=alice node sdks/nestjs/samples/agent-client/dist/main.js --scenario validation-retry
 ```
 
 Against a real backend (if you already hold a valid access token):
 
 ```sh
-LIAISO_AUTH=bearer LIAISO_TOKEN=eyJ... LIAISO_BASE_URL=https://example.internal \
+SEZZLEE_AUTH=bearer SEZZLEE_TOKEN=eyJ... SEZZLEE_BASE_URL=https://example.internal \
   node sdks/nestjs/samples/agent-client/dist/main.js --scenario error-envelope --tool create_order --arguments '{"item":"","quantity":0}'
 ```

@@ -2,7 +2,7 @@ import type {
   ArgumentFill,
   EndpointDescriptor,
   JsonSchemaObject,
-} from "@liaiso/core";
+} from "@sezzlee/core";
 
 export type JsonValue =
   | string
@@ -197,7 +197,7 @@ export interface McpSelectionMarker {
   readonly options: McpToolOptions;
 }
 
-export const MCP_SELECTION = "liaiso:selection";
+export const MCP_SELECTION = "sezzlee:selection";
 
 export function McpVariant(options: McpVariantOptions): MethodDecorator {
   return ((

@@ -20,14 +20,14 @@ export type {
 } from "./generated/tool-definition.js";
 export type { Fixture } from "./generated/fixture.js";
 export {
-  LiaisoTemplateError,
-  LiaisoArgumentError,
-  LiaisoCatalogError,
+  SezzleeTemplateError,
+  SezzleeArgumentError,
+  SezzleeCatalogError,
 } from "./errors.js";
 export type {
-  LiaisoArgumentErrorCode,
-  LiaisoCatalogErrorCode,
-  LiaisoTemplateErrorCode,
+  SezzleeArgumentErrorCode,
+  SezzleeCatalogErrorCode,
+  SezzleeTemplateErrorCode,
 } from "./errors.js";
 export {
   arraySeparatorFor,
@@ -258,11 +258,11 @@ export type {
   CacheKind,
   CacheKey,
   FlatCacheKey,
-  LiaisoCache,
+  SezzleeCache,
 } from "./cache/cache.js";
 export { flattenCacheKey } from "./cache/cache.js";
-export { MemoryLiaisoCache } from "./cache/memory-cache.js";
-export type { MemoryLiaisoCacheOptions } from "./cache/memory-cache.js";
+export { MemorySezzleeCache } from "./cache/memory-cache.js";
+export type { MemorySezzleeCacheOptions } from "./cache/memory-cache.js";
 export { SingleFlight } from "./cache/single-flight.js";
 export { atLeast, severityIn } from "./catalog/diagnostics.js";
 export type {
@@ -293,7 +293,7 @@ export type {
 } from "./catalog/pipeline.js";
 export {
   armDeadline,
-  LiaisoDispatchAborted,
+  SezzleeDispatchAborted,
   untilAbandoned,
 } from "./invoke/deadline.js";
 export type {

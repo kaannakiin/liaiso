@@ -1,4 +1,4 @@
-import type { CallerFacts } from "@liaiso/core";
+import type { CallerFacts } from "@sezzlee/core";
 import type { OuterRequest } from "../options.js";
 
 export interface VisibilityEvaluator {

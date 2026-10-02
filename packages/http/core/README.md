@@ -1,14 +1,14 @@
-# @liaiso/core
+# @sezzlee/core
 
-The language-neutral reference implementation of the liaiso spec, in TypeScript.
+The language-neutral reference implementation of the sezzlee spec, in TypeScript.
 
 **This is not a package you install.** `private: true`, version `0.0.0`, never published; it exists
-as a `workspace:*` dependency of `@liaiso/sdk-nestjs`, `@liaiso/openapi` and `@liaiso/openapi-mcp`
+as a `workspace:*` dependency of `@sezzlee/sdk-nestjs`, `@sezzlee/openapi` and `@sezzlee/openapi-mcp`
 (and the NestJS agent-client sample). There is no version to pin
 and no public API contract. If you are reading this you are changing it.
 
 `core` is **not** `file-core`. This package is the HTTP catalog implementation;
-[`@liaiso/file-core`](../../cores/file-core) is the shared machinery for file-backed MCP servers. Neither depends
+[`@sezzlee/file-core`](../../cores/file-core) is the shared machinery for file-backed MCP servers. Neither depends
 on the other, in either direction.
 
 ## What lives here
@@ -41,13 +41,13 @@ inside `generated/fixture.ts` — one definition per type, from one place.
 pnpm turbo run gen
 ```
 
-Committed, and never hand-edited. Always build through turbo — `pnpm --filter @liaiso/core build`
+Committed, and never hand-edited. Always build through turbo — `pnpm --filter @sezzlee/core build`
 skips generation and can compile against stale types.
 
 ## Tests and the conformance corpus
 
 ```bash
-pnpm turbo run test --filter=@liaiso/core
+pnpm turbo run test --filter=@sezzlee/core
 ```
 
 `test/conformance-fixtures.spec.ts` runs the shared corpus in [`../conformance`](../conformance).
@@ -60,8 +60,8 @@ A rule change that does not move a fixture has not been made.
 ## Search benchmark
 
 ```bash
-pnpm --filter @liaiso/core bench:search
-pnpm --filter @liaiso/core bench:search -- --quick
+pnpm --filter @sezzlee/core bench:search
+pnpm --filter @sezzlee/core bench:search -- --quick
 ```
 
 The deterministic benchmark compares the original linear scan, a byte-trigram candidate index,
@@ -71,10 +71,10 @@ report. A digest mismatch between algorithms fails the run before results are re
 
 ## Relationship to the SDKs
 
-`@liaiso/sdk-nestjs` depends on this package and re-exports the parts its users need, so NestJS
+`@sezzlee/sdk-nestjs` depends on this package and re-exports the parts its users need, so NestJS
 consumers never import core directly.
 
-`Liaiso.AspNetCore` deliberately does **not** depend on it — it is an independent implementation in
+`Sezzlee.AspNetCore` deliberately does **not** depend on it — it is an independent implementation in
 C#, and it earns parity by passing the same fixtures. That independence is the point: a spec
 validated by one implementation is a description of that implementation.
 

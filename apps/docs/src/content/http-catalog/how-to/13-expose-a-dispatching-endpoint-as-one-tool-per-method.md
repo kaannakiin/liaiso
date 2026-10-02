@@ -50,7 +50,7 @@ A source returns one entry per method: the key the route expects, a tool name, a
 body as JSON Schema, and optionally whether the method only reads or destroys data.
 
 ```csharp
-builder.Services.AddLiaiso(options =>
+builder.Services.AddSezzlee(options =>
 {
     options.Families.Provide(DemoDynamicMethods.Source, DemoDynamicMethods.LoadAsync);
 });
@@ -77,7 +77,7 @@ new McpFamilyMember(
 ```
 
 ```ts
-LiaisoModule.forRoot((options) => {
+SezzleeModule.forRoot((options) => {
   options.families.provide(dynamicMethodsSource, () => dynamicMethods);
 });
 ```
@@ -115,11 +115,11 @@ by.
 Members are loaded again when you reload the catalog:
 
 ```csharp
-await app.Services.GetRequiredService<ILiaisoCatalogChangeSource>().ReloadAsync();
+await app.Services.GetRequiredService<ISezzleeCatalogChangeSource>().ReloadAsync();
 ```
 
 ```ts
-await app.get(LiaisoCatalog).reload();
+await app.get(SezzleeCatalog).reload();
 ```
 
 A reload advances the catalog generation and sends `tools/list_changed`. It is refused, and the
@@ -130,11 +130,11 @@ name another tool already has. If the source fails, the members it last returned
 ## What the agent sees
 
 The demos carry the same three members. Driving one of them with the
-[agent-client](https://github.com/kaannakiin/liaiso/tree/main/sdks/nestjs/samples/agent-client) against
+[agent-client](https://github.com/sezzlee/mcp/tree/main/sdks/nestjs/samples/agent-client) against
 either demo:
 
 ```sh
-LIAISO_AUTH=token LIAISO_USER=alice node sdks/nestjs/samples/agent-client/dist/main.js --scenario family
+SEZZLEE_AUTH=token SEZZLEE_USER=alice node sdks/nestjs/samples/agent-client/dist/main.js --scenario family
 ```
 
 ```text
@@ -172,4 +172,4 @@ Look for these codes in the startup log ([How to find out why a tool is missing]
   search for "method" matches all of them. Only the key's value is withheld.
 
 The normative rules are in
-[tool-families.md](https://github.com/kaannakiin/liaiso/blob/main/packages/http/spec/tool-families.md).
+[tool-families.md](https://github.com/sezzlee/mcp/blob/main/packages/http/spec/tool-families.md).

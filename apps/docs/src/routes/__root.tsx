@@ -19,11 +19,11 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "liaiso — Swagger for Agents" },
+      { title: "Sezzlee — MCP Documentation" },
       {
         name: "description",
         content:
-          "liaiso is an MCP layer that embeds into existing backends. One spec, one SDK per language.",
+          "Sezzlee MCP documentation for connecting existing backends, files and databases to agents.",
       },
     ],
     links: [{ rel: "stylesheet", href: appCss }],

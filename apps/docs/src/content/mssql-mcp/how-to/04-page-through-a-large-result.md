@@ -9,7 +9,7 @@ database](/docs/mssql-mcp/querying-your-first-database):
 
 ```sh
 sql() {
-  npx -y @modelcontextprotocol/inspector --cli --config ~/liaiso-mssql.json --server shop \
+  npx -y @modelcontextprotocol/inspector --cli --config ~/sezzlee-mssql.json --server shop \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```
@@ -19,7 +19,7 @@ sql() {
 `maxRows` caps the rows in one answer. When the statement produced more, the answer says so:
 
 ```sh
-sql run_query --tool-arg sql="SELECT order_id, status FROM liaiso_shop.orders" maxRows=3 \
+sql run_query --tool-arg sql="SELECT order_id, status FROM sezzlee_shop.orders" maxRows=3 \
   | jq -c '{rows, truncated, truncationReason, hint}'
 ```
 
@@ -36,7 +36,7 @@ than reading it to the end.
 Order the rows by something unique, and skip the rows already read with `OFFSET` and `FETCH`:
 
 ```sh
-sql run_query --tool-arg sql="SELECT order_id, status FROM liaiso_shop.orders ORDER BY order_id OFFSET 3 ROWS FETCH NEXT 3 ROWS ONLY" \
+sql run_query --tool-arg sql="SELECT order_id, status FROM sezzlee_shop.orders ORDER BY order_id OFFSET 3 ROWS FETCH NEXT 3 ROWS ONLY" \
   | jq -c '{rows, truncated}'
 ```
 
@@ -60,7 +60,7 @@ only the columns you need, or `LEFT(column, n)` of the long ones.
 A question about totals is cheaper answered by the database than by reading every row:
 
 ```sh
-sql run_query --tool-arg sql="SELECT status, COUNT(*) AS orders FROM liaiso_shop.orders GROUP BY status ORDER BY status" \
+sql run_query --tool-arg sql="SELECT status, COUNT(*) AS orders FROM sezzlee_shop.orders GROUP BY status ORDER BY status" \
   | jq -c '.rows[]'
 ```
 

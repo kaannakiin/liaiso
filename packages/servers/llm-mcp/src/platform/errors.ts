@@ -5,10 +5,10 @@ import {
   type ErrorContext,
   type ErrorFactory,
   type SourceErrorCode,
-} from "@liaiso/mcp-core";
+} from "@sezzlee/mcp-core";
 import { vocabulary } from "./vocabulary.js";
 
-export type LiaisoLlmErrorCode =
+export type SezzleeLlmErrorCode =
   | SourceErrorCode
   | "backend_unavailable"
   | "backend_refused"
@@ -18,15 +18,15 @@ export type LiaisoLlmErrorCode =
   | "input_too_large"
   | "unparsable_output";
 
-export class LiaisoLlmError extends McpSourceError {
-  declare readonly code: LiaisoLlmErrorCode;
+export class SezzleeLlmError extends McpSourceError {
+  declare readonly code: SezzleeLlmErrorCode;
 }
 
-export const fail: ErrorFactory<LiaisoLlmErrorCode> = (
+export const fail: ErrorFactory<SezzleeLlmErrorCode> = (
   code,
   message,
   recovery,
-) => new LiaisoLlmError(code, message, recovery);
+) => new SezzleeLlmError(code, message, recovery);
 
 export function asLlmError(
   error: unknown,

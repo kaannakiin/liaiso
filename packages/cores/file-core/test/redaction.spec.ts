@@ -5,7 +5,7 @@ import {
   createMcpSourceServer,
   readOnly,
   type ToolDefinitions,
-} from "@liaiso/mcp-core";
+} from "@sezzlee/mcp-core";
 import {
   FileSourceError,
   type CoreErrorCode,

@@ -9,7 +9,7 @@ database](/docs/mssql-mcp/querying-your-first-database):
 
 ```sh
 sql() {
-  npx -y @modelcontextprotocol/inspector --cli --config ~/liaiso-mssql.json --server shop \
+  npx -y @modelcontextprotocol/inspector --cli --config ~/sezzlee-mssql.json --server shop \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```
@@ -20,7 +20,7 @@ sql() {
 the descriptions stored with them as `MS_Description` extended properties:
 
 ```sh
-sql search_catalog --tool-arg query=revenue schema=liaiso_shop \
+sql search_catalog --tool-arg query=revenue schema=sezzlee_shop \
   | jq -c '.results[] | {name, kind, matched}'
 ```
 
@@ -34,7 +34,7 @@ cryptic names becomes searchable, so it pays to write them.
 A word also matches names that begin with it, and case and accents are ignored:
 
 ```sh
-sql search_catalog --tool-arg query=SHIPP schema=liaiso_shop \
+sql search_catalog --tool-arg query=SHIPP schema=sezzlee_shop \
   | jq -c '.results[] | {name, matched: [.matched[] | "\(.field): \(.value)"]}'
 ```
 
@@ -56,7 +56,7 @@ for any run of characters, and `includeViews=false` leaves views out. With no `q
 are listed by name:
 
 ```sh
-sql search_catalog --tool-arg schema=liaiso_shop namePattern="order%" \
+sql search_catalog --tool-arg schema=sezzlee_shop namePattern="order%" \
   | jq -c '[.results[] | {name, kind}]'
 ```
 
@@ -70,7 +70,7 @@ sql search_catalog --tool-arg schema=liaiso_shop namePattern="order%" \
 `true` and `nextCursor` continues with the same filters:
 
 ```sh
-sql search_catalog --tool-arg schema=liaiso_shop maxResults=2 \
+sql search_catalog --tool-arg schema=sezzlee_shop maxResults=2 \
   | jq -c '{names: [.results[].name], truncated}'
 ```
 

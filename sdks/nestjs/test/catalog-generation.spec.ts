@@ -16,20 +16,20 @@ import {
 import type { Request, Response } from "express";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { CallerScopeResolver } from "../src/cache.js";
-import { LiaisoCatalog } from "../src/catalog.js";
+import { SezzleeCatalog } from "../src/catalog.js";
 import { McpTool } from "../src/decorators.js";
-import { LiaisoDispatcher } from "../src/dispatcher.js";
+import { SezzleeDispatcher } from "../src/dispatcher.js";
 import { extensionTokens } from "../src/extension-points.js";
 import type { InvokeResultMapper } from "../src/invoke-result-mapper.js";
 import {
   catalogGenerationMetaKey,
-  registerLiaisoTools,
+  registerSezzleeTools,
 } from "../src/meta-tools.js";
-import { LIAISO_OPTIONS, type LiaisoOptions } from "../src/options.js";
-import { LiaisoModule } from "../src/liaiso.module.js";
+import { SEZZLEE_OPTIONS, type SezzleeOptions } from "../src/options.js";
+import { SezzleeModule } from "../src/sezzlee.module.js";
 import {
-  LiaisoStreamableHttp,
-  type LiaisoRequestHandler,
+  SezzleeStreamableHttp,
+  type SezzleeRequestHandler,
 } from "../src/transport/streamable-http.js";
 import { CallerVisibilityProvider } from "../src/visibility/provider.js";
 
@@ -58,27 +58,27 @@ class EchoController {
 
 let mapper: InvokeResultMapper | undefined;
 let scopes: CallerScopeResolver | undefined;
-let options: LiaisoOptions | undefined;
+let options: SezzleeOptions | undefined;
 
 @Controller()
 class GenerationMcpController {
-  private readonly serve: LiaisoRequestHandler;
+  private readonly serve: SezzleeRequestHandler;
 
   constructor(
-    private readonly streamableHttp: LiaisoStreamableHttp,
-    private readonly catalog: LiaisoCatalog,
-    private readonly dispatcher: LiaisoDispatcher,
+    private readonly streamableHttp: SezzleeStreamableHttp,
+    private readonly catalog: SezzleeCatalog,
+    private readonly dispatcher: SezzleeDispatcher,
     private readonly visibility: CallerVisibilityProvider,
   ) {
     this.serve = this.streamableHttp.serve(() => {
       const server = new McpServer({ name: "generation", version: "0.0.0" });
-      registerLiaisoTools(server, {
+      registerSezzleeTools(server, {
         catalog: this.catalog,
         dispatcher: this.dispatcher,
         mapper: mapper as InvokeResultMapper,
         visibility: this.visibility,
         scopes: scopes as CallerScopeResolver,
-        options: options as LiaisoOptions,
+        options: options as SezzleeOptions,
       });
       return server;
     });
@@ -106,7 +106,7 @@ async function waitFor(
 describe("nest catalog generation and connection reflection", () => {
   let app: INestApplication;
   let baseUrl: string;
-  let catalog: LiaisoCatalog;
+  let catalog: SezzleeCatalog;
   let client: Client;
   let notifications = 0;
 
@@ -119,7 +119,7 @@ describe("nest catalog generation and connection reflection", () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [LiaisoModule.forRoot()],
+      imports: [SezzleeModule.forRoot()],
       controllers: [EchoController, GenerationMcpController],
     }).compile();
     app = moduleRef.createNestApplication({ logger: false });
@@ -127,10 +127,10 @@ describe("nest catalog generation and connection reflection", () => {
     await app.listen(0);
     baseUrl = await app.getUrl();
 
-    catalog = app.get(LiaisoCatalog);
+    catalog = app.get(SezzleeCatalog);
     mapper = app.get<InvokeResultMapper>(extensionTokens.invokeResultMapper);
     scopes = app.get<CallerScopeResolver>(extensionTokens.callerScopeResolver);
-    options = app.get<LiaisoOptions>(LIAISO_OPTIONS);
+    options = app.get<SezzleeOptions>(SEZZLEE_OPTIONS);
 
     client = new Client(
       { name: "generation-probe", version: "0.0.0" },

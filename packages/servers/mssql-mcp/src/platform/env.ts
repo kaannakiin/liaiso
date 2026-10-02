@@ -27,10 +27,10 @@ export type EnvOutcome =
   | { readonly kind: "invalid"; readonly reason: string };
 
 export const requiredNames = [
-  "LIAISO_MSSQL_SERVER",
-  "LIAISO_MSSQL_DATABASE",
-  "LIAISO_MSSQL_USER",
-  "LIAISO_MSSQL_PASSWORD",
+  "SEZZLEE_MSSQL_SERVER",
+  "SEZZLEE_MSSQL_DATABASE",
+  "SEZZLEE_MSSQL_USER",
+  "SEZZLEE_MSSQL_PASSWORD",
 ] as const;
 
 function flag(raw: string | undefined, fallback: boolean): boolean | undefined {
@@ -78,50 +78,50 @@ export function readMssqlEnv(env: EnvRecord): EnvOutcome {
   if (missing.length > 0) {
     return { kind: "usage", missing };
   }
-  const port = count(env["LIAISO_MSSQL_PORT"], 1433);
+  const port = count(env["SEZZLEE_MSSQL_PORT"], 1433);
   const connectTimeoutMs = count(
-    env["LIAISO_MSSQL_CONNECT_TIMEOUT_MS"],
+    env["SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS"],
     15_000,
   );
-  const queryTimeoutMs = count(env["LIAISO_MSSQL_QUERY_TIMEOUT_MS"], 30_000);
-  const encrypt = flag(env["LIAISO_MSSQL_ENCRYPT"], true);
+  const queryTimeoutMs = count(env["SEZZLEE_MSSQL_QUERY_TIMEOUT_MS"], 30_000);
+  const encrypt = flag(env["SEZZLEE_MSSQL_ENCRYPT"], true);
   const trustServerCertificate = flag(
-    env["LIAISO_MSSQL_TRUST_SERVER_CERTIFICATE"],
+    env["SEZZLEE_MSSQL_TRUST_SERVER_CERTIFICATE"],
     false,
   );
   if (port === undefined) {
     return {
       kind: "invalid",
-      reason: "LIAISO_MSSQL_PORT must be a positive integer.",
+      reason: "SEZZLEE_MSSQL_PORT must be a positive integer.",
     };
   }
   if (connectTimeoutMs === undefined) {
     return {
       kind: "invalid",
-      reason: "LIAISO_MSSQL_CONNECT_TIMEOUT_MS must be a positive integer.",
+      reason: "SEZZLEE_MSSQL_CONNECT_TIMEOUT_MS must be a positive integer.",
     };
   }
   if (queryTimeoutMs === undefined) {
     return {
       kind: "invalid",
-      reason: "LIAISO_MSSQL_QUERY_TIMEOUT_MS must be a positive integer.",
+      reason: "SEZZLEE_MSSQL_QUERY_TIMEOUT_MS must be a positive integer.",
     };
   }
   if (encrypt === undefined || trustServerCertificate === undefined) {
     return {
       kind: "invalid",
       reason:
-        "LIAISO_MSSQL_ENCRYPT and LIAISO_MSSQL_TRUST_SERVER_CERTIFICATE must be true or false.",
+        "SEZZLEE_MSSQL_ENCRYPT and SEZZLEE_MSSQL_TRUST_SERVER_CERTIFICATE must be true or false.",
     };
   }
   return {
     kind: "config",
     config: {
-      server: env["LIAISO_MSSQL_SERVER"] ?? "",
+      server: env["SEZZLEE_MSSQL_SERVER"] ?? "",
       port,
-      database: env["LIAISO_MSSQL_DATABASE"] ?? "",
-      user: env["LIAISO_MSSQL_USER"] ?? "",
-      password: env["LIAISO_MSSQL_PASSWORD"] ?? "",
+      database: env["SEZZLEE_MSSQL_DATABASE"] ?? "",
+      user: env["SEZZLEE_MSSQL_USER"] ?? "",
+      password: env["SEZZLEE_MSSQL_PASSWORD"] ?? "",
       encrypt,
       trustServerCertificate,
       connectTimeoutMs,

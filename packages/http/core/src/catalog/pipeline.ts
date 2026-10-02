@@ -1,6 +1,6 @@
 import { searchParameters } from "../card.js";
 import { curatedDescriptions, type CurationRelief } from "../curation.js";
-import { LiaisoCatalogError, LiaisoTemplateError } from "../errors.js";
+import { SezzleeCatalogError, SezzleeTemplateError } from "../errors.js";
 import type { FileOptions } from "../file-argument.js";
 import type { EndpointDescriptor } from "../generated/endpoint-descriptor.js";
 import type { ToolDefinition } from "../generated/tool-definition.js";
@@ -59,7 +59,7 @@ export type CatalogEntry<Source extends object = object> = {
  * @param source fields carried onto the catalog entry unchanged, for the source's own later use
  * @param owner the operation's human-readable identity in diagnostics
  * @param declare applies the source's declarations to the discovered descriptor; it may throw a
- * `LiaisoTemplateError` for a declaration conflict, which aborts the build
+ * `SezzleeTemplateError` for a declaration conflict, which aborts the build
  */
 export interface CatalogCandidate<Source extends object = object> {
   readonly source: Source;
@@ -149,7 +149,7 @@ export function buildCatalog<Source extends object>(
       }
     } catch (error) {
       report({
-        code: (error as LiaisoCatalogError).code,
+        code: (error as SezzleeCatalogError).code,
         message: (error as Error).message,
       });
     }
@@ -208,7 +208,7 @@ export function buildCatalog<Source extends object>(
       productions.push(...productionsOf(declared));
     } catch (error) {
       report({
-        code: (error as LiaisoTemplateError).code,
+        code: (error as SezzleeTemplateError).code,
         message: (error as Error).message,
       });
     }
@@ -224,7 +224,7 @@ export function buildCatalog<Source extends object>(
     });
   } catch (error) {
     report({
-      code: (error as LiaisoCatalogError).code,
+      code: (error as SezzleeCatalogError).code,
       message: (error as Error).message,
     });
     names = [];
@@ -271,7 +271,9 @@ export function buildCatalog<Source extends object>(
       );
     } catch (error) {
       const code =
-        error instanceof LiaisoTemplateError ? error.code : "template_rejected";
+        error instanceof SezzleeTemplateError
+          ? error.code
+          : "template_rejected";
       report({ code, message: (error as Error).message });
       continue;
     }
@@ -363,7 +365,7 @@ export function assertCatalogValid(fatal: readonly CatalogDiagnostic[]): void {
   if (fatal.length === 0) {
     return;
   }
-  throw new LiaisoCatalogError(
+  throw new SezzleeCatalogError(
     fatal[0]?.code as "name_collision",
     fatal.map((diagnostic) => diagnostic.message).join(" | "),
   );

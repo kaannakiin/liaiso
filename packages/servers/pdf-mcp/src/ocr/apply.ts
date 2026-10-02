@@ -1,7 +1,7 @@
-import type { Fingerprint } from "@liaiso/file-core";
+import type { Fingerprint } from "@sezzlee/file-core";
 import type { ExtractedPage } from "../engine/inspector.js";
 import { resolvedPagesOf, type ResolvedPage } from "../document/extraction.js";
-import { LiaisoPdfError } from "../platform/errors.js";
+import { SezzleePdfError } from "../platform/errors.js";
 import { limits } from "../platform/limits.js";
 import type { OcrBinding, RecognizedPage, RenderedPage } from "./port.js";
 
@@ -64,10 +64,10 @@ export function createOcrCache(
   };
 }
 
-function asOcrFailure(error: unknown, stage: string): LiaisoPdfError {
-  if (error instanceof LiaisoPdfError) return error;
+function asOcrFailure(error: unknown, stage: string): SezzleePdfError {
+  if (error instanceof SezzleePdfError) return error;
   const detail = error instanceof Error ? error.message : String(error);
-  return new LiaisoPdfError(
+  return new SezzleePdfError(
     "ocr_failed",
     `The OCR ${stage} step failed: ${detail}`,
     "The page keeps its original needsOcr marking; no text was invented for it.",

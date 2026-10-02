@@ -5,10 +5,10 @@ import {
   type CoreErrorCode,
   type ErrorContext,
   type ErrorFactory,
-} from "@liaiso/file-core";
+} from "@sezzlee/file-core";
 import { vocabulary } from "./vocabulary.js";
 
-export type LiaisoExcelErrorCode =
+export type SezzleeExcelErrorCode =
   | CoreErrorCode
   | "encrypted_workbook"
   | "corrupt_workbook"
@@ -28,28 +28,28 @@ export type LiaisoExcelErrorCode =
   | "numeric_overflow"
   | "range_outside_used_range";
 
-export class LiaisoExcelError extends FileSourceError {
-  declare readonly code: LiaisoExcelErrorCode;
+export class SezzleeExcelError extends FileSourceError {
+  declare readonly code: SezzleeExcelErrorCode;
 
-  constructor(code: LiaisoExcelErrorCode, message: string, recovery?: string) {
+  constructor(code: SezzleeExcelErrorCode, message: string, recovery?: string) {
     super(code, message, recovery);
   }
 }
 
-export const fail: ErrorFactory<LiaisoExcelErrorCode> = (
+export const fail: ErrorFactory<SezzleeExcelErrorCode> = (
   code,
   message,
   recovery,
-) => new LiaisoExcelError(code, message, recovery);
+) => new SezzleeExcelError(code, message, recovery);
 
 export function asExcelError(
   error: unknown,
   context: ErrorContext = {},
-): LiaisoExcelError {
-  if (error instanceof LiaisoExcelError) {
+): SezzleeExcelError {
+  if (error instanceof SezzleeExcelError) {
     return error;
   }
-  return new LiaisoExcelError(
+  return new SezzleeExcelError(
     "internal_error",
     internalErrorMessage(error, context),
     internalErrorRecovery(vocabulary),

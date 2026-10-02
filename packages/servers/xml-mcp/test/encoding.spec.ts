@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
-import { detectByteOrderMark } from "@liaiso/file-core";
+import { detectByteOrderMark } from "@sezzlee/file-core";
 import {
   scanProlog,
   unsupportedPrologEncoding,

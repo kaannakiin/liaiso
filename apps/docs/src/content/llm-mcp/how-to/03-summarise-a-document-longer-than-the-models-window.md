@@ -10,8 +10,8 @@ model](/docs/llm-mcp/handing-your-first-task-to-a-local-model):
 
 ```sh
 llm() {
-  npx -y @modelcontextprotocol/inspector --cli liaiso-llm -- \
-    -e LIAISO_LLM_MODEL="$LIAISO_LLM_MODEL" -e LIAISO_LLM_ROOT="$HOME/liaiso-llm" \
+  npx -y @modelcontextprotocol/inspector --cli sezzlee-llm -- \
+    -e SEZZLEE_LLM_MODEL="$SEZZLEE_LLM_MODEL" -e SEZZLEE_LLM_ROOT="$HOME/sezzlee-llm" \
     --method tools/call --tool-name "$@" | jq '.content[0].text | fromjson'
 }
 ```

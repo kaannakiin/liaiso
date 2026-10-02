@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Liaiso.Samples.DemoAuthServer;
+namespace Sezzlee.Samples.DemoAuthServer;
 
 internal sealed record RegisteredClient(string ClientId, IReadOnlyList<string> RedirectUris, string? ClientName, DateTimeOffset IssuedAt);
 

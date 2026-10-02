@@ -1,4 +1,4 @@
-import type { McpFamilyMember } from "@liaiso/sdk-nestjs";
+import type { McpFamilyMember } from "@sezzlee/sdk-nestjs";
 
 export const dynamicMethodsSource = "dynamic-methods";
 

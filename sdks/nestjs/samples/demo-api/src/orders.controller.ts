@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Transform, Type } from "class-transformer";
-import { McpTool } from "@liaiso/sdk-nestjs";
+import { McpTool } from "@sezzlee/sdk-nestjs";
 import {
   IsArray,
   IsInt,

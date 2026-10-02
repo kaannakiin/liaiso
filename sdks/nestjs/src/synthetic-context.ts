@@ -1,10 +1,13 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Socket } from "node:net";
-import { LiaisoDispatchAborted, type DispatchAbortReason } from "@liaiso/core";
+import {
+  SezzleeDispatchAborted,
+  type DispatchAbortReason,
+} from "@sezzlee/core";
 import type { DispatchResult } from "./dispatcher.js";
 import type { OuterConnection } from "./outer-connection.js";
 
-export { LiaisoDispatchAborted };
+export { SezzleeDispatchAborted };
 export type { DispatchAbortReason };
 
 export interface SyntheticContext {
@@ -153,7 +156,7 @@ export function createSyntheticContext(
         return;
       }
       settled = true;
-      reject(new LiaisoDispatchAborted(reason));
+      reject(new SezzleeDispatchAborted(reason));
       try {
         req.emit("aborted");
         req.emit("close");
@@ -161,7 +164,7 @@ export function createSyntheticContext(
         socket.emit("close");
       } catch (error) {
         process.stderr.write(
-          `liaiso: a disconnect listener threw: ${String(error)}\n`,
+          `sezzlee: a disconnect listener threw: ${String(error)}\n`,
         );
       }
     };

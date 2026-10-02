@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch.SystemTextJson;
 using Microsoft.AspNetCore.Mvc;
-using Liaiso.AspNetCore.Discovery;
+using Sezzlee.AspNetCore.Discovery;
 
 namespace DemoApi.Controllers;
 

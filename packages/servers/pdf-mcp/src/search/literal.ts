@@ -1,4 +1,4 @@
-import { asciiLower, truncateWellFormed } from "@liaiso/file-core";
+import { asciiLower, truncateWellFormed } from "@sezzlee/file-core";
 import { limits } from "../platform/limits.js";
 import type { ExtractedPage } from "../engine/inspector.js";
 

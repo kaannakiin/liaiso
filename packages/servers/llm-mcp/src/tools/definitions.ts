@@ -6,7 +6,7 @@ import {
   type ToolCatalog,
   type ToolInputOf,
   type ToolNameOf,
-} from "@liaiso/mcp-core";
+} from "@sezzlee/mcp-core";
 import { z } from "zod";
 import { taskKinds } from "./prompts.js";
 

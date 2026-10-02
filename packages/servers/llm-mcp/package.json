@@ -1,5 +1,5 @@
 {
-  "name": "@liaiso/llm-mcp",
+  "name": "@sezzlee/llm-mcp",
   "version": "0.1.2",
   "description": "MCP server that lets a planning agent (Codex, Claude Code, Cursor) hand bounded language work to a local Ollama model.",
   "keywords": [
@@ -9,7 +9,7 @@
     "ai-agents",
     "llm",
     "claude",
-    "liaiso",
+    "sezzlee",
     "ollama",
     "local-llm",
     "codex",
@@ -21,19 +21,19 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kaannakiin/liaiso.git",
+    "url": "git+https://github.com/sezzlee/mcp.git",
     "directory": "packages/servers/llm-mcp"
   },
-  "homepage": "https://github.com/kaannakiin/liaiso/tree/main/packages/servers/llm-mcp#readme",
+  "homepage": "https://github.com/sezzlee/mcp/tree/main/packages/servers/llm-mcp#readme",
   "bugs": {
-    "url": "https://github.com/kaannakiin/liaiso/issues"
+    "url": "https://github.com/sezzlee/mcp/issues"
   },
   "type": "module",
   "engines": {
     "node": ">=22"
   },
   "bin": {
-    "liaiso-llm": "./dist/cli.js"
+    "sezzlee-llm": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.0.0",
-    "@liaiso/mcp-core": "workspace:^",
+    "@sezzlee/mcp-core": "workspace:^",
     "zod": "^4.5.4"
   },
   "scripts": {
@@ -64,8 +64,8 @@
   },
   "devDependencies": {
     "@modelcontextprotocol/client": "^2.0.0",
-    "@liaiso/oxlint-config": "workspace:*",
-    "@liaiso/typescript-config": "workspace:*",
+    "@sezzlee/oxlint-config": "workspace:*",
+    "@sezzlee/typescript-config": "workspace:*",
     "@types/node": "^24.3.0",
     "@vitest/coverage-v8": "3.2.7",
     "oxlint": "1.85.0",

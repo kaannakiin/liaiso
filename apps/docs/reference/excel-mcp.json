@@ -9,7 +9,7 @@
       ["packages/cores/file-core/src/errors.ts", "CoreErrorCode"],
       [
         "packages/servers/excel-mcp/src/platform/errors.ts",
-        "LiaisoExcelErrorCode"
+        "SezzleeExcelErrorCode"
       ]
     ],
     "sections": [

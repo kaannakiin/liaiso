@@ -1,11 +1,11 @@
-import type { OoxmlErrorCode, OoxmlErrorFactory } from "@liaiso/ooxml-core";
+import type { OoxmlErrorCode, OoxmlErrorFactory } from "@sezzlee/ooxml-core";
 import {
-  LiaisoExcelError,
-  type LiaisoExcelErrorCode,
+  SezzleeExcelError,
+  type SezzleeExcelErrorCode,
 } from "../../platform/errors.js";
 
 interface Mapping {
-  readonly code: LiaisoExcelErrorCode;
+  readonly code: SezzleeExcelErrorCode;
   readonly recovery: string;
 }
 
@@ -42,5 +42,5 @@ const mappings: Readonly<Record<OoxmlErrorCode, Mapping>> = {
  */
 export const failOoxml: OoxmlErrorFactory = (code, message) => {
   const mapping = mappings[code];
-  return new LiaisoExcelError(mapping.code, message, mapping.recovery);
+  return new SezzleeExcelError(mapping.code, message, mapping.recovery);
 };

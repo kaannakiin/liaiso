@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LiaisoExcelError } from "../src/platform/errors.js";
+import { SezzleeExcelError } from "../src/platform/errors.js";
 import {
   advance,
   columnToLetters,
@@ -36,7 +36,7 @@ describe("parseCellRef", () => {
   });
 
   it.each(["1A", "A0", "$A$1", "", "A", "1"])("rejects %s", (reference) => {
-    expect(() => parseCellRef(reference)).toThrowError(LiaisoExcelError);
+    expect(() => parseCellRef(reference)).toThrowError(SezzleeExcelError);
   });
 
   it("formats back", () => {
@@ -106,8 +106,10 @@ describe("resolveRange", () => {
       resolveRange(used, "M900:P950");
       expect.unreachable();
     } catch (error) {
-      expect((error as LiaisoExcelError).code).toBe("range_outside_used_range");
-      expect((error as LiaisoExcelError).recovery).toContain("A1:J100");
+      expect((error as SezzleeExcelError).code).toBe(
+        "range_outside_used_range",
+      );
+      expect((error as SezzleeExcelError).recovery).toContain("A1:J100");
     }
   });
 });

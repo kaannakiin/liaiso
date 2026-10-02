@@ -1,5 +1,5 @@
-import type { ErrorFactory } from "@liaiso/mcp-core";
-import { truncateWellFormed } from "@liaiso/mcp-core";
+import type { ErrorFactory } from "@sezzlee/mcp-core";
+import { truncateWellFormed } from "@sezzlee/mcp-core";
 import type { DbErrorCode } from "../errors.js";
 import type { DbLimits } from "../limits.js";
 import type {

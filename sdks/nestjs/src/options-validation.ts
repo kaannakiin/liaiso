@@ -1,20 +1,20 @@
-import type { LiaisoOptions } from "./options.js";
+import type { SezzleeOptions } from "./options.js";
 
-export class LiaisoConfigurationError extends Error {
+export class SezzleeConfigurationError extends Error {
   constructor(readonly failures: readonly string[]) {
-    super(`liaiso: invalid configuration.\n  ${failures.join("\n  ")}`);
-    this.name = "LiaisoConfigurationError";
+    super(`sezzlee: invalid configuration.\n  ${failures.join("\n  ")}`);
+    this.name = "SezzleeConfigurationError";
   }
 }
 
 /**
- * Mirrors the ASP.NET `LiaisoOptionsValidator` so the two surfaces can be audited side by side.
+ * Mirrors the ASP.NET `SezzleeOptionsValidator` so the two surfaces can be audited side by side.
  *
  * @param options the configured options
  * @returns one message per invalid setting, empty when the configuration is usable
  */
 export function collectConfigurationFailures(
-  options: LiaisoOptions,
+  options: SezzleeOptions,
 ): readonly string[] {
   const failures: string[] = [];
   if (options.cache.lifetimeMs < 0) {
@@ -81,11 +81,11 @@ export function collectConfigurationFailures(
 
 /**
  * @param options the configured options
- * @throws LiaisoConfigurationError when any setting is unusable
+ * @throws SezzleeConfigurationError when any setting is unusable
  */
-export function validateLiaisoOptions(options: LiaisoOptions): void {
+export function validateSezzleeOptions(options: SezzleeOptions): void {
   const failures = collectConfigurationFailures(options);
   if (failures.length > 0) {
-    throw new LiaisoConfigurationError(failures);
+    throw new SezzleeConfigurationError(failures);
   }
 }
