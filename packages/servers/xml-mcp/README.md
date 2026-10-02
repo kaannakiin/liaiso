@@ -4,7 +4,7 @@ A read-only, sandboxed MCP server that reads local XML documents.
 It builds on [@sezzlee/file-core](../../cores/file-core); it does **not** depend on
 `@sezzlee/core` and imports nothing from `packages/lab/xml-lab`.
 
-**Documentation: <https://sezzlee-docs.invokit-docs.workers.dev/docs/xml-mcp/introduction>** — a
+**Documentation: <https://docs.sezzlee.app/docs/xml-mcp/introduction>** — a
 tutorial, task guides, and the tool, error-code and limit reference generated from this package.
 
 ## Quick start
@@ -45,7 +45,7 @@ behavior. Requires Node.js 22 or 24 on macOS (x64, arm64), glibc Linux (x64, arm
 | `aggregate_document` | Counts, distinct counts and, with `numericMode: binary64`, sums and averages per group                                                 |
 
 Every argument, error code and limit is listed in the
-[reference](https://sezzlee-docs.invokit-docs.workers.dev/docs/xml-mcp/tools).
+[reference](https://docs.sezzlee.app/docs/xml-mcp/tools).
 
 A document over the 8 MiB resident ceiling is read in a reduced-capability `chunked` mode:
 `select_xpath`, `find_in_document` and `aggregate_document` are unavailable there, while

@@ -4,7 +4,7 @@ A standalone MCP server that **reads** local Excel files for an agent. There is 
 
 Reads `.xlsx`, `.xlsm` and `.csv`, sandboxed to one folder. Sandboxing, the document cache, the error envelope, the cursor codec and the tool registration layer come from [@sezzlee/file-core](../../cores/file-core).
 
-**Documentation: <https://sezzlee-docs.invokit-docs.workers.dev/docs/excel-mcp/introduction>** — a tutorial, task guides, and the tool, error-code and limit reference generated from this package.
+**Documentation: <https://docs.sezzlee.app/docs/excel-mcp/introduction>** — a tutorial, task guides, and the tool, error-code and limit reference generated from this package.
 
 ## Quick start
 
@@ -44,7 +44,7 @@ Requires Node.js 22 or 24 on macOS (x64, arm64), glibc Linux (x64, arm64) or Win
 | `get_merged_ranges`       | Merged cell ranges                                                                               |
 | `get_images`              | Embedded pictures: anchor, size, extension. Charts, pivot tables and sparklines are refused      |
 
-Every argument, error code and limit is listed in the [reference](https://sezzlee-docs.invokit-docs.workers.dev/docs/excel-mcp/tools).
+Every argument, error code and limit is listed in the [reference](https://docs.sezzlee.app/docs/excel-mcp/tools).
 
 ## How the metadata is read
 
