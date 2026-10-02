@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Scope: `apps/docs`, the liaiso documentation site. The repo-root `CLAUDE.md` still applies — this
+Scope: `apps/docs`, the Sezzlee MCP documentation site. The repo-root `CLAUDE.md` still applies — this
 file adds what is specific to this app and overrides it where stated.
 
 ## Commands
@@ -13,7 +13,7 @@ Run from the repo root:
 - `pnpm turbo run build --filter=@liaiso/docs` — production build into `dist/` (Worker in
   `dist/server`, prerendered pages and assets in `dist/client`)
 - `pnpm --filter @liaiso/docs preview` — serve the build locally in `workerd` (requires a build first)
-- `pnpm --filter @liaiso/docs run deploy` — `wrangler deploy` to the `liaiso-docs` Worker (requires a build first)
+- `pnpm --filter @liaiso/docs run deploy` — `wrangler deploy` to the `sezzlee-docs` Worker (requires a build first)
 - `pnpm --filter @liaiso/docs lint` / `check-types`
 
 Use turbo for `build` so `^build` dependencies resolve; `dev`, `preview` and `deploy` do not need it.
@@ -32,18 +32,18 @@ every link is slash-less; the default `auto-trailing-slash` would answer each pa
 
 ### Deployment
 
-- Live site: <https://liaiso-docs.invokit-docs.workers.dev> — Worker `liaiso-docs` on the
-  `invokit-docs` workers.dev subdomain, Cloudflare account `9a3e2156b439a4ae8a2ac5b153252fee`, Free
-  plan. No custom domain is bound.
+- Live site: <https://docs.sezzlee.app> — Worker `sezzlee-docs`, Cloudflare account
+  `9a3e2156b439a4ae8a2ac5b153252fee`. The custom domain is configured in `wrangler.jsonc`;
+  the workers.dev endpoint is disabled.
 - **Deploys are manual.** No CI job deploys this site, so a merged content change is not live until
   someone runs `pnpm turbo run build --filter=@liaiso/docs` and then
   `pnpm --filter @liaiso/docs run deploy`.
 - A change under `apps/docs` is finished only once it is deployed: after the change is committed,
   ask before deploying (it publishes), then deploy, then confirm with
-  `curl -sS -o /dev/null -w "%{http_code}\n" https://liaiso-docs.invokit-docs.workers.dev/docs/<product>/<slug>`
+  an HTTPS request to `https://docs.sezzlee.app/docs/<product>/<slug>`
   on a page the change touched.
 - The Cloudflare MCP server (`mcp__cloudflare-api__*`) is scoped to the same account: use it to
-  read the Worker's state (`/workers/scripts/liaiso-docs/deployments`, `/workers/domains`), not to
+  read the Worker's state (`/workers/scripts/sezzlee-docs/deployments`, `/workers/domains`), not to
   upload the Worker — `wrangler deploy` is the only deploy path, because it uploads the prerendered
   assets alongside the script.
 

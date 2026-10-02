@@ -59,7 +59,7 @@ function DocsLayout() {
               size="lg"
               className="no-underline text-inherit"
             >
-              liaiso
+              Sezzlee
             </Text>
             {active && (
               <>

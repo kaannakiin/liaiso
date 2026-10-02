@@ -130,7 +130,7 @@ name another tool already has. If the source fails, the members it last returned
 ## What the agent sees
 
 The demos carry the same three members. Driving one of them with the
-[agent-client](https://github.com/kaannakiin/liaiso/tree/main/sdks/nestjs/samples/agent-client) against
+[agent-client](https://github.com/sezzlee/mcp/tree/main/sdks/nestjs/samples/agent-client) against
 either demo:
 
 ```sh
@@ -172,4 +172,4 @@ Look for these codes in the startup log ([How to find out why a tool is missing]
   search for "method" matches all of them. Only the key's value is withheld.
 
 The normative rules are in
-[tool-families.md](https://github.com/kaannakiin/liaiso/blob/main/packages/http/spec/tool-families.md).
+[tool-families.md](https://github.com/sezzlee/mcp/blob/main/packages/http/spec/tool-families.md).

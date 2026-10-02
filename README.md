@@ -1,6 +1,6 @@
-# liaiso
+# Sezzlee MCP
 
-**Swagger for agents.** liaiso turns what you already have — an HTTP backend, a folder of
+**Swagger for agents.** Sezzlee turns what you already have — an HTTP backend, a folder of
 spreadsheets, a SQL Server database — into tools an AI agent can find and call over the
 [Model Context Protocol](https://modelcontextprotocol.io).
 
@@ -21,7 +21,7 @@ It comes in two shapes:
 
 A naive MCP adapter turns every endpoint into a tool and forwards calls over the network. That
 floods the agent's context, loses the caller's identity and silently papers over what it cannot
-represent. liaiso instead:
+represent. Sezzlee instead:
 
 - shows the agent **three meta-tools** (`search_tools`, `load_tool`, `invoke_tool`) rather than the
   whole catalog, so the size of your API does not grow the agent's context;
@@ -38,7 +38,7 @@ The longer argument is on the docs site:
 Requirements: Node.js 24+, pnpm 11 (`corepack enable`), and the .NET 8 or 10 SDK for the C# side.
 
 ```bash
-git clone https://github.com/kaannakiin/liaiso.git
+git clone https://github.com/sezzlee/mcp.git
 cd liaiso
 pnpm install
 pnpm build

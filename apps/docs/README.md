@@ -1,6 +1,6 @@
-# @liaiso/docs
+# Sezzlee MCP documentation
 
-The liaiso documentation site. TanStack Start (Vite) + Mantine + Tailwind CSS.
+The Sezzlee MCP documentation site at <https://docs.sezzlee.app>. TanStack Start (Vite) + Mantine + Tailwind CSS.
 
 ```bash
 pnpm --filter @liaiso/docs dev     # http://localhost:5180

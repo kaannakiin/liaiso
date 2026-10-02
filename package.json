@@ -1,5 +1,5 @@
 {
-  "name": "liaiso",
+  "name": "sezzlee-mcp",
   "private": true,
   "scripts": {
     "build": "turbo run build",

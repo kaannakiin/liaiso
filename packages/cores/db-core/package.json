@@ -16,12 +16,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kaannakiin/liaiso.git",
+    "url": "git+https://github.com/sezzlee/mcp.git",
     "directory": "packages/cores/db-core"
   },
-  "homepage": "https://github.com/kaannakiin/liaiso/tree/main/packages/cores/db-core#readme",
+  "homepage": "https://github.com/sezzlee/mcp/tree/main/packages/cores/db-core#readme",
   "bugs": {
-    "url": "https://github.com/kaannakiin/liaiso/issues"
+    "url": "https://github.com/sezzlee/mcp/issues"
   },
   "type": "module",
   "engines": {
