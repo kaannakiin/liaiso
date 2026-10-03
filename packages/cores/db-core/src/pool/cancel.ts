@@ -75,6 +75,11 @@ export async function runCancellable(
   limits: PoolLimits,
   fail: ErrorFactory<DbErrorCode>,
 ): Promise<QueryResult> {
+  if (signal?.aborted)
+    throw fail(
+      "query_cancelled",
+      "The call was cancelled before the query ran.",
+    );
   const running = lease.connection.run(spec);
   const settled = running.settled;
   /** Guard: the race below may leave this promise unobserved on the losing arm. */
