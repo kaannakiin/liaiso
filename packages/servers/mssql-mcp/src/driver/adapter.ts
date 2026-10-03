@@ -9,6 +9,8 @@ import {
   type RunningQuery,
 } from "@sezzlee/db-core";
 import type { MssqlConfig } from "../platform/env.js";
+import type { LookupFunction } from "node:net";
+import type { Socket } from "node:net";
 import { describeType } from "../dialect/types.js";
 
 type Driver = typeof mssql;
@@ -25,7 +27,39 @@ interface ColumnMeta {
 
 type Stop = "maxRows" | "deadline" | "caller";
 
-function poolConfig(config: MssqlConfig): mssql.config {
+function poolConfig(
+  config: MssqlConfig,
+  deps: MssqlDriverDeps,
+  openingSignal?: AbortSignal,
+): mssql.config {
+  // @types/mssql declares a zero-argument hook; Tedious passes socket options,
+  // DNS lookup and cancellation. Optional parameters cover both contracts.
+  const connector =
+    deps.connector === undefined
+      ? undefined
+      : async (
+          options?: {
+            readonly host: string;
+            readonly port: number;
+            readonly localAddress?: string;
+          },
+          lookup?: LookupFunction,
+          signal?: AbortSignal,
+        ): Promise<Socket> => {
+          if (
+            options === undefined ||
+            lookup === undefined ||
+            deps.connector === undefined
+          )
+            throw new Error("Invalid database socket context");
+          const combined =
+            openingSignal === undefined
+              ? signal
+              : signal === undefined
+                ? openingSignal
+                : AbortSignal.any([openingSignal, signal]);
+          return deps.connector(options, lookup, combined);
+        };
   return {
     server: config.server,
     port: config.port,
@@ -37,6 +71,8 @@ function poolConfig(config: MssqlConfig): mssql.config {
     options: {
       encrypt: config.encrypt,
       trustServerCertificate: config.trustServerCertificate,
+      ...(connector === undefined ? {} : { connector }),
+      ...(deps.serverName === undefined ? {} : { serverName: deps.serverName }),
     },
     /**
      * Guard: one physical connection per pool. db-core owns the pooling, and
@@ -86,8 +122,25 @@ function timeoutError(ms: number): Error {
   });
 }
 
+function cancellationError(): Error {
+  return Object.assign(new Error("The connection was cancelled."), {
+    code: "ECANCEL",
+  });
+}
+
 export interface MssqlDriverDeps {
   readonly driver?: Driver;
+  /** Trusted host application hook; never read from SQL or the environment. */
+  readonly connector?: (
+    options: {
+      readonly host: string;
+      readonly port: number;
+      readonly localAddress?: string;
+    },
+    lookup: LookupFunction,
+    signal?: AbortSignal,
+  ) => Promise<Socket>;
+  readonly serverName?: string;
 }
 
 export function createMssqlDriver(
@@ -97,10 +150,52 @@ export function createMssqlDriver(
   let nextId = 0;
 
   return {
-    async open(config: MssqlConfig): Promise<DriverConnection> {
-      const pool = await new driver.ConnectionPool(
-        poolConfig(config),
-      ).connect();
+    async open(
+      config: MssqlConfig,
+      signal?: AbortSignal,
+    ): Promise<DriverConnection> {
+      if (signal?.aborted) throw cancellationError();
+      const connecting = new AbortController();
+      const pool = new driver.ConnectionPool(
+        poolConfig(config, deps, connecting.signal),
+      );
+      await new Promise<void>((resolve, reject) => {
+        const abort = () => {
+          connecting.abort();
+          reject(cancellationError());
+          void pool.close().catch(() => undefined);
+        };
+        const dispose = () => signal?.removeEventListener("abort", abort);
+        signal?.addEventListener("abort", abort, { once: true });
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        try {
+          void pool.connect().then(
+            () => {
+              dispose();
+              if (connecting.signal.aborted) {
+                void pool.close().catch(() => undefined);
+                reject(cancellationError());
+                return;
+              }
+              resolve();
+            },
+            (error) => {
+              dispose();
+              reject(error);
+            },
+          );
+        } catch (error) {
+          dispose();
+          reject(error);
+        }
+      });
+      if (signal?.aborted) {
+        void pool.close().catch(() => undefined);
+        throw cancellationError();
+      }
       nextId += 1;
       const id = nextId;
       return {
